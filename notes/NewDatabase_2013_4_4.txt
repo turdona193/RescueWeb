@@ -1,14 +1,10 @@
-/**@startuml
-hide circles
+@startuml
+
 package personal{
 users "1..1"->"0..n" certifications
 users "1..1"->"0..1" EMTCert
 users "1..1"-->"1..1" operationalStatus
 users "1..1"-->"1..1" administrativeStatus
-users "0..1"<--"1..1" position
-users "1..1"-->"1..1" trainingLevel
-users "1..1"-->"1..1" privileges
-
 }
 package StandBys{
 	standBy "1..1" -> "0..n" standByPersonal
@@ -38,29 +34,18 @@ class users{
 	phoneNumber
 	email
 	--SquadInformation--
-	<i>privilegeValue</i>
-	<i>trainingLevel</i>
-	<i>administrativeValue</i>
-	<i>operationalValue</i>
-	portableNumber
-}
-class trainingLevel{
+	privileges
+	'(Admin,Eboard,Member,Guest) 
+	trainingLevel
 	'(none,CPR,EMT-Student,Emt-b,
 	' aemt-cc,aemt-p)
-	<b><i>trainingValue</b></i>
-	trainingLevel
-}
-class privileges{
-	<b><i>privilegeValue</i></b>
-	privilege
-		'(Admin,Eboard,Member,Guest) 
-}
-class position{
+	administrativeValue
+	operationalValue
+	position
 	'(Eboard Position)
-	<b>position</b>
-	<i>username</i>
+	portableNumber
+	isCrewChief	
 }
-
 class administrativeStatus{
 	<b><i>administrativeValue</i></b>
 	status
@@ -114,5 +99,3 @@ class standByCoverage{
 
 
 @enduml
-@enduml
-**/
