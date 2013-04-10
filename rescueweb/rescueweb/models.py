@@ -74,7 +74,7 @@ class emtcert(Base):
 class certifications(Base):
     __tablename__ = 'Certifications'
     username = Column(Text, ForeignKey('Users.username'), primary_key=True)
-    certification = Column(Text)
+    certification = Column(Text, primary_key=True)
     expiration = Column(Text)
 
     def __init__(self, username,certification,expiration):

@@ -11,7 +11,6 @@ from .models import (
     operationalstatus,
     administrativestatus,
     eboardpositions,
-    portablenumber,
     traininglevel,
     )
 
