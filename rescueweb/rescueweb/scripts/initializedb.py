@@ -19,6 +19,7 @@ from ..models import (
     eboardpositions,
     traininglevel,
     privileges,
+    Page,
     Base,
     )
 
@@ -40,6 +41,12 @@ def main(argv=sys.argv):
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
     with transaction.manager:
+        model = Page(name = 'Home', data = 'The SUNY Potsdam Campus Rescue Squad started in 1992 as a group of college students that formed together to provide much needed medical coverage for SUNY Potsdam varsity athletic events as well as various other college events.')
+        DBSession.add(model)
+        
+        model = Page(name = 'History', data = 'This is where the history of the Squad would be')
+        DBSession.add(model)
+        
         user = users(username = 'turdona193', password = 'nick',firstname = 'Nicholas',middlename = 'Anthony',lastname = 'Turdo',
                      street = '3510 Barrington Dr',city = 'Potsdam', state = 'NY',zipcode = '13676',residence = 'Townhouse',roomnumber = 'A1-104',
                      phonenumber = 6462595690,email = 'turdona193@potsdam.edu',privileges = 2,trainingvalue = 3,administrativevalue = 3,operationalvalue = 4, portablenumber = 10)

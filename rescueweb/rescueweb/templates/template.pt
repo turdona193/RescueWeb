@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      metal:define-macro="template">
+
+      
+<head>
+  <title>SUNY Potsdam Campus Rescue Squad</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+  <meta name="keywords" content="Potsdam Campus Rescue" />
+  <meta name="description" content="pyramid web application" />
+  <link rel="shortcut icon" href="${request.static_url('rescueweb:static/favicon.ico')}" />
+  <link rel="stylesheet" href="${request.static_url('rescueweb:static/pylons.css')}" type="text/css" media="screen" charset="utf-8" />
+  <link rel="stylesheet" href="http://static.pylonsproject.org/fonts/nobile/stylesheet.css" media="screen" />
+  <link rel="stylesheet" href="http://static.pylonsproject.org/fonts/neuton/stylesheet.css" media="screen" />
+  <!--[if lte IE 6]>
+  <link rel="stylesheet" href="${request.static_url('rescueweb:static/ie6.css')}" type="text/css" media="screen" charset="utf-8" />
+  <![endif]-->
+  
+</head>
+<body>
+<div id="main">
+    <h1>${title}</h1>
+
+    <div id="site-map">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/history">History</a></li>
+            <li><a href="/personnel">Personal</a></li>
+            
+        </ul>
+    </div>
+
+    <div metal:define-slot="content">
+    </div>
+</div>
+</body>
+</html>

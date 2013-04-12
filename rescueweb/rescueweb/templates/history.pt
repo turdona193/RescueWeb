@@ -1,0 +1,7 @@
+<div metal:use-macro="main.macros['template']">
+    <div metal:fill-slot="content">
+        <p>
+            this is where the history would go.
+        </p>
+    </div>
+</div>

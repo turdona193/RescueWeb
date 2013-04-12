@@ -1,5 +1,6 @@
 from pyramid.response import Response
 from pyramid.view import view_config
+from pyramid.renderers import get_renderer
 
 from sqlalchemy.exc import DBAPIError
 
@@ -14,14 +15,23 @@ from .models import (
     traininglevel,
     )
 
+@view_config(route_name='home', renderer='templates/home.pt')
+def home(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title='Home', main=main)
 
-@view_config(route_name='home', renderer='templates/mytemplate.pt')
-def my_view(request):
-    try:
-        one = DBSession.query(users).filter(users.username == 'turdona193').first()
-    except DBAPIError:
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
-    return {'one': one, 'project': 'rescueweb'}
+@view_config(route_name='history', renderer='templates/history.pt')
+def history(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'History', main = main)
+
+@view_config(route_name='personnel', renderer='templates/personnel.pt')
+def personal(request):
+    main = get_renderer('templates/template.pt').implementation()
+    personal = DBSession.query(users).all()
+    
+       # headers = [column.name for column in personal[0].__table__.columns]
+    return dict(title = 'Personal', main = main)
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem

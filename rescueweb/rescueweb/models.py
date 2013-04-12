@@ -19,6 +19,17 @@ DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
 
+class Page(Base):
+    """ The SQLAlchemy declarative model class for a Page object. """
+    __tablename__ = 'pages'
+    name = Column(Text, primary_key = True)
+    data = Column(Text)
+
+    def __init__(self, name, data):
+        self.name = name
+        self.data = data
+
+
 class users(Base):
     __tablename__ = 'Users'
     username = Column(Text, primary_key=True)
