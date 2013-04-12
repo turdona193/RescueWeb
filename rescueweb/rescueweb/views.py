@@ -31,7 +31,7 @@ def personal(request):
     personal = DBSession.query(users).all()
     
        # headers = [column.name for column in personal[0].__table__.columns]
-    return dict(title = 'Personal', main = main)
+    return dict(title = 'Personnel', main = main)
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem

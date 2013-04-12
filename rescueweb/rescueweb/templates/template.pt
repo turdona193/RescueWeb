@@ -21,17 +21,91 @@
   
 </head>
 <body>
-<div id="main">
-    <h1>${title}</h1>
+<div>
 
-    <div id="site-map">
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/history">History</a></li>
-            <li><a href="/personnel">Personal</a></li>
-            
-        </ul>
-    </div>
+<!-- GOING TO NEED IF LOGGED IN, DISPLAY LOG OUT, IF NOT LOGGED IN, DISPLAY LOG IN><!-->
+	<table border="1">
+	<tr>
+	<th rowspan="2">
+	<img src="${request.static_url('rescueweb:static/CRSbanner.jpg')}" alt="CRS Banner"/>
+	</th>
+		<td><a href="/">My Account</a></td>		
+	</tr>
+	<tr>
+		<td><a href="/">Log out</a></td>
+	</tr>
+	</table>
+
+</div>
+
+<!-- THIS SECTION IS A TABLE CONTAINING ALL THE ROWS OF DROP DOWN NAVIGATION MENUS ><!-->
+
+<div id="site-map">
+
+<table border="1" cellpadding="200">
+	<tr><td>
+	<select id="HomeMenu" style="color: #000056; width:150px" size="1" name="HomeMenu">
+	<option value="#">Welcome!</option>
+	<option value="/">Home</option>
+	<option value="/history">History</option>
+	<option value="/announcements">Announcements</option>
+	<option value="/personnel">Personnel</option>
+	<option value="/pictures">Pictures</option>
+	<option value="/join">How to Join</option>
+	<option value="/events">Events</option>
+	</select>
+</td>
+	<td><img src="${request.static_url('rescueweb:static/ekg.jpg')}" alt="ekg"/>
+</td>
+	<td>
+	<select id="Links" style="color: #000056; width:150px" size="1" name="Links">
+	<option value="#">Links</option>
+	<option value="http://www.pvrs.org/">Potsdam Rescue</option>
+	<option value="http://www.health.state.ny.us/">NYS Dep. of Health</option>
+	<option value="http://training.fema.gov/">FEMA Training</option>
+	<option value="http://www.canton.edu/NCEMS">North Country EMS</option>
+	<option value="http://hamradio.arc.nasa.gov/ICScourses.html">ICS Courses</option>
+	</select>
+</td>
+	<td><img src="${request.static_url('rescueweb:static/ekg.jpg')}" alt="ekg"/>
+</td>
+	<td>
+	<select id="Members" style="color: #000056; width:150px" size="1" name="Members">
+	<option value="#">Members Only</option>
+	<option value="/standbys">Stand-Bys</option>
+	<option value="/duty_crew_calendar">Duty Crew Calendar</option>
+	<option value="/coverage_requests">Coverage Requests</option>
+	<option value="/meeting_minutes">Meeting Minutes</option>
+	<option value="/squad_documents">Squad Documents</option>
+	
+	
+	</select>
+	</td>
+	</tr>
+	</table>
+	<script type="text/javascript">
+ var urlmenu = document.getElementById( 'Links' );
+ urlmenu.onchange = function() {
+	if(location == "#")return;
+    window.open( this.options[ this.selectedIndex ].value );
+ };
+</script>
+<script type="text/javascript">
+ var urlmenu = document.getElementById( 'HomeMenu' );
+ urlmenu.onchange = function() {
+      window.open(this.options[ this.selectedIndex ].value, '_self');
+ };
+</script>
+
+<!-- THIS SCRIPT IS FOR RUNNING LINKS TO MEMBERS ONLY SECTION!><!-->
+<script type="text/javascript">
+ var urlmenu = document.getElementById( 'Members' );
+ urlmenu.onchange = function() {
+      window.open(this.options[ this.selectedIndex ].value, '_self');
+ };
+</script>
+
+	<h1>${title}</h1>
 
     <div metal:define-slot="content">
     </div>
