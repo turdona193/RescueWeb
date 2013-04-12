@@ -6,6 +6,7 @@ from sqlalchemy.exc import DBAPIError
 
 from .models import (
     DBSession,
+    Page,
     users,
     emtcert,
     certifications,
@@ -18,20 +19,23 @@ from .models import (
 @view_config(route_name='home', renderer='templates/home.pt')
 def home(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title='Home', main=main)
+    page = DBSession.query(Page).filter_by(name='Home').first()
+
+    return dict(title='Home', main=main , page = page)
 
 @view_config(route_name='history', renderer='templates/history.pt')
 def history(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'History', main = main)
+    page = DBSession.query(Page).filter_by(name='History').first()
+    return dict(title = 'History', main = main , page = page)
 
 @view_config(route_name='personnel', renderer='templates/personnel.pt')
 def personal(request):
     main = get_renderer('templates/template.pt').implementation()
-    personal = DBSession.query(users).all()
+    page = DBSession.query(users).all()
     
-       # headers = [column.name for column in personal[0].__table__.columns]
-    return dict(title = 'Personal', main = main)
+    headers = [column.name for column in page[0].__table__.columns]
+    return dict(title = 'Personnel', main = main, personnel = page, headers = headers)
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
