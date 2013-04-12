@@ -1,0 +1,6 @@
+<div metal:use-macro="main.macros['layout']">
+    <div metal:fill-slot="content">
+        <p>Welcome to the duty crew calendar page!</p>
+        <p>Calendars are awful</p> 
+    </div>
+</div>

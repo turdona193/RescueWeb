@@ -1,0 +1,6 @@
+<div metal:use-macro="main.macros['layout']">
+    <div metal:fill-slot="content">
+        <p>This is the ${title} page!</p>
+        <p>Cover everything, all of them.</p>
+    </div>
+</div>

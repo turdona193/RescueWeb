@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      metal:define-macro="layout">
+<head>
+    <title>Wiki - ${title}</title>
+</head>
+<body>
+<div id="main">
+    <h1>${title}</h1>
+
+    <div id="site-map">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/events">Events</a></li>
+            <li><a href="/standbys">Standbys</a></li>
+            <li><a href="/duty_crew_calendar">Duty-Crew calendar</a></li>
+            <li><a href="/coverage_requests">Coverage Requests</a></li>
+            <li><a href="/meeting_minutes">Meeting Minutes</a></li>
+        </ul>
+    </div>
+
+    <div metal:define-slot="content">
+    </div>
+</div>
+</body>
+</html>
