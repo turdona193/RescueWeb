@@ -1,15 +1,27 @@
 @startuml
-
+hide circles
 package personal{
 users "1..1"->"0..n" certifications
 users "1..1"->"0..1" EMTCert
 users "1..1"-->"1..1" operationalStatus
 users "1..1"-->"1..1" administrativeStatus
+users "0..1"<--"1..1" position
+users "1..1"-->"1..1" trainingLevel
+users "1..1"-->"1..1" privileges
+
 }
 package StandBys{
 	standBy "1..1" -> "0..n" standByPersonal
 	standByPersonal "0..1" -> "0..1" standByCoverage
 }
+package DutyCrews{
+	dutyCrewSchedule -- dutyCrews
+	dutyCrews -- dutyCrewCoverage
+}
+package Events{
+	events "1..1"--"0..n" attendees
+}
+
 	users "1..1"-->"0..n" standByPersonal
 	users "1..1"-->"0..n" standByCoverage
 
@@ -34,18 +46,29 @@ class users{
 	phoneNumber
 	email
 	--SquadInformation--
-	privileges
-	'(Admin,Eboard,Member,Guest) 
-	trainingLevel
+	<i>privilegeValue</i>
+	<i>trainingLevel</i>
+	<i>administrativeValue</i>
+	<i>operationalValue</i>
+	portableNumber
+}
+class trainingLevel{
 	'(none,CPR,EMT-Student,Emt-b,
 	' aemt-cc,aemt-p)
-	administrativeValue
-	operationalValue
-	position
-	'(Eboard Position)
-	portableNumber
-	isCrewChief	
+	<b><i>trainingValue</b></i>
+	trainingLevel
 }
+class privileges{
+	<b><i>privilegeValue</i></b>
+	privilege
+		'(Admin,Eboard,Member,Guest) 
+}
+class position{
+	'(Eboard Position)
+	<b>position</b>
+	<i>username</i>
+}
+
 class administrativeStatus{
 	<b><i>administrativeValue</i></b>
 	status
@@ -76,9 +99,7 @@ class standBy{
 	event
 	location
 	notes
-	dd
-	mm
-	yyyy
+	Date
 	time
 }
 
@@ -88,6 +109,7 @@ class standByPersonal{
 	position
 	'(ccpic,Active,probationary)
 	'Limit by level of training
+	covered
 }
 
 class standByCoverage{
@@ -96,6 +118,52 @@ class standByCoverage{
 	coveredBy
 }
 
+class dutyCrewSchedule{
+	<b>Date{Month,Year}</b>
+	numberOfCrews
+	startingCrew
+}
+
+class outOfService{
+	<b>Date</b>
+	time
+}
+
+class dutyCrews{
+	<b>crewNumber</b>
+	<i><b>username</i></b>
+	<i><b>Date {Month,Year}</i></b>
+}
+
+class dutyCrewCoverage{
+	<b><i>username</i></b>
+	<b><i>Date</i></b>
+	<i>coveredBy</i>
+}
+class crewChiefSchedule{
+	<b>Date</b>
+	<i>ccusername</i>
+	<i>pccusername</i>
+}
+
+
+class events{
+	<b>eventID<b>
+	Date
+	time
+	name
+	notes
+}
+class attendees{
+	<b><i>eventID</b></i>
+	<b><i>username</b></i>
+}
+
+class meetingMinutes{
+}
+
+class minutesContent{
+}
 
 
 @enduml

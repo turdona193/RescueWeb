@@ -1,11 +1,22 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-        <p>
-sdafnasjdnfkasd
+
+          <h2>${title}</h2>
+          <table>
+			<tr> 
+				<div tal:repeat = "header headers">
+            		<th>${header}</th>
+				</div>
+			</tr>
+            <div tal:repeat="content personnel">
+              <tr>
+				<div tal:repeat = "header headers">
+					<td>${getattr(content,header)}</td>
+				</div>
+              </tr>
+            </div>
+          </table>
 
 
-
-
-        </p>
     </div>
 </div>
