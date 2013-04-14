@@ -38,7 +38,20 @@ class Page(Base):
     def __init__(self, name, data):
         self.name = name
         self.data = data
-
+        
+class announcements(Base):
+    __tablename__ = 'announcements'
+    id = Column(Integer, primary_key=True)
+    header = Column(Text)
+    text = Column(Text)
+    priority = Column(Integer, ForeignKey('Privileges.privilegevalue'))
+    username = Column(Text,ForeignKey('Users.username'))
+    
+    def __init__(self, header, text, priority, username):
+        self.header = header
+        self.text  = text
+        self.priority = priority
+        self.username = username
 
 class users(Base):
     __tablename__ = 'Users'

@@ -20,6 +20,7 @@ from ..models import (
     traininglevel,
     privileges,
     Page,
+    announcements,
     Base,
     )
 
@@ -61,6 +62,20 @@ The Squad currently has 7 NYS DOH Part 800 compliant BLS jump bags. One bag is h
 
 Campus Rescue runs on average approximately 150 calls and standbys each year.""")
         DBSession.add(model)
+        
+        model = Page(name = 'Join', data = ("""The Campus Rescue Squad at SUNY Potsdam is always open for new members! If you are interested in joining the squad, email rescue@potsdam.edu
+                                            The official CRS application is located here. General membership meetings are held bi-weekly in Forum Room 204 at 8:00pm, preceded by a training at 7:00pm in the Union's Fire Side Lounge. The meeting dates for the Spring 2012 semester are: To be Announced! 
+                                            CRS does not discriminate membership because of race, religion, creed, color, or lifestyle preference."""))
+        DBSession.add(model)
+        
+        model = announcements(header = 'Remember Paperwork', text = 'Please remember to submit all paperwork', priority = 1, username = 'turdona193')
+        DBSession.add(model)
+        model = announcements(header = 'Crew Chief Signup', text = 'Please remember to sign up on the Crew Chief Calendar', priority = 1, username = 'turdona193')
+        DBSession.add(model)
+        model = announcements(header = 'Mixer', text = 'Hey Guys, There is a mixer happening Wednesday, Bring friends.', priority = 1, username = 'turdona193')
+        DBSession.add(model)
+
+        
         
         user = users(username = 'turdona193', password = 'nick',firstname = 'Nicholas',middlename = 'Anthony',lastname = 'Turdo',
                      street = '3510 Barrington Dr',city = 'Potsdam', state = 'NY',zipcode = '13676',residence = 'Townhouse',roomnumber = 'A1-104',

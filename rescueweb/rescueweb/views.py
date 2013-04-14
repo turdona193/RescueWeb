@@ -7,6 +7,7 @@ from sqlalchemy.exc import DBAPIError
 from .models import (
     DBSession,
     Page,
+    announcements,
     users,
     emtcert,
     certifications,
@@ -41,6 +42,20 @@ def personal(request):
 def duty_crew_calendar(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Duty Crew Calendar', main = main)
+
+@view_config(route_name='announcements', renderer='templates/announcements.pt')
+def announcements(request):
+    main = get_renderer('templates/template.pt').implementation()
+    page = DBSession.query(announcements).all()
+    
+    headers = [column.name for column in page[0].__table__.columns]
+    return dict(title = 'Announcement', main = main)
+
+@view_config(route_name='join', renderer='templates/join.pt')
+def join(request):
+    main = get_renderer('templates/template.pt').implementation()
+    page = DBSession.query(Page).filter_by(name='Join').first()
+    return dict(title = 'Join', main = main , page = page)
 
 
 conn_err_msg = """\

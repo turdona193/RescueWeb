@@ -19,6 +19,8 @@ def main(global_config, **settings):
     config.add_route('history','/history')
     config.add_route('personnel','/personnel')
     config.add_route('duty_crew_calendar', '/duty_crew_calendar')
+    config.add_route('announcements' , '/announcements')
+    config.add_route('join' , '/join')
     
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
