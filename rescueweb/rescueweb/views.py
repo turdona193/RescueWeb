@@ -37,6 +37,12 @@ def personal(request):
     headers = [column.name for column in page[0].__table__.columns]
     return dict(title = 'Personnel', main = main, personnel = page, headers = headers)
 
+@view_config(route_name='duty_crew_calendar', renderer='templates/duty_crew_calendar.pt')
+def duty_crew_calendar(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'Duty Crew Calendar', main = main)
+
+
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
