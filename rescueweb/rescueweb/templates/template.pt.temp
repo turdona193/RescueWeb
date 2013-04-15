@@ -29,16 +29,13 @@
 	<th rowspan="2">
 	<img src="${request.static_url('rescueweb:static/CRSbanner.jpg')}" alt="CRS Banner"/>
 	</th>
-		<span tal:condition="logged_in">
-   			<td><a href="/">${logged_in}</a></td>
-		</span>
-		<span tal:condition="not: logged_in">
-   			<td><a href="/login">Login</a></td>
-		</span>
+	<span tal:condition="logged_in">
+   		<a href="${}/logout">My Account</a>
+	</span>
 	</tr>
 	<tr>
 		<span tal:condition="logged_in">
-  			<td><a href="${request.application_url}/logout">Logout</a></td>
+  			<a href="${request.application_url}/logout">Logout</a>
 		</span>	</tr>
 	</table>
 
@@ -80,31 +77,14 @@
 	<option value="#">Members Only</option>
 	<option value="/standbys">Stand-Bys</option>
 	<option value="/duty_crew_calendar">Duty Crew Calendar</option>
-	<option value="/coverage">Coverage Requests</option>
-	<option value="/minutes">Meeting Minutes</option>
-	<option value="/documents">Squad Documents</option>
+	<option value="/coverage_requests">Coverage Requests</option>
+	<option value="/meeting_minutes">Meeting Minutes</option>
+	<option value="/squad_documents">Squad Documents</option>
+	
+	
 	</select>
-</td>
-	<td><img src="${request.static_url('rescueweb:static/ekg.jpg')}" alt="ekg"/>
-</td>
-	<td>
-	<select id="Administrative" style="color: #000056; width:150px" size="1" name="Administrative">
-	<option value="#">Administrative Tools</option>
-	<option value="/adduser">Add User</option>
-	<option value="/edituser">Edit User</option>
-	<option value="/deleteuser">Delete User</option>
-	<option value="/portableNumbers">Assign Portable Numbers</option>
-	<option value="/addannouncements">Add Announcements</option>
-	<option value="/addevents">Add Events</option>
-	<option value="/addstandby">Add Stand-by</option>
-	<option value="/editdutycrew">Duty Crew Calendar</option>
-	<option value="http://www.potsdamcrs.com/cpanel">Host Monster</option>
-	<option value="/sqlheaders">SQL Headers</option>
-	</select>
-</td>
+	</td>
 	</tr>
-	
-	
 	</table>
 	<script type="text/javascript">
  var urlmenu = document.getElementById( 'Links' );
@@ -129,17 +109,22 @@
 </script>
 
 
+<div id="middle">
+      <div class="middle align-left">
 	<h1>${title}</h1>
-	<div id="main">
-
 
     <div metal:define-slot="content">
     </div>
-	</div>
+</div>
+
+</div>
+
 
 
 </body>
-<div id="footer">
-	<div class="footer align-bottom">&copy; Copyright Pending, Team Murrica.</div>
-</div>
 </html>
+
+
+<div id="footer">
+	<div class="footer">&copy; Copyright Pending, Team Murrica.</div>
+</div>

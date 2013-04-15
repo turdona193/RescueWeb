@@ -202,10 +202,10 @@ body h1, body h2, body h3, body h4, body h5, body h6
 
 #footer
 {
-  bottom: 0;
+  bottom: -60;
   background: #000 url(footerbg.png) repeat-x 0 top;
   position: relative;
-  margin-top: -40px;
+  margin-top: 0px;
   clear: both;
 }
 

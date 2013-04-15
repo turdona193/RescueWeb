@@ -1,0 +1,7 @@
+<div metal:use-macro="main.macros['template']">
+    <div metal:fill-slot="content">
+    	<div tal:repeat = "content page">
+        <a href="${request.static_url('rescueweb:documents/$getattr(content,header[1])')}">${getattr(content,header[0])}</a>
+        </div>
+    </div>
+</div>
