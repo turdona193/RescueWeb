@@ -1,6 +1,6 @@
-<div metal:use-macro="main.macros['layout']">
+<div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
         <p>This is the ${title} page!</p>
-        <p>You are all on stanby, or not, that is all.</p>
+        <p>You are all on stand-by, or not, that is all.</p>
     </div>
 </div>

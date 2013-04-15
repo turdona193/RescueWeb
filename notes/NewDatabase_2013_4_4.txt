@@ -21,6 +21,9 @@ package DutyCrews{
 package Events{
 	events "1..1"--"0..n" attendees
 }
+package Minutes{
+	meetingMinutes --> minutesContent
+}
 
 	users "1..1"-->"0..n" standByPersonal
 	users "1..1"-->"0..n" standByCoverage
@@ -160,9 +163,23 @@ class attendees{
 }
 
 class meetingMinutes{
+	date
+	minutes(time started)
+	<b>meeting_index</b>
 }
 
 class minutesContent{
+	<b><i>meeting_index</b></i>
+	<b>title</b>
+	content
+}
+
+class announcements{
+	<b>header</b>
+	<b>text</b>
+	priority
+	<b>TSTAMP</b>
+	<i>username (posted by)</i>
 }
 
 

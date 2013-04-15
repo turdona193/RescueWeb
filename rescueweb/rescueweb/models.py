@@ -18,10 +18,12 @@ from zope.sqlalchemy import ZopeTransactionExtension
 from pyramid.security import (
     Allow,
     Everyone,
+    ALL_PERMISSIONS,
     )
 class RootFactory(object):
-    __acl__ = [ (Allow, Everyone, 'view'),
-                (Allow, 'group:editors', 'edit') ]
+    __acl__ = [ (Allow, Everyone, 'Guest'),
+                (Allow, 'group:Member','Member'),
+                (Allow, 'group:admin' , ALL_PERMISSIONS) ]
     def __init__(self, request):
         pass
 
@@ -39,20 +41,31 @@ class Page(Base):
         self.name = name
         self.data = data
         
-class announcements(Base):
+class Announcements(Base):
     __tablename__ = 'announcements'
-    id = Column(Integer, primary_key=True)
+    key = Column(Integer, primary_key=True)
     header = Column(Text)
     text = Column(Text)
     priority = Column(Integer, ForeignKey('Privileges.privilegevalue'))
     username = Column(Text,ForeignKey('Users.username'))
     
-    def __init__(self, header, text, priority, username):
+    def __init__(self,key, header, text, priority, username):
+        self.key = key
         self.header = header
         self.text  = text
         self.priority = priority
         self.username = username
-
+        
+class Documents(Base):
+    __tablename__ = 'documents'
+    name = Column(Text)
+    fileName = Column(Text, primary_key = True)
+    
+    def __init__(self, name, fileName):
+        self.name = name
+        self.fileName = fileName
+        
+        
 class users(Base):
     __tablename__ = 'Users'
     username = Column(Text, primary_key=True)

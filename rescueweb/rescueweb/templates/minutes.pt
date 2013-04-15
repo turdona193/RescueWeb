@@ -1,6 +1,6 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
         <p>This is the ${title} page!</p>
-        <p>There are no events planned at this time. Go away.</p>
+        <p>There are no meeting minutes at this time.</p>
     </div>
 </div>
