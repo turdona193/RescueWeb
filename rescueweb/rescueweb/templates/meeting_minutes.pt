@@ -1,6 +1,0 @@
-<div metal:use-macro="main.macros['layout']">
-    <div metal:fill-slot="content">
-        <p>This is the ${title} page!</p>
-        <p>There are no meeting minutes at this time.</p>
-    </div>
-</div>
