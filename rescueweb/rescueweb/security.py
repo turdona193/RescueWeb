@@ -1,7 +1,7 @@
 USERS = {'turdona193':'nick',
           'muehlbjp193':'jared',
           'guarintb193' :'tim'}
-GROUPS = {'turdona' :['group:Member'],
+GROUPS = {'turdona193' :['group:Member'],
           'muehlbjp193':['group:admin'],
           'guarintb193':['group:admin']}
 

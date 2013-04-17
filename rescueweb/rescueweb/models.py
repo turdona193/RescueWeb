@@ -21,9 +21,9 @@ from pyramid.security import (
     ALL_PERMISSIONS,
     )
 class RootFactory(object):
-    __acl__ = [ (Allow, Everyone, 'Guest'),
-                (Allow, 'group:Member','Member'),
-                (Allow, 'group:admin' , ALL_PERMISSIONS) ]
+    __acl__ = [ (Allow,  Everyone     , 'Guest'),
+                (Allow, 'group:Member', 'Member'),
+                (Allow, 'group:admin' ,  ALL_PERMISSIONS) ]
     def __init__(self, request):
         pass
 
@@ -81,7 +81,7 @@ class users(Base):
     roomnumber = Column(Text)
     phonenumber = Column(Integer)
     email = Column(Text)
-    privileges = Column(Integer)
+    privileges = Column(Integer, ForeignKey('Privileges.privilegevalue'))
     trainingvalue = Column(Integer, ForeignKey('TrainingLevels.trainingvalue'))
     administrativevalue = Column(Integer, ForeignKey('AdministrativeStatus.administrativevalue'))
     operationalvalue = Column(Integer, ForeignKey('OperationalStatus.operationalvalue'))
@@ -167,9 +167,10 @@ class traininglevel(Base):
         
 class privileges(Base):
     __tablename__ = 'Privileges'
-    privilegevalue = Column(Integer,ForeignKey('Users.privileges'), primary_key=True)
+    privilegevalue = Column(Integer, primary_key=True)
     privilege = Column(Text)
     
-    def __init__(self, privilegevalue,privilege):
+    def __init__(self, privilegevalue, privilege):
         self.privilegevalue = privilegevalue
         self.privilege = privilege
+

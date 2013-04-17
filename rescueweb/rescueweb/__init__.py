@@ -43,6 +43,9 @@ def main(global_config, **settings):
     config.add_route('coverage' , '/coverage')
     config.add_route('minutes' , '/minutes')
     config.add_route('documents' , '/documents')
+    
+    config.add_route('adduser' , '/adduser')
+
 
 
 

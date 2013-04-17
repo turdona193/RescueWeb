@@ -1,32 +1,41 @@
 @startuml
 hide circles
-package personal{
+package personnel{
 users "1..1"->"0..n" certifications
 users "1..1"->"0..1" EMTCert
 users "1..1"-->"1..1" operationalStatus
 users "1..1"-->"1..1" administrativeStatus
-users "0..1"<--"1..1" position
+users "0..1"<--"1..1" eboardPosition
 users "1..1"-->"1..1" trainingLevel
 users "1..1"-->"1..1" privileges
 
 }
 package StandBys{
-	standBy "1..1" -> "0..n" standByPersonal
-	standByPersonal "0..1" -> "0..1" standByCoverage
+	standBy "1..1" -> "0..n" standByPersonnel
+	standBy "1..1" --> "0..n" standByPersonnelTwo
+	standBy "1..1" --> "0..n" standByPersonnelThree
+	
+	
+	standByPersonnel "0..1" -> "0..1" standByCoverage
+	standByPersonnelThree "0..1" -> "0..1" standByCoverageThree
+
+
+
 }
 package DutyCrews{
-	dutyCrewSchedule -- dutyCrews
-	dutyCrews -- dutyCrewCoverage
+	dutyCrewCalendar --> dutyCrewSchedule
+	dutyCrews -- dutyCrewSchedule
+	class crewChiefSchedule
 }
 package Events{
 	events "1..1"--"0..n" attendees
 }
 package Minutes{
-	meetingMinutes --> minutesContent
+	meetingMinutes "1..1"-->"0..n" minutesContent
 }
 
-	users "1..1"-->"0..n" standByPersonal
-	users "1..1"-->"0..n" standByCoverage
+	users "1..1"->"0..n" standByPersonnel
+	users "1..1"->"0..n" standByCoverage
 
 
 class users{
@@ -66,9 +75,9 @@ class privileges{
 	privilege
 		'(Admin,Eboard,Member,Guest) 
 }
-class position{
+class eboardPosition{
 	'(Eboard Position)
-	<b>position</b>
+	<b>eboardPosition</b>
 	<i>username</i>
 }
 
@@ -106,13 +115,31 @@ class standBy{
 	time
 }
 
-class standByPersonal{
+class standByPersonnel{
 	<b><i>standByID</i></b>
 	<b><i>userName</i></b>
-	position
+	standByPosition
 	'(ccpic,Active,probationary)
 	'Limit by level of training
 	covered
+}
+
+class standByPersonnelTwo{
+	<b><i>standByID</i></b>
+	<b><i>userName</i></b>
+	standByPosition
+	'(ccpic,Active,probationary)
+	'Limit by level of training
+	coverRequestion{Boolean}
+	covered{null -> username}
+}
+
+class standByPersonnelThree{
+	<b><i>standByID</i></b>
+	<b><i>userName</i></b>
+	standByPosition
+	'(ccpic,Active,probationary)
+	'Limit by level of training
 }
 
 class standByCoverage{
@@ -121,15 +148,25 @@ class standByCoverage{
 	coveredBy
 }
 
-class dutyCrewSchedule{
-	<b>Date{Month,Year}</b>
-	numberOfCrews
-	startingCrew
+class standByCoverageThree{
+	<b><i>standByID</i></b>
+	<b><i>userName</i></b>
+	covering
+	coveredBy
+	CID
 }
 
 class outOfService{
 	<b>Date</b>
 	time
+	<b>Date</b>
+	time
+}
+
+class dutyCrewCalendar{
+	<i><b>Date {Month,Year}</i></b>
+	numberOfCrews
+	startingCrew
 }
 
 class dutyCrews{
@@ -137,11 +174,11 @@ class dutyCrews{
 	<i><b>username</i></b>
 	<i><b>Date {Month,Year}</i></b>
 }
-
-class dutyCrewCoverage{
+class dutyCrewSchedule{
+	<b><i>Date</b></i>
 	<b><i>username</i></b>
-	<b><i>Date</i></b>
-	<i>coveredBy</i>
+	coverRequest {boolean}
+	coveredBy
 }
 class crewChiefSchedule{
 	<b>Date</b>
@@ -156,6 +193,7 @@ class events{
 	time
 	name
 	notes
+	permission
 }
 class attendees{
 	<b><i>eventID</b></i>
@@ -164,13 +202,14 @@ class attendees{
 
 class meetingMinutes{
 	date
-	minutes(time started)
+	minutes{time started}
 	<b>meeting_index</b>
 }
 
 class minutesContent{
 	<b><i>meeting_index</b></i>
-	<b>title</b>
+	<b>Header</b>
+	<b>SubHeader</b>
 	content
 }
 
@@ -179,7 +218,21 @@ class announcements{
 	<b>text</b>
 	priority
 	<b>TSTAMP</b>
-	<i>username (posted by)</i>
+	<i>username {posted by}</i>
+}
+
+class loginIns{
+	<b>username</b>
+	<b>TSTAMP</b>
+}
+class documents{
+	name
+	<b>fileName</b>
+}
+
+class links{
+	<b>name</b>
+	<b>address</b>
 }
 
 

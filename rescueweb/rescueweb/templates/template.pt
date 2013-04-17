@@ -127,14 +127,18 @@
       window.open(this.options[ this.selectedIndex ].value, '_self');
  };
 </script>
+<script type="text/javascript">
+ var urlmenu = document.getElementById( 'Administrative' );
+ urlmenu.onchange = function() {
+      window.open(this.options[ this.selectedIndex ].value, '_self');
+ };
+</script>
 
 
 	<h1>${title}</h1>
 	<div id="main">
-
-
-    <div metal:define-slot="content">
-    </div>
+        <div metal:define-slot="content">
+        </div>
 	</div>
 
 

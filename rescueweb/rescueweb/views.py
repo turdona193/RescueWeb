@@ -30,6 +30,7 @@ from .models import (
     users,
     emtcert,
     certifications,
+    privileges,
     operationalstatus,
     administrativestatus,
     eboardpositions,
@@ -124,6 +125,31 @@ def documents(request):
     
     return dict(title = 'Squad Documents', main = main,page = page, header = headers,
                 logged_in=authenticated_userid(request))
+    
+@view_config(route_name='adduser', renderer='templates/adduser.pt',
+             permission = 'admin')
+def adduser(request):
+    main = get_renderer('templates/template.pt').implementation()
+    headers = [column.name for column in users.__table__.columns][:-5]
+
+    if 'form.submitted' in request.params:
+        print("hello")
+        
+    privilegesOptions = DBSession.query(privileges.privilege).all()
+    trainingOptions = DBSession.query(traininglevel.traininglevel).all()
+    administrativeOptions = DBSession.query(administrativestatus.status).all()
+    operationalOptions = DBSession.query(operationalstatus.status).all()
+
+    
+    return dict(title = 'Add User',
+                main = main,
+                headers = headers,
+                privilegesOptions = privilegesOptions,
+                trainingOptions = trainingOptions,
+                administrativeOptions = administrativeOptions,
+                operationalOptions = operationalOptions,
+                logged_in=authenticated_userid(request)
+                )
 
 
 
