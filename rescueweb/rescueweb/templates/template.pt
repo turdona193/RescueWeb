@@ -1,30 +1,22 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       metal:define-macro="template">
-
-      
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <title>SUNY Potsdam Campus Rescue Squad</title>
-  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
-  <meta name="keywords" content="Potsdam Campus Rescue" />
-  <meta name="description" content="pyramid web application" />
-  <link rel="shortcut icon" href="${request.static_url('rescueweb:static/favicon.ico')}" />
-  <link rel="stylesheet" href="${request.static_url('rescueweb:static/pylons.css')}" type="text/css" media="screen" charset="utf-8" />
-  <link rel="stylesheet" href="http://static.pylonsproject.org/fonts/nobile/stylesheet.css" media="screen" />
-  <link rel="stylesheet" href="http://static.pylonsproject.org/fonts/neuton/stylesheet.css" media="screen" />
-  <!--[if lte IE 6]>
-  <link rel="stylesheet" href="${request.static_url('rescueweb:static/ie6.css')}" type="text/css" media="screen" charset="utf-8" />
-  <![endif]-->
-  
-</head>
+<link rel="stylesheet" href="${request.static_url('rescueweb:static/tinydropdown.css')}" type="text/css" />
+
+<!-- Thanks go to Michael for the drop down script
+http://www.scriptiny.com/2011/04/javascript-dropdown-menu/
+><!-->
+<script type="text/javascript" src="${request.static_url('rescueweb:static/tinydropdown.js')}"></script>
+
 <body>
 <div>
-
-<!-- GOING TO NEED IF LOGGED IN, DISPLAY LOG OUT, IF NOT LOGGED IN, DISPLAY LOG IN><!-->
-	<table border="1">
+<center>
+<table>
 	<tr>
 	<th rowspan="2">
 	<img src="${request.static_url('rescueweb:static/CRSbanner.jpg')}" alt="CRS Banner"/>
@@ -41,109 +33,66 @@
   			<td><a href="${request.application_url}/logout">Logout</a></td>
 		</span>	</tr>
 	</table>
-
+	</center>
 </div>
 
-<!-- THIS SECTION IS A TABLE CONTAINING ALL THE ROWS OF DROP DOWN NAVIGATION MENUS ><!-->
 
-<div id="site-map">
+<div class="nav">
+    <ul id="menu" class="menu">
+        <li class="nodiv"><a href="#">${title}</a></li>
+        <li><span>Welcome</span>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/history">History</a></li>
+                <li><a href="/personnel">Personnel</a></li>      
+            </ul>
+        </li>
+        <li><span>News</span>
+            <ul>
+                <li><a href="/announcements">Announcements</a></li>
+                <li><a href="/events">Events</a></li>
+                <li><a href="/pictures">Pictures</a></li>
+            </ul>
+        </li>
+        <li><span>Join</span>
+            <ul>
+                <li><a href="/join">How to Join</a></li>
+                <li><a href="/contact">Contact Us</a></li>
+                <li><a href="/links">Links</a></li><!-- Move Links to a different menu!-->
+            </ul>
+        </li>
 
-<table border="1" cellpadding="200">
-	<tr><td>
-	<select id="HomeMenu" style="color: #000056; width:150px" size="1" name="HomeMenu">
-	<option value="#">Welcome!</option>
-	<option value="/">Home</option>
-	<option value="/history">History</option>
-	<option value="/announcements">Announcements</option>
-	<option value="/personnel">Personnel</option>
-	<option value="/pictures">Pictures</option>
-	<option value="/join">How to Join</option>
-	<option value="/events">Events</option>
-	</select>
-</td>
-	<td><img src="${request.static_url('rescueweb:static/ekg.jpg')}" alt="ekg"/>
-</td>
-	<td>
-	<select id="Links" style="color: #000056; width:150px" size="1" name="Links">
-	<option value="#">Links</option>
-	<option value="http://www.pvrs.org/">Potsdam Rescue</option>
-	<option value="http://www.health.state.ny.us/">NYS Dep. of Health</option>
-	<option value="http://training.fema.gov/">FEMA Training</option>
-	<option value="http://www.canton.edu/NCEMS">North Country EMS</option>
-	<option value="http://hamradio.arc.nasa.gov/ICScourses.html">ICS Courses</option>
-	</select>
-</td>
-	<td><img src="${request.static_url('rescueweb:static/ekg.jpg')}" alt="ekg"/>
-</td>
-	<td>
-	<select id="Members" style="color: #000056; width:150px" size="1" name="Members">
-	<option value="#">Members Only</option>
-	<option value="/standbys">Stand-Bys</option>
-	<option value="/duty_crew_calendar">Duty Crew Calendar</option>
-	<option value="/coverage">Coverage Requests</option>
-	<option value="/minutes">Meeting Minutes</option>
-	<option value="/documents">Squad Documents</option>
-	</select>
-</td>
-	<td><img src="${request.static_url('rescueweb:static/ekg.jpg')}" alt="ekg"/>
-</td>
-	<td>
-	<select id="Administrative" style="color: #000056; width:150px" size="1" name="Administrative">
-	<option value="#">Administrative Tools</option>
-	<option value="/adduser">Add User</option>
-	<option value="/edituser">Edit User</option>
-	<option value="/deleteuser">Delete User</option>
-	<option value="/portableNumbers">Assign Portable Numbers</option>
-	<option value="/addannouncements">Add Announcements</option>
-	<option value="/addevents">Add Events</option>
-	<option value="/addstandby">Add Stand-by</option>
-	<option value="/editdutycrew">Duty Crew Calendar</option>
-	<option value="http://www.potsdamcrs.com/cpanel">Host Monster</option>
-	<option value="/sqlheaders">SQL Headers</option>
-	</select>
-</td>
-	</tr>
-	
-	
-	</table>
-	<script type="text/javascript">
- var urlmenu = document.getElementById( 'Links' );
- urlmenu.onchange = function() {
-	if(location == "#")return;
-    window.open( this.options[ this.selectedIndex ].value );
- };
-</script>
+        <li tal:condition="logged_in"><span>Members</span>
+		<ul>
+			<li class="submenu">
+                    <span>Administrative</span>
+                    <ul>
+                        <li class="noborder"><a href="/documents">Documents</a></li>
+                        <li><a href="/minutes">Meeting Minutes</a></li>
+                        <li><a href="/member_info">Member Info</a></li>
+                    </ul>
+                </li>
+			<li class="submenu">
+				<span>Operational</span>
+                    <ul>
+                        <li class="noborder"><a href="/standbys">Stand-bys</a></li>
+                        <li><a href="/duty_crew_calendar">Duty Crew</a></li>
+                        <li><a href="/coverage">Coverage</a></li>
+                    </ul>
+				</li>
+			</ul>  
+        </li>
+    </ul>
+</div>
 <script type="text/javascript">
- var urlmenu = document.getElementById( 'HomeMenu' );
- urlmenu.onchange = function() {
-      window.open(this.options[ this.selectedIndex ].value, '_self');
- };
+var dropdown=new TINY.dropdown.init("dropdown", {id:'menu', active:'menuhover'});
 </script>
 
-<!-- THIS SCRIPT IS FOR RUNNING LINKS TO MEMBERS ONLY SECTION!><!-->
-<script type="text/javascript">
- var urlmenu = document.getElementById( 'Members' );
- urlmenu.onchange = function() {
-      window.open(this.options[ this.selectedIndex ].value, '_self');
- };
-</script>
-<script type="text/javascript">
- var urlmenu = document.getElementById( 'Administrative' );
- urlmenu.onchange = function() {
-      window.open(this.options[ this.selectedIndex ].value, '_self');
- };
-</script>
-
-
-	<h1>${title}</h1>
-	<div id="main">
-        <div metal:define-slot="content">
-        </div>
-	</div>
+<div id="main">
+    <div metal:define-slot="content">
+    </div>
+</div>
 
 
 </body>
-<div id="footer">
-	<div class="footer align-bottom">&copy; Copyright Pending, Team Murrica.</div>
-</div>
 </html>
