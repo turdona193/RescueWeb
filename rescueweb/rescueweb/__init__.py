@@ -45,9 +45,20 @@ def main(global_config, **settings):
     config.add_route('documents' , '/documents')
     
     config.add_route('adduser' , '/adduser')
-
-
-
+    config.add_route('edituser' , '/edituser')
+    config.add_route('deleteuser' , '/deleteuser')
+    config.add_route('portableNumbers' , '/portableNumbers')
+    config.add_route('addannouncements' , '/addannouncements')
+    config.add_route('addevents' , '/addeventsdeleteuser')
+    config.add_route('addstandby' , '/addstandby')
+    config.add_route('editdutycrew' , '/editdutycrew')
+    config.add_route('editcertifications' , '/editcertifications')
+    config.add_route('editannouncements' , '/editannouncements')
+    config.add_route('editpages' , '/editpages')
+    config.add_route('editlinks' , '/addlinks')
+    config.add_route('editdocuments' , '/adddocuments')
+    config.add_route('editpictures' , '/editpictures')
+    config.add_route('editmeetingminutes' , '/editmeetingminutes')
 
     
     config.add_route('login', '/login')

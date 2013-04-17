@@ -65,7 +65,20 @@ def personnel(request):
              permission = 'Member')
 def duty_crew_calendar(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Duty Crew Calendar', 
+
+    import calendar
+    import datetime
+
+    currentDate = datetime.date.today()
+    year = currentDate.year
+    month = currentDate.month
+    monthName = calendar.month_name[month]
+    startDay, days = calendar.monthrange(year, month)
+    startDay = (startDay +1)%7
+    return dict(title = 'Duty Crew Calendar',
+                monthName = monthName,
+                startDay = startDay,
+                days = days,
                 main = main,
                 logged_in=authenticated_userid(request))
 
@@ -150,6 +163,105 @@ def adduser(request):
                 operationalOptions = operationalOptions,
                 logged_in=authenticated_userid(request)
                 )
+
+@view_config(route_name='edituser', renderer='templates/edituser.pt',
+             permission = 'admin')
+def edituser(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'Edit User', main = main,
+                logged_in=authenticated_userid(request))
+
+@view_config(route_name='deleteuser', renderer='templates/deleteuser.pt',
+             permission = 'admin')
+def deleteuser(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'Delete User', main = main,
+                logged_in=authenticated_userid(request))
+
+@view_config(route_name='portableNumbers', renderer='templates/portableNumbers.pt',
+             permission = 'admin')
+def portableNumbers(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'Portable Numbers', main = main,
+                logged_in=authenticated_userid(request))
+
+@view_config(route_name='addannouncements', renderer='templates/addannouncements.pt',
+             permission = 'admin')
+def addannouncements(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'Add Announcements', main = main,
+                logged_in=authenticated_userid(request))
+
+view_config(route_name='addevents', renderer='templates/addevents.pt',
+             permission = 'admin')
+def addevents(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'Add Events', main = main,
+                logged_in=authenticated_userid(request))
+
+view_config(route_name='addstandby', renderer='templates/addstandby.pt',
+             permission = 'admin')
+def addstandby(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'Add Standby', main = main,
+                logged_in=authenticated_userid(request))
+
+view_config(route_name='editdutycrew', renderer='templates/editdutycrew.pt',
+             permission = 'admin')
+def editdutycrew(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'Edit Duty Crew', main = main,
+                logged_in=authenticated_userid(request))
+
+view_config(route_name='editcertifications', renderer='templates/editcertifications.pt',
+             permission = 'admin')
+def editcertifications(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'Edit Certifications', main = main,
+                logged_in=authenticated_userid(request))
+
+view_config(route_name='editannouncements', renderer='templates/editannouncements.pt',
+             permission = 'admin')
+def editannouncements(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'Edit Announcements', main = main,
+                logged_in=authenticated_userid(request))
+
+view_config(route_name='editpages', renderer='templates/editpages.pt',
+             permission = 'admin')
+def editpages(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'Edit Pages', main = main,
+                logged_in=authenticated_userid(request))
+
+view_config(route_name='editlinks', renderer='templates/editlinks.pt',
+             permission = 'admin')
+def editlinks(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'Edit Links', main = main,
+                logged_in=authenticated_userid(request))
+
+view_config(route_name='editdocuments', renderer='templates/editdocuments.pt',
+             permission = 'admin')
+def editdocuments(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'Edit documents', main = main,
+                logged_in=authenticated_userid(request))
+
+view_config(route_name='editpictures', renderer='templates/editpictures.pt',
+             permission = 'admin')
+def editpictures(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'Edit Pictures', main = main,
+                logged_in=authenticated_userid(request))
+
+view_config(route_name='editmeetingminutes', renderer='templates/editmeetingminutes.pt',
+             permission = 'admin')
+def editmeetingminutes(request):
+    main = get_renderer('templates/template.pt').implementation()
+    return dict(title = 'Edit Meeting Minutes', main = main,
+                logged_in=authenticated_userid(request))
+
 
 
 

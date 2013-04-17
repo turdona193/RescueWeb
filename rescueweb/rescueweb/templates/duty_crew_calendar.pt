@@ -9,12 +9,12 @@
 	<div tal:define ="start_day calendar.monthrange(2013, 4)[0] ">
 	-->
 	
-	<div tal:define= "month 'April' "> 
-	<div tal:define= "no_of_days 30" >
-	<div tal:define= "start_day 1">
+	<div tal:define= "month monthName "> 
+	<div tal:define= "no_of_days days" >
+	<div tal:define= "start_day startDay">
 	
 		
-	
+	<h2 tal:content="month"></h2>
 	<table>
 	<tr>
 	    <td>Sunday</td>
