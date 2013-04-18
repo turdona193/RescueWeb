@@ -1,6 +1,7 @@
 import os
 import sys
 import transaction
+import datetime
 
 from sqlalchemy import engine_from_config
 
@@ -22,6 +23,7 @@ from ..models import (
     Page,
     Announcements,
     Documents,
+    weblinks,
     Base,
     )
 
@@ -43,31 +45,43 @@ def main(argv=sys.argv):
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
     with transaction.manager:
-        model = Page(name = 'Home', data = ("""Welcome to the SUNY Potsdam Campus Rescue Squad website!\n 
-Currently the CRS staff consists of approximately 22 members, many of which have completed the NYS EMT Curriculum. Also, many of the members are currently enrolled in the EMT basic class.\n
-If you wish to report a medical emergency please call x2222 and ask for CRS assistance and be ready to give the following information: a reason for calling (the medical emergency), your name, the location of the medical emergency, and remember to remain calm.\n
+        model = Page(name = 'Home', data = ("""Welcome to the SUNY Potsdam Campus Rescue Squad website! </br>
+Currently the CRS staff consists of approximately 22 members, many of which have completed the NYS EMT Curriculum. Also, many of the members are currently enrolled in the EMT basic class. </br>
+If you wish to report a medical emergency please call x2222 and ask for CRS assistance and be ready to give the following information: a reason for calling (the medical emergency), your name, the location of the medical emergency, and remember to remain calm.</br>
 Disclaimer: Campus Rescue Squad takes privacy very seriously. Any images shown on this site are taken from mock events and do not show actual patients."""))
         DBSession.add(model)
         
-        model = Page(name = 'History', data = """The SUNY Potsdam Campus Rescue Squad started in 1992 as a group of college students that formed together to provide much needed medical coverage for SUNY Potsdam varsity athletic events as well as various other college events. \n
+        model = Page(name = 'History', data = """The SUNY Potsdam Campus Rescue Squad started in 1992 as a group of college students that formed together to provide much needed medical coverage for SUNY Potsdam varsity athletic events as well as various other college events. </br>
 
-By 1993, CRS was providing coverage for most all athletic events when it was requested, many concerts at the Crane School of Music, as well as other various college events. At the end of the 1993-1994 school year, it was decided that the campus required 24/7 first response care, not just medical stand-bys. By September 2004, Campus Rescue was not only a student organization, but also a New York State DOH certified Emergency First Response Agency. Also, CRS was now able to sponsor members to take both EMT-Basic and EMT-D courses through SUNY Canton. NYS certified EMT’s were also on call each night for 8 hour tours of duty.\n
+By 1993, CRS was providing coverage for most all athletic events when it was requested, many concerts at the Crane School of Music, as well as other various college events. At the end of the 1993-1994 school year, it was decided that the campus required 24/7 first response care, not just medical stand-bys. By September 2004, Campus Rescue was not only a student organization, but also a New York State DOH certified Emergency First Response Agency. Also, CRS was now able to sponsor members to take both EMT-Basic and EMT-D courses through SUNY Canton. NYS certified EMT’s were also on call each night for 8 hour tours of duty. </br>
 
-As responsibilities as a certified agency came, so did the necessity for communications. Through their menial budget CRS was able to purchase four radios. Along with those radios was a donation of 12 pagers, which finally allowed Campus Safety (now University Police) to activate CRS via pager alert.\n
+As responsibilities as a certified agency came, so did the necessity for communications. Through their menial budget CRS was able to purchase four radios. Along with those radios was a donation of 12 pagers, which finally allowed Campus Safety (now University Police) to activate CRS via pager alert. </br>
 
-Almost 17 years later, Campus Rescue continues the tradition of quality emergency medical care 24/7 while school is in session. Because of the dedication of true professional EMS providers, Campus Rescue continues to thrive as an important link in prehospital care in SUNY Potsdam.\n
+Almost 17 years later, Campus Rescue continues the tradition of quality emergency medical care 24/7 while school is in session. Because of the dedication of true professional EMS providers, Campus Rescue continues to thrive as an important link in prehospital care in SUNY Potsdam. </br>
 
-The Squad today (as of 2008) has approximately 25 members, 14 of which are NYS certified EMT’s, 6 of which are currently enrolled in the NYS EMT-B curriculum, and 23 of which are American Heart Association BCLS certified in AED and CPR.\n
+The Squad today (as of 2008) has approximately 25 members, 14 of which are NYS certified EMT’s, 6 of which are currently enrolled in the NYS EMT-B curriculum, and 23 of which are American Heart Association BCLS certified in AED and CPR.</br>
 
-The Squad currently has 7 NYS DOH Part 800 compliant BLS jump bags. One bag is housed in University Police dispatch, one at the Crumb Library, and 2 are housed in the squad equipment room. CRS is approved through medical direction and NY to administer albuterol for respiratory emergencies and Epinephrine for anaphylaxis. The squad also owns an AED, housed in one of University Police’s patrol cars. AEDs are also housed in every building on campus due to the PAD program.\n
+The Squad currently has 7 NYS DOH Part 800 compliant BLS jump bags. One bag is housed in University Police dispatch, one at the Crumb Library, and 2 are housed in the squad equipment room. CRS is approved through medical direction and NY to administer albuterol for respiratory emergencies and Epinephrine for anaphylaxis. The squad also owns an AED, housed in one of University Police’s patrol cars. AEDs are also housed in every building on campus due to the PAD program.</br>
 
 Campus Rescue runs on average approximately 150 calls and standbys each year.""")
         DBSession.add(model)
         
-        model = Page(name = 'Join', data = ("""The Campus Rescue Squad at SUNY Potsdam is always open for new members! If you are interested in joining the squad, email rescue@potsdam.edu
-                                            The official CRS application is located here. General membership meetings are held bi-weekly in Forum Room 204 at 8:00pm, preceded by a training at 7:00pm in the Union's Fire Side Lounge. The meeting dates for the Spring 2012 semester are: To be Announced! 
+        
+        
+        model = Page(name = 'Join', data = ("""The Campus Rescue Squad at SUNY Potsdam is always open for new members! If you are interested in joining the squad, email rescue@potsdam.edu </br>
+                                            The official CRS application is located here. General membership meetings are held bi-weekly in Forum Room 204 at 8:00pm, preceded by a training at 7:00pm in the Union's Fire Side Lounge. The meeting dates for the Spring 2012 semester are: To be Announced! </br>
                                             CRS does not discriminate membership because of race, religion, creed, color, or lifestyle preference."""))
         DBSession.add(model)
+        
+        model = Page(name = 'ContactUs', data = """ On Campus Emergency: 315-267-2222 </br>
+        Off Campus Emergency: 911 </br>
+        Business Line: 315-267-2253 </br>
+        Mailing Address: 9010 Barrington Drive, Potsdam, NY 13676</br>
+        Office Location: Sission Basement </br>
+        
+        """)
+        DBSession.add(model)
+
         
         model = Documents(name = 'Constitution', fileName = 'Constitution.pdf')
         DBSession.add(model)
@@ -78,6 +92,18 @@ Campus Rescue runs on average approximately 150 calls and standbys each year."""
         model = Documents(name = 'Standard Operating Guidelines', fileName = 'SOG.pdf')
         DBSession.add(model)
         
+        model = weblinks(name = 'Potsdam Rescue' , address = 'http://www.pvrs.org/')
+        DBSession.add(model)
+        model = weblinks(name = 'NYS Department of Health' , address = 'http://www.health.state.ny.us/')
+        DBSession.add(model)
+        model = weblinks(name = 'FEMA Training Website' , address = 'http://training.fema.gov/')
+        DBSession.add(model)
+        model = weblinks(name = 'North Country EMS' , address = 'http://www.canton.edu/NCEMS')
+        DBSession.add(model)
+        model = weblinks(name = 'ICS Courses' , address = 'http://hamradio.arc.nasa.gov/ICScourses.html')
+        DBSession.add(model)
+        
+        
         model = Announcements(key = 1,header = 'Remember Paperwork', text = 'Please remember to submit all paperwork', priority = 1, username = 'turdona193')
         DBSession.add(model)
         model = Announcements(key = 2,header = 'Crew Chief Signup', text = 'Please remember to sign up on the Crew Chief Calendar', priority = 1, username = 'turdona193')
@@ -87,15 +113,15 @@ Campus Rescue runs on average approximately 150 calls and standbys each year."""
 
         
         
-        user = users(username = 'turdona193', password = 'nick',firstname = 'Nicholas',middlename = 'Anthony',lastname = 'Turdo',
+        user = users(username = 'turdona193', password = 'nick',firstname = 'Nicholas',middlename = 'Anthony',lastname = 'Turdo',birthday = datetime.date(1991,1,26),
                      street = '3510 Barrington Dr',city = 'Potsdam', state = 'NY',zipcode = '13676',residence = 'Townhouse',roomnumber = 'A1-104',
                      phonenumber = 6462595690,email = 'turdona193@potsdam.edu',privileges = 2,trainingvalue = 3,administrativevalue = 3,operationalvalue = 4, portablenumber = 10)
         DBSession.add(user)
-        user = users(username = 'muehlbjp193', password = 'jared',firstname = 'Jared',middlename = 'Paul',lastname = 'Muehlbauer',
+        user = users(username = 'muehlbjp193', password = 'jared',firstname = 'Jared',middlename = 'Paul',lastname = 'Muehlbauer',birthday = datetime.date(1991,12,26),
                      street = '2512 Barrington Dr',city = 'Potsdam', state = 'NY',zipcode = '13676',residence = 'Townhouse',roomnumber = 'A1-201',
                      phonenumber = 6462595690,email = 'muehlbjp193@potsdam.edu',privileges = 2,trainingvalue = 3,administrativevalue = 4,operationalvalue = 6, portablenumber = 7)
         DBSession.add(user)
-        user = users(username = 'guarintb193', password = 'tim',firstname = 'Tim',middlename = 'Bret',lastname = 'Guarino',
+        user = users(username = 'guarintb193', password = 'tim',firstname = 'Tim',middlename = 'Bret',lastname = 'Guarino',birthday = datetime.date(1991,10,31),
                      street = '1459 Barrington Dr',city = 'Potsdam', state = 'NY',zipcode = '13676',residence = 'Townhouse',roomnumber = 'A1-204',
                      phonenumber = 6462595690,email = 'guarintb193@potsdam.edu',privileges = 2,trainingvalue = 3,administrativevalue = 4,operationalvalue = 6, portablenumber = 1)
         DBSession.add(user)

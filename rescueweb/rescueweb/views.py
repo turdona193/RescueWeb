@@ -35,6 +35,7 @@ from .models import (
     administrativestatus,
     eboardpositions,
     traininglevel,
+    weblinks,
     )
 
 @view_config(route_name='home', renderer='templates/home.pt')
@@ -59,6 +60,22 @@ def personnel(request):
     
     headers = [column.name for column in page[0].__table__.columns]
     return dict(title = 'Personnel', main = main, personnel = page, headers = headers,
+                logged_in=authenticated_userid(request))
+    
+@view_config(route_name='contact', renderer='templates/contact.pt')
+def contact(request):
+    main = get_renderer('templates/template.pt').implementation()
+    page = DBSession.query(Page).filter_by(name='ContactUs').first()
+    return dict(title = 'Personnel', main = main, page = page,
+                logged_in=authenticated_userid(request))
+    
+@view_config(route_name='links', renderer='templates/links.pt')
+def links(request):
+    main = get_renderer('templates/template.pt').implementation()
+    page = DBSession.query(weblinks).all()
+    
+    headers = [column.name for column in page[0].__table__.columns]
+    return dict(title = 'Links', main = main, links = page, header = headers,
                 logged_in=authenticated_userid(request))
 
 @view_config(route_name='duty_crew_calendar', renderer='templates/duty_crew_calendar.pt',
@@ -212,8 +229,8 @@ def editdutycrew(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Edit Duty Crew', main = main,
                 logged_in=authenticated_userid(request))
-
 view_config(route_name='editcertifications', renderer='templates/editcertifications.pt',
+
              permission = 'admin')
 def editcertifications(request):
     main = get_renderer('templates/template.pt').implementation()
@@ -261,7 +278,6 @@ def editmeetingminutes(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Edit Meeting Minutes', main = main,
                 logged_in=authenticated_userid(request))
-
 
 
 

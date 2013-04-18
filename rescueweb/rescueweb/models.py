@@ -4,6 +4,7 @@ from sqlalchemy import (
     Text,
     Float,
     ForeignKey,
+    Date,
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -73,6 +74,7 @@ class users(Base):
     firstname = Column(Text)
     middlename = Column(Text)
     lastname = Column(Text)
+    birthday = Column(Date)
     street = Column(Text)
     city =Column(Text)
     state = Column(Text)
@@ -87,7 +89,7 @@ class users(Base):
     operationalvalue = Column(Integer, ForeignKey('OperationalStatus.operationalvalue'))
     portablenumber = Column(Integer)
     
-    def __init__(self, username, password,firstname,middlename,lastname,street,city,
+    def __init__(self, username, password,firstname,middlename,lastname,birthday,street,city,
                  state,zipcode,residence,roomnumber,phonenumber,email,privileges,
                  trainingvalue,administrativevalue,operationalvalue,portablenumber):
         self.username = username
@@ -95,6 +97,7 @@ class users(Base):
         self.firstname =firstname
         self.middlename = middlename
         self.lastname = lastname
+        self.birthday = birthday
         self.street = street
         self.city = city
         self.state = state
@@ -174,3 +177,15 @@ class privileges(Base):
         self.privilegevalue = privilegevalue
         self.privilege = privilege
 
+class weblinks(Base):
+    __tablename__ = 'Links'
+    name = Column(Text, primary_key=True)
+    address = Column(Text)
+    
+    def __init__(self, name, address):
+        self.name = name
+        self.address = address
+
+    
+    
+    
