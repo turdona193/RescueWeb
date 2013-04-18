@@ -1,3 +1,5 @@
+#LoginIns table still needs to be added along with the dutycrew stuff
+
 from sqlalchemy import (
     Column,
     Integer,
@@ -5,6 +7,8 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     Date,
+    DateTime,
+    Boolean,
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -186,6 +190,101 @@ class weblinks(Base):
         self.name = name
         self.address = address
 
+class standBy(Base):
+    __tablename__ = 'StandBy'
+    standbyid = Column(Integer, primary_key=True)
+    event = Column(Text)
+    location = Column(Text)
+    notes = Column(Text)
+    startdatetime = Column(DateTime)
+    enddatetime = Column(DateTime)
+
+    def __init__(self, standbyid, event, location, notes, startdatetime,
+                 enddatetime):
+        self.standbyid = standbyid
+        self.event = event
+        self.location = location
+        self.notes = notes
+        self.startdatetime = startdatetime
+        self.enddatetime = enddatetime
     
-    
-    
+class standByPersonnel(Base):
+    __tablename__ = 'StandByPersonnel'
+    standbyid = Column(Integer, ForeignKey('StandBy.standbyid'), primary_key=True)
+    username = Column(Text, ForeignKey('Users.username'), primary_key=True)
+    standbyposition = Column(Text)
+    coverrequested = Column(Boolean)
+    covered = Column(Text, ForeignKey('Users.username'))
+
+    def __init__(self, standbyid, username, standbyposition, coverrequested, covered):
+        self.standbyid = standbyid
+        self.username = username
+        self.standbyposition = standbyposition
+        self.coverrequested = coverrequested
+        self.covered = covered
+
+class crewChiefSchedule(Base):
+    __tablename__ = 'CrewChiefSchedule'
+    date = Column(Date, primary_key=True)
+    ccusername = Column(Text, ForeignKey('Users.username'))
+    pccusername = Column(Text, ForeignKey('Users.username'))
+
+    def __init__(self, date, ccusername, pccusername):
+        self.date = date
+        self.ccusername = ccusername
+        self.pccusername = pccusername
+
+class events(Base):
+    __tablename__ = 'Events'
+    eventid = Column(Integer, primary_key=True)
+    startdatetime = Column(DateTime)
+    enddatetime = Column(DateTime)
+    name = Column(Text)
+    notes = Column(Text)
+    privileges = Column(Integer, ForeignKey('Privileges.privilegevalue'))
+
+    def __init__(self, eventid, startdatetime, enddatetime, name, notes, privileges):
+        self.eventid = eventid
+        self.startdatetime = startdatetime
+        self.enddatetime = enddatetime
+        self.name = name
+        self.notes = notes
+        self.privileges = privileges
+
+class attendees(Base):
+    __tablename__ = 'Attendees'
+    eventid = Column(Integer, ForeignKey('Events.eventid'), primary_key=True)
+    username = Column(Text, ForeignKey('Users.username'), primary_key=True)
+
+    def __init__(self, eventid, username):
+        self.eventid = eventid
+        self.username = username
+
+class meetingMinutes(Base):
+    __tablename__ = 'MeetingMinutes'
+    meetingindex = Column(Integer, primary_key=True)
+    datetime = Column(DateTime)
+
+    def __init__(self, eventid, username):
+        self.meetingindex = meetingindex
+        self.datetime = datetime
+
+class minutesContent(Base):
+    __tablename__ = 'MinutesContent'
+    meetingindex = Column(Integer, ForeignKey('MinutesContent.meetingindex'), primary_key=True)
+    header = Column(Text, primary_key=True)
+    subheader = Column(Text, primary_key=True)
+    content = Column(Text)
+
+    def __init__(Base, meetingindex, header, subheader, content):
+        self.meetingindex = meetingindex
+        self.header = header
+        self.subheader = subheader
+        self.content = content
+
+
+
+
+
+
+
