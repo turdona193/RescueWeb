@@ -44,8 +44,6 @@ def main(global_config, **settings):
     config.add_route('documents' , '/documents')
     config.add_route('minutes' , '/minutes')
     config.add_route('memberinfo' , '/memberinfo')
-
-    
     
     config.add_route('standbys' , '/standbys')
     config.add_route('duty_crew_calendar', '/duty_crew_calendar')
@@ -54,21 +52,22 @@ def main(global_config, **settings):
     config.add_route('adduser' , '/adduser')
     config.add_route('edituser' , '/edituser')
     config.add_route('deleteuser' , '/deleteuser')
-    config.add_route('portableNumbers' , '/portableNumbers')
-    config.add_route('addannouncements' , '/addannouncements')
-    config.add_route('addevents' , '/addeventsdeleteuser')
-    config.add_route('addstandby' , '/addstandby')
     
+    config.add_route('addeditpages' , '/addeditpages')
+    config.add_route('addeditlinks' , '/addeditlinks')
+    config.add_route('addeditdocuments' , '/addeditdocuments')
+    config.add_route('addeditminutes' , '/addeditminutes')
+    config.add_route('addeditpictures' , '/addeditpictures')
+    
+    config.add_route('editportableNumbers' , '/editportableNumbers')
+    config.add_route('addeditcertifications' , '/addeditcertifications')
+    
+    config.add_route('addeditstandby' , '/addeditstandby')
     config.add_route('editdutycrew' , '/editdutycrew')
-    config.add_route('editcertifications' , '/editcertifications')
-    config.add_route('editannouncements' , '/editannouncements')
-    config.add_route('editpages' , '/editpages')
-    config.add_route('editlinks' , '/addlinks')
-    config.add_route('editdocuments' , '/adddocuments')
-    config.add_route('editpictures' , '/editpictures')
-    config.add_route('editmeetingminutes' , '/editmeetingminutes')
-    config.add_route('editevent' , '/editevent')
-    config.add_route('editstandby' , '/editstandby')
+    
+    config.add_route('addeditannouncements' , '/addeditannouncements')
+    config.add_route('addeditevents' , '/addeditevents')
+
 
 
     

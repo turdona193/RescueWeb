@@ -195,9 +195,9 @@ def deleteuser(request):
     return dict(title = 'Delete User', main = main,
                 logged_in=authenticated_userid(request))
 
-@view_config(route_name='portableNumbers', renderer='templates/portableNumbers.pt',
+@view_config(route_name='editportableNumbers', renderer='templates/editportableNumbers.pt',
              permission = 'admin')
-def portableNumbers(request):
+def editportableNumbers(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Portable Numbers', main = main,
                 logged_in=authenticated_userid(request))

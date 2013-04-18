@@ -69,7 +69,7 @@ http://www.scriptiny.com/2011/04/javascript-dropdown-menu/
 	                    <ul>
 	                        <li class="noborder"><a href="/documents">Documents</a></li>
 	                        <li><a href="/minutes">Meeting Minutes</a></li>
-	                        <li><a href="/member_info">Member Info</a></li>
+	                        <li><a href="/memberinfo">Member Info</a></li>
 	                    </ul>
 	            </li>
 				<li class="submenu">
@@ -92,7 +92,6 @@ http://www.scriptiny.com/2011/04/javascript-dropdown-menu/
 		        				<li class="noborder"><a href="/adduser">Add User</a></li>
 		        				<li><a href="/edituser">Edit User</a></li>
 		        				<li><a href="/deleteuser">Delete User</a></li>
-		        				<li><a href="/editportablenumber">Edit Portable Number</a></li>
 	        				</ul>
 	        			</li>
 	        			<li class = "submenu"><span>Website</span>
@@ -120,7 +119,7 @@ http://www.scriptiny.com/2011/04/javascript-dropdown-menu/
         				<li class="submenu"><span>Tools</span>
         					<ul>
         						<li class="noborder"><a href="/addeditstandby">Add/Edit Stand-by</a></li>
-		        				<li><a href="/addeditcertifications">Edit Duty Crew Schedule</a></li>
+		        				<li><a href="/editdutycrew">Edit Duty Crew Schedule</a></li>
         				
         					</ul>
         				</li>	
