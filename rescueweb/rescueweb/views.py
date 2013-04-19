@@ -89,7 +89,7 @@ def pictures(request):
 def join(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Page).filter_by(name='Join').first()
-    return dict(title = 'Join', main = main , page = page,
+    return dict(title = 'How to Join', main = main , page = page,
                 logged_in=authenticated_userid(request))
     
 
@@ -98,7 +98,7 @@ def join(request):
 def contact(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Page).filter_by(name='ContactUs').first()
-    return dict(title = 'Personnel', main = main, page = page,
+    return dict(title = 'Contact Us', main = main, page = page,
                 logged_in=authenticated_userid(request))
     
 @view_config(route_name='links', renderer='templates/links.pt')
@@ -111,7 +111,8 @@ def links(request):
                 logged_in=authenticated_userid(request))
 
 
-@view_config(route_name='documents', renderer='templates/documents.pt')
+@view_config(route_name='documents', renderer='templates/documents.pt',
+             permission = 'Member')
 def documents(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Documents).all()
@@ -121,13 +122,15 @@ def documents(request):
     return dict(title = 'Squad Documents', main = main,page = page, header = headers,
                 logged_in=authenticated_userid(request))
 
-@view_config(route_name='minutes', renderer='templates/minutes.pt')
+@view_config(route_name='minutes', renderer='templates/minutes.pt',
+             permission = 'Member')
 def minutes(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Meeting Minutes', main = main,
                 logged_in=authenticated_userid(request))
 
-@view_config(route_name='memberinfo', renderer='templates/memberinfo.pt')
+@view_config(route_name='memberinfo', renderer='templates/memberinfo.pt',
+             permission = 'Member')
 def memberinfo(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Member Information', main = main,
@@ -135,15 +138,16 @@ def memberinfo(request):
     
 
 
-@view_config(route_name='standbys', renderer='templates/standbys.pt')
+@view_config(route_name='standbys', renderer='templates/standbys.pt',
+             permission = 'Member')
 def standbys(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Stand-Bys', main = main,
                 logged_in=authenticated_userid(request)) 
 
 
-@view_config(route_name='duty_crew_calendar', renderer='templates/duty_crew_calendar.pt',
-             permission = 'Member')
+@view_config(route_name='duty_crew_calendar',
+             renderer='templates/duty_crew_calendar.pt', permission = 'Member')
 def duty_crew_calendar(request):
     main = get_renderer('templates/template.pt').implementation()
 
@@ -164,7 +168,8 @@ def duty_crew_calendar(request):
                 logged_in=authenticated_userid(request))
 
     
-@view_config(route_name='coverage', renderer='templates/coverage.pt')
+@view_config(route_name='coverage', renderer='templates/coverage.pt',
+             permission = 'Member')
 def coverage(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Coverage Requests', main = main,
@@ -245,7 +250,7 @@ view_config(route_name='addeditpictures', renderer='templates/addeditpictures.pt
              permission = 'admin')
 def addeditpictures(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Edit Pictures', main = main,
+    return dict(title = 'Add/Edit Pictures', main = main,
                 logged_in=authenticated_userid(request))
 
 
@@ -255,7 +260,7 @@ def addeditpictures(request):
              permission = 'admin')
 def editportableNumbers(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Portable Numbers', main = main,
+    return dict(title = 'Edit Portable Numbers', main = main,
                 logged_in=authenticated_userid(request))
 
 view_config(route_name='addeditcertifications', renderer='templates/addeditcertifications.pt',
@@ -292,22 +297,6 @@ def addeditevents(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Add/Edit Events', main = main,
                 logged_in=authenticated_userid(request))
-
-
-
-
-    
-
-
-view_config(route_name='editannouncements', renderer='templates/editannouncements.pt',
-             permission = 'admin')
-def editannouncements(request):
-    main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Edit Announcements', main = main,
-                logged_in=authenticated_userid(request))
-
-
-
 
 
 
