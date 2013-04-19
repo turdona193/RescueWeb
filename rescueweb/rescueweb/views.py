@@ -111,7 +111,8 @@ def links(request):
                 logged_in=authenticated_userid(request))
 
 
-@view_config(route_name='documents', renderer='templates/documents.pt')
+@view_config(route_name='documents', renderer='templates/documents.pt',
+             permission = 'Member')
 def documents(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Documents).all()
@@ -121,13 +122,15 @@ def documents(request):
     return dict(title = 'Squad Documents', main = main,page = page, header = headers,
                 logged_in=authenticated_userid(request))
 
-@view_config(route_name='minutes', renderer='templates/minutes.pt')
+@view_config(route_name='minutes', renderer='templates/minutes.pt',
+             permission = 'Member')
 def minutes(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Meeting Minutes', main = main,
                 logged_in=authenticated_userid(request))
 
-@view_config(route_name='memberinfo', renderer='templates/memberinfo.pt')
+@view_config(route_name='memberinfo', renderer='templates/memberinfo.pt',
+             permission = 'Member')
 def memberinfo(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Member Information', main = main,
@@ -135,15 +138,16 @@ def memberinfo(request):
     
 
 
-@view_config(route_name='standbys', renderer='templates/standbys.pt')
+@view_config(route_name='standbys', renderer='templates/standbys.pt',
+             permission = 'Member')
 def standbys(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Stand-Bys', main = main,
                 logged_in=authenticated_userid(request)) 
 
 
-@view_config(route_name='duty_crew_calendar', renderer='templates/duty_crew_calendar.pt',
-             permission = 'Member')
+@view_config(route_name='duty_crew_calendar',
+             renderer='templates/duty_crew_calendar.pt', permission = 'Member')
 def duty_crew_calendar(request):
     main = get_renderer('templates/template.pt').implementation()
 
@@ -164,7 +168,8 @@ def duty_crew_calendar(request):
                 logged_in=authenticated_userid(request))
 
     
-@view_config(route_name='coverage', renderer='templates/coverage.pt')
+@view_config(route_name='coverage', renderer='templates/coverage.pt',
+             permission = 'Member')
 def coverage(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Coverage Requests', main = main,
