@@ -1,9 +1,9 @@
 USERS = {'turdona193':'nick',
           'muehlbjp193':'jared',
           'guarintb193' :'tim'}
-GROUPS = {'turdona193' :['group:Member'],
-          'muehlbjp193':['group:admin'],
-          'guarintb193':['group:admin']}
+GROUPS = {'turdona193' :['Member'],
+          'muehlbjp193':['admin'],
+          'guarintb193':['admin']}
 
 def groupfinder(userid, request):
     if userid in USERS:
