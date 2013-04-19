@@ -89,7 +89,7 @@ def pictures(request):
 def join(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Page).filter_by(name='Join').first()
-    return dict(title = 'Join', main = main , page = page,
+    return dict(title = 'How to Join', main = main , page = page,
                 logged_in=authenticated_userid(request))
     
 
@@ -98,7 +98,7 @@ def join(request):
 def contact(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Page).filter_by(name='ContactUs').first()
-    return dict(title = 'Personnel', main = main, page = page,
+    return dict(title = 'Contact Us', main = main, page = page,
                 logged_in=authenticated_userid(request))
     
 @view_config(route_name='links', renderer='templates/links.pt')
@@ -245,7 +245,7 @@ view_config(route_name='addeditpictures', renderer='templates/addeditpictures.pt
              permission = 'admin')
 def addeditpictures(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Edit Pictures', main = main,
+    return dict(title = 'Add/Edit Pictures', main = main,
                 logged_in=authenticated_userid(request))
 
 
@@ -255,7 +255,7 @@ def addeditpictures(request):
              permission = 'admin')
 def editportableNumbers(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Portable Numbers', main = main,
+    return dict(title = 'Edit Portable Numbers', main = main,
                 logged_in=authenticated_userid(request))
 
 view_config(route_name='addeditcertifications', renderer='templates/addeditcertifications.pt',
@@ -292,22 +292,6 @@ def addeditevents(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Add/Edit Events', main = main,
                 logged_in=authenticated_userid(request))
-
-
-
-
-    
-
-
-view_config(route_name='editannouncements', renderer='templates/editannouncements.pt',
-             permission = 'admin')
-def editannouncements(request):
-    main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Edit Announcements', main = main,
-                logged_in=authenticated_userid(request))
-
-
-
 
 
 
