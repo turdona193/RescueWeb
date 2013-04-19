@@ -53,7 +53,7 @@ def main(global_config, **settings):
     config.add_route('edituser' , '/edituser')
     config.add_route('deleteuser' , '/deleteuser')
     
-    config.add_route('addeditpages' , '/addeditpages')
+    config.add_route('editpages' , '/editpages')
     config.add_route('addeditlinks' , '/addeditlinks')
     config.add_route('addeditdocuments' , '/addeditdocuments')
     config.add_route('addeditminutes' , '/addeditminutes')

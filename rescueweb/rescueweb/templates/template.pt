@@ -96,7 +96,7 @@ http://www.scriptiny.com/2011/04/javascript-dropdown-menu/
 	        			</li>
 	        			<li class = "submenu"><span>Website</span>
 	        				<ul>
-		        				<li class="noborder"><a href="/addeditpages">Add/Edit Pages</a></li>
+		        				<li class="noborder"><a href="/editpages">Edit Pages</a></li>
 		        				<li><a href="/addeditlinks">Add/Edit Links</a></li>
 		        				<li><a href="/addeditdocuments">Add/Edit Documents</a></li>
 		        				<li><a href="/addeditminutes">Add/Edit Meeting Minutes</a></li>
