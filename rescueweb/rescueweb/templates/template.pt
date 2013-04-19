@@ -6,11 +6,16 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <title>SUNY Potsdam Campus Rescue Squad</title>
-<link rel="stylesheet" href="${request.static_url('rescueweb:static/tinydropdown.css')}" type="text/css" />
 
-<!-- Thanks go to Michael for the drop down script
+<!-- Determine which stylesheet to use for the menu !-->
+<link tal:condition="logged_in" rel="stylesheet" href="${request.static_url('rescueweb:static/tinydropdown.css')}" type="text/css" />
+<link tal:condition="not: logged_in" rel="stylesheet" href="${request.static_url('rescueweb:static/tinydropdownGuest.css')}" type="text/css" />
+
+<!-- Thanks go to Michael for menu script
+Javascript Dropdown Menu
+April 18, 2013
 http://www.scriptiny.com/2011/04/javascript-dropdown-menu/
-><!-->
+!-->
 <script type="text/javascript" src="${request.static_url('rescueweb:static/tinydropdown.js')}"></script>
 
 <body>
@@ -18,28 +23,28 @@ http://www.scriptiny.com/2011/04/javascript-dropdown-menu/
 <center>
 <table>
 	<tr>
+	<th rowspan="2"><div style="width: 175px"><font size="4" color="#020069" style="font-family:serif">${title}</font></div></th>
 	<th rowspan="2">
 	<img src="${request.static_url('rescueweb:static/CRSbanner.jpg')}" alt="CRS Banner"/>
 	</th>
 		<span tal:condition="logged_in">
-   			<td><a href="/">${logged_in}</a></td>
+   			<td style="width:175px;text-align:center"><a href="/">${logged_in}</a></td>
 		</span>
 		<span tal:condition="not: logged_in">
-   			<td><a href="/login">Login</a></td>
+   			<td rowspan="2" style="width:175px;vertical-align:bottom;text-align:center"><a href="/login">Login</a></td>
 		</span>
 	</tr>
 	<tr>
 		<span tal:condition="logged_in">
-  			<td><a href="${request.application_url}/logout">Logout</a></td>
+  			<td style="vertical-align:bottom;text-align:center"><a href="${request.application_url}/logout">Logout</a></td>
 		</span>	</tr>
 	</table>
-	</center>
+</center>
 </div>
 
 
 <div class="nav">
     <ul id="menu" class="menu">
-        <li class="nodiv"><a href="#">${title}</a></li>
         <li><span>Welcome</span>
             <ul>
                 <li><a href="/">Home</a></li>
@@ -98,7 +103,7 @@ http://www.scriptiny.com/2011/04/javascript-dropdown-menu/
 	        				<ul>
 		        				<li class="noborder"><a href="/editpages">Edit Pages</a></li>
 		        				<li><a href="/addeditlinks">Add/Edit Links</a></li>
-		        				<li><a href="/addeditdocuments">Add/Edit Documents</a></li>
+		        				<li><a href="/addeditdocuments">Add/Edit<br/>Documents</a></li>
 		        				<li><a href="/addeditminutes">Add/Edit Meeting Minutes</a></li>
 		        				<li><a href="/addeditpictures">Add/Edit Pictures</a></li>
 	        				</ul>
@@ -143,7 +148,7 @@ http://www.scriptiny.com/2011/04/javascript-dropdown-menu/
 var dropdown=new TINY.dropdown.init("dropdown", {id:'menu', active:'menuhover'});
 </script>
 
-<div id="main">
+<div class="main">
     <div metal:define-slot="content">
     </div>
 </div>
