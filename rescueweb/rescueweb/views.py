@@ -315,7 +315,9 @@ def login(request):
     if 'form.submitted' in request.params:
         login = request.params['login']
         password = request.params['password']
-        if USERS.get(login) == password:
+
+        password_query = DBSession.query(users.password).filter(users.username == login).first()[0]
+        if password_query == password:
             headers = remember(request, login)
             return HTTPFound(location = came_from,
                              headers = headers)
