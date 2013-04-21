@@ -218,35 +218,49 @@ def deleteuser(request):
                 logged_in=authenticated_userid(request))
     
 
-view_config(route_name='editpages', renderer='templates/editpages.pt',
+@view_config(route_name='editpages', renderer='templates/editpages.pt',
              permission = 'admin')
 def editpages(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Edit Pages', main = main,
+    pagenames = ['Home' , 'History' ,'Join', 'ContactUs' ]
+        
+    if 'form.submitted' in request.params:
+        page.data = request.params['body']
+        DBSession.add(page)
+        #return HTTPFound(location = request.route_url('home'))
+
+    if 'form.selected' in request.params:
+        pagename = request.params['pagename']
+        print(pagename)
+        page = DBSession.query(Page).filter_by(name=pagename).first()
+    else:
+        page = DBSession.query(Page).filter_by(name=pagename).first()
+
+    return dict(title = 'Edit Pages', main = main, page = page, pagenames = pagenames,
                 logged_in=authenticated_userid(request))
 
-view_config(route_name='addeditlinks', renderer='templates/addeditlinks.pt',
+@view_config(route_name='addeditlinks', renderer='templates/addeditlinks.pt',
              permission = 'admin')
 def addeditlinks(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Add/Edit Links', main = main,
                 logged_in=authenticated_userid(request))
 
-view_config(route_name='addeditdocuments', renderer='templates/addeditdocuments.pt',
+@view_config(route_name='addeditdocuments', renderer='templates/addeditdocuments.pt',
              permission = 'admin')
 def addeditdocuments(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Add/Edit documents', main = main,
                 logged_in=authenticated_userid(request))
 
-view_config(route_name='editmeetingminutes', renderer='templates/editmeetingminutes.pt',
+@view_config(route_name='addeditminutes', renderer='templates/addeditminutes.pt',
              permission = 'admin')
 def editmeetingminutes(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Edit Meeting Minutes', main = main,
+    return dict(title = 'Add/Edit Meeting Minutes', main = main,
                 logged_in=authenticated_userid(request))
 
-view_config(route_name='addeditpictures', renderer='templates/addeditpictures.pt',
+@view_config(route_name='addeditpictures', renderer='templates/addeditpictures.pt',
              permission = 'admin')
 def addeditpictures(request):
     main = get_renderer('templates/template.pt').implementation()
@@ -263,21 +277,21 @@ def editportableNumbers(request):
     return dict(title = 'Edit Portable Numbers', main = main,
                 logged_in=authenticated_userid(request))
 
-view_config(route_name='addeditcertifications', renderer='templates/addeditcertifications.pt',
+@view_config(route_name='addeditcertifications', renderer='templates/addeditcertifications.pt',
              permission = 'admin')
 def addeditcertifications(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Add/Edit Certifications', main = main,
                 logged_in=authenticated_userid(request))
     
-view_config(route_name='addeditstandby', renderer='templates/addeditstandby.pt',
+@view_config(route_name='addeditstandby', renderer='templates/addeditstandby.pt',
              permission = 'admin')
 def addeditstandby(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Add/Edit Standby', main = main,
                 logged_in=authenticated_userid(request))
 
-view_config(route_name='editdutycrew', renderer='templates/editdutycrew.pt',
+@view_config(route_name='editdutycrew', renderer='templates/editdutycrew.pt',
              permission = 'admin')
 def editdutycrew(request):
     main = get_renderer('templates/template.pt').implementation()
@@ -291,7 +305,7 @@ def addeditannouncements(request):
     return dict(title = 'Add/Edit Announcements', main = main,
                 logged_in=authenticated_userid(request))
 
-view_config(route_name='addeditevents', renderer='templates/addeditevents.pt',
+@view_config(route_name='addeditevents', renderer='templates/addeditevents.pt',
              permission = 'admin')
 def addeditevents(request):
     main = get_renderer('templates/template.pt').implementation()

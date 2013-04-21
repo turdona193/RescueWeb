@@ -1,0 +1,20 @@
+<div metal:use-macro="main.macros['template']">
+   <div metal:fill-slot="content">
+        <p>
+        	<form method="post">
+        	Pages: <select name="pagename">
+				<div tal:repeat = "pagename pagenames">
+  					<option value=${pagename}>${pagename}</option>
+  				</div>
+			</select><br/>
+		
+			<input type="submit" name="form.selected" value="Load Page"/>
+			
+			
+          	<textarea name="body" tal:content="page.data" rows="10" cols="60"/><br/>
+          		<input type="submit" name="form.submitted" value="Save"/>
+        	</form>
+        
+        </p>
+    </div>
+</div>
