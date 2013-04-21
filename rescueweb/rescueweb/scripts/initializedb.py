@@ -13,6 +13,7 @@ from pyramid.paster import (
 from ..models import (
     DBSession,
     users,
+    events,
     emtcert,
     certifications,
     operationalstatus,
@@ -202,3 +203,10 @@ Campus Rescue runs on average approximately 150 calls and standbys each year."""
         DBSession.add(privilege)
         privilege = privileges(privilegevalue=2,privilege='Admin')
         DBSession.add(privilege)
+
+        event = events(eventid=1, startdatetime=datetime.datetime(2000, 1, 1), enddatetime=datetime.datetime(2000, 1, 3), name='Party', notes='nothing', privileges=0)
+        DBSession.add(event);
+        event = events(eventid=2, startdatetime=datetime.datetime(2001, 2, 3), enddatetime=datetime.datetime(2001, 10, 15), name='Dance', notes='not going', privileges=0)
+        DBSession.add(event);
+        event = events(eventid=3, startdatetime=datetime.datetime(2002, 5, 5), enddatetime=datetime.datetime(2002, 5, 8), name='Grad', notes='we leave!', privileges=0)
+        DBSession.add(event);

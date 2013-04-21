@@ -2,5 +2,13 @@
     <div metal:fill-slot="content">
         <p>This is the ${title} page!</p>
         <p>There are no events planned at this time. Go away.</p>
+	<br>
+        <div tal:repeat="content tests">
+	     <h3>${content.name}</h3>
+	     <h5>${content.startdatetime}</h5>
+	     <p>${content.notes}</p>
+	     <br>
+	</div>
+	<p>---</p>
     </div>
 </div>
