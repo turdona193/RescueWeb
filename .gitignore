@@ -1,3 +1,16 @@
 rescueweb/rescueweb/__pycache__/
 rescueweb/rescueweb.egg-info/
 rescueweb/rescueweb/scripts/__pycache__
+
+__pycache__
+.gitignore*
+bin
+build
+include
+lib
+*.pyc
+.project
+.pydevproject
+rescueweb.egg-info
+rescueweb.sqlite
+*~
