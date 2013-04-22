@@ -20,3 +20,26 @@ li.menuhover span, li.menuhover li.menuhover span {color:#fff; background:#4876b
 #info li {width:160px; border-top:none; padding:8px 10px; color:#666; text-shadow:1px 1px #fff; text-align:left}
 
 .main {font:13px Verdana,Arial; color:#000; background:#fff; margin-left:10%; margin-right:10%; margin-top:10px; margin-bottom:100px}
+
+
+.footer {
+width:100%;
+height:20px;
+position:fixed;
+bottom:0;
+vertical-align: top;
+margin-left:auto;
+margin-right:auto;
+text-align: center;
+font-family: Verdana,Arial;
+font-size: 15px;
+background: #020069;
+text-shadow:1px 1px #888;
+}
+
+.push {
+width:100%;
+height:20px;
+position:relative;
+bottom:0;
+}
