@@ -27,6 +27,7 @@ from .models import (
     Page,
     Announcements,
     Documents,
+    events,
     users,
     emtcert,
     certifications,
@@ -72,10 +73,12 @@ def announcements(request):
                 logged_in=authenticated_userid(request))
     
 @view_config(route_name='events', renderer='templates/events.pt')
-def events(request):
+def eventsV(request):
     main = get_renderer('templates/template.pt').implementation()
+    ev = DBSession.query(events).all()
     return dict(title = 'Events', main = main,
-                logged_in=authenticated_userid(request))
+                logged_in=authenticated_userid(request),
+                ev = ev)
 
 
 @view_config(route_name='pictures', renderer='templates/pictures.pt')
