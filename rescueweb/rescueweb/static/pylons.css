@@ -152,7 +152,7 @@ body
   padding: 0;
   background-color: #fff;
   position: relative;
-  font: 16px/24px NobileRegular, "Lucida Grande", Lucida, Verdana, sans-serif;
+  font: 16px/24px Helvetica, Arial, sans-serif;
 }
 
 a
@@ -169,7 +169,7 @@ a:hover
 
 body h1, body h2, body h3, body h4, body h5, body h6
 {
-  font-family: NeutonRegular, "Lucida Grande", Lucida, Verdana, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   font-weight: 400;
   color: #373839;
   font-style: normal;
