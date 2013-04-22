@@ -2,19 +2,23 @@
    <div metal:fill-slot="content">
         <p>
         	<form method="post">
-        	Pages: <select name="pagename">
-				<div tal:repeat = "pagename pagenames">
-  					<option value=${pagename}>${pagename}</option>
-  				</div>
-			</select><br/>
+        		Pages: <select name="pagename">
+							<div tal:repeat = "pagename pagenames">
+  								<option value=${pagename}>${pagename}</option>
+  							</div>
+						</select><br/>
+				<input type="submit" name="form.selected" value="Load Page"/><br/>
+						
+		     </form>
 		
-			<input type="submit" name="form.selected" value="Load Page"/>
 			
-			
-          	<textarea name="body" tal:content="page.data" rows="10" cols="60"/><br/>
-          		<input type="submit" name="form.submitted" value="Save"/>
-        	</form>
-        
+			<span tal:condition="pageselected">
+			    <form method="post">
+          			<textarea name="body" tal:content="page.data" rows="16" cols="80"/><br/>
+          	  		<input type="hidden" name="editpage" value="${pageselected}" />
+          			<input type="submit" name="form.submitted" value="Save"/>
+        		</form>
+        	</span>
         </p>
     </div>
 </div>

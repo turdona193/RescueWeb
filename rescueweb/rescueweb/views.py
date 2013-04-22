@@ -222,21 +222,27 @@ def deleteuser(request):
              permission = 'admin')
 def editpages(request):
     main = get_renderer('templates/template.pt').implementation()
-    pagenames = ['Home' , 'History' ,'Join', 'ContactUs' ]
-        
+    pagenames = ['Home' , 'History' ,'Join', 'ContactUs' ]    
     if 'form.submitted' in request.params:
+        pageselected = request.params['editpage']
+        page = DBSession.query(Page).filter_by(name = pageselected).first()
         page.data = request.params['body']
         DBSession.add(page)
         #return HTTPFound(location = request.route_url('home'))
 
     if 'form.selected' in request.params:
-        pagename = request.params['pagename']
-        print(pagename)
-        page = DBSession.query(Page).filter_by(name=pagename).first()
+        pageselected = request.params['pagename']
+        page = DBSession.query(Page).filter_by(name=pageselected).first()
+        content = 'this should be after the load'
     else:
-        page = DBSession.query(Page).filter_by(name=pagename).first()
-
-    return dict(title = 'Edit Pages', main = main, page = page, pagenames = pagenames,
+        page = Page('' ,'')
+        pageselected = ''
+        
+    return dict(title = 'Edit Pages', 
+                main = main, 
+                page = page, 
+                pagenames = pagenames, 
+                pageselected = pageselected,
                 logged_in=authenticated_userid(request))
 
 @view_config(route_name='addeditlinks', renderer='templates/addeditlinks.pt',
