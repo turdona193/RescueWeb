@@ -176,10 +176,12 @@ class privileges(Base):
     __tablename__ = 'Privileges'
     privilegevalue = Column(Integer, primary_key=True)
     privilege = Column(Text)
+    pyramidsecuritygroup = Column(Text)
     
-    def __init__(self, privilegevalue, privilege):
+    def __init__(self, privilegevalue, privilege, pyramidsecuritygroup):
         self.privilegevalue = privilegevalue
         self.privilege = privilege
+        self.pyramidsecuritygroup = pyramidsecuritygroup
 
 class weblinks(Base):
     __tablename__ = 'Links'

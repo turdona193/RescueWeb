@@ -8,8 +8,8 @@
   <title>SUNY Potsdam Campus Rescue Squad</title>
 
 <!-- Determine which stylesheet to use for the menu !-->
-<link tal:condition="logged_in" rel="stylesheet" href="${request.static_url('rescueweb:static/tinydropdown.css')}" type="text/css" />
-<link tal:condition="not: logged_in" rel="stylesheet" href="${request.static_url('rescueweb:static/tinydropdownGuest.css')}" type="text/css" />
+<link tal:condition="user" rel="stylesheet" href="${request.static_url('rescueweb:static/tinydropdown.css')}" type="text/css" />
+<link tal:condition="not: user" rel="stylesheet" href="${request.static_url('rescueweb:static/tinydropdownGuest.css')}" type="text/css" />
 
 <!-- Thanks go to Michael for menu script
 Javascript Dropdown Menu
@@ -27,15 +27,15 @@ http://www.scriptiny.com/2011/04/javascript-dropdown-menu/
 	<th rowspan="2">
 	<img src="${request.static_url('rescueweb:static/CRSbanner.jpg')}" alt="CRS Banner"/>
 	</th>
-		<span tal:condition="logged_in">
-   			<td style="width:175px;text-align:center"><a href="/">${logged_in}</a></td>
+		<span tal:condition="user">
+   			<td style="width:175px;text-align:center"><a href="/">${user.username}</a></td>
 		</span>
-		<span tal:condition="not: logged_in">
+		<span tal:condition="not: user">
    			<td rowspan="2" style="width:175px;vertical-align:bottom;text-align:center"><a href="/login">Login</a></td>
 		</span>
 	</tr>
 	<tr>
-		<span tal:condition="logged_in">
+		<span tal:condition="user">
   			<td style="vertical-align:bottom;text-align:center"><a href="${request.application_url}/logout">Logout</a></td>
 		</span>	</tr>
 	</table>
@@ -67,7 +67,7 @@ http://www.scriptiny.com/2011/04/javascript-dropdown-menu/
             </ul>
         </li>
 
-        <li tal:condition="logged_in"><span>Members</span>
+        <li tal:condition="user"><span>Members</span>
 			<ul>
 				<li class="submenu">
 	                    <span>Administrative</span>
@@ -88,7 +88,7 @@ http://www.scriptiny.com/2011/04/javascript-dropdown-menu/
 			</ul>  
         </li>
         
-        <li tal:condition="logged_in"><span>Website Tools</span>
+        <li tal:condition="user"><span>Website Tools</span>
         	<ul>
         		<li class = "submenu"><span>Administrative</span>
         			<ul>
