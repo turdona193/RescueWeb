@@ -4,8 +4,13 @@
            	<form method="post">
         		Announcements: <select name="selecteduser">
 							    	<div tal:repeat = "user users">
-							    		<span tal:condition="s">
+							    		<span tal:condition="edit_user.username==user">
+  											<option value="${user}" selected>${user}</option>
+  										</span>
+  										<span tal:condition="not edit_user.username==user">
   											<option value="${user}">${user}</option>
+  										</span>
+  										
   									</div>
 							   </select> <br/><br/>
 				<input type="submit" name="form.selected" value="Load"/><br/>
@@ -16,7 +21,7 @@
     	<span tal:condition="userselected">
     
 	        <form method="post">
-				Login: <input type="text" name="username" value="${editedit_user.username}"/><br/>
+				Login: <input type="text" name="username" value="${edit_user.username}"/><br/>
 				Password: <input type="password" name="password" value="${edit_user.password}"/><br/>
 				First Name: <input type="text" name="firstname" value="${edit_user.firstname}"/><br/>
 				Middle Name: <input type="text" name="middlename" value="${edit_user.middlename}"/><br/>

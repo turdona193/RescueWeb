@@ -5,6 +5,10 @@ from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from rescueweb.security import groupfinder
 
+from rescueweb.security import (
+    groupfinder,
+    get_user,
+    )
 
 from .models import (
     DBSession,
@@ -68,8 +72,10 @@ def main(global_config, **settings):
     config.add_route('addeditannouncements' , '/addeditannouncements')
     config.add_route('addeditevents' , '/addeditevents')
 
-
-
+    # Attach a `user' attribute to the request object that's passed around
+    # everywhere. This user object only has `username' and `privileges'
+    # attributes currently.
+    config.add_request_method(get_user, 'user', reify=True)
     
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')

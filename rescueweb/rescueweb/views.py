@@ -7,7 +7,6 @@ from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 
 from sqlalchemy.exc import DBAPIError
-from .security import USERS
 
 from pyramid.httpexceptions import (
     HTTPFound,
@@ -47,15 +46,24 @@ def home(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Page).filter_by(name='Home').first()
 
-    return dict(title='Home', main=main , page = page,
-                logged_in=authenticated_userid(request))
+    return dict(
+            title='Home', 
+            main=main, 
+            page=page,
+            user=request.user
+            )
 
 @view_config(route_name='history', renderer='templates/history.pt')
 def history(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Page).filter_by(name='History').first()
-    return dict(title = 'History', main = main , page = page,
-                logged_in=authenticated_userid(request))
+
+    return dict(
+            title='History', 
+            main=main, 
+            page=page,
+            user=request.user
+            )
 
 @view_config(route_name='personnel', renderer='templates/personnel.pt')
 def personnel(request):
@@ -63,8 +71,14 @@ def personnel(request):
     page = DBSession.query(users).all()
     
     headers = [column.name for column in page[0].__table__.columns]
-    return dict(title = 'Personnel', main = main, personnel = page, headers = headers,
-                logged_in=authenticated_userid(request))
+
+    return dict(
+            title='Personnel', 
+            main=main, 
+            personnel=page, 
+            headers=headers,
+            user=request.user
+            )
 
 
 @view_config(route_name='announcements', renderer='templates/announcements.pt')
@@ -72,15 +86,18 @@ def announcements(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Announcements).order_by(Announcements.posted.desc()).all()
     headers = [column.name for column in page[0].__table__.columns]
-    return dict(title = 'Announcements', main = main,  announcements = page, headers = headers,
-                logged_in=authenticated_userid(request))
+    return dict(
+            title='Announcements', 
+            main=main,
+            announcements=page, headers=headers,
+                user=request.user)
     
 @view_config(route_name='events', renderer='templates/events.pt')
 def eventsV(request):
     main = get_renderer('templates/template.pt').implementation()
     ev = DBSession.query(events).all()
     return dict(title = 'Events', main = main,
-                logged_in=authenticated_userid(request),
+                user=request.user,
                 ev = ev)
 
 
@@ -88,7 +105,7 @@ def eventsV(request):
 def pictures(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Pictures', main = main,
-                logged_in=authenticated_userid(request))   
+                user=request.user)   
 
 
 @view_config(route_name='join', renderer='templates/join.pt')
@@ -96,7 +113,7 @@ def join(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Page).filter_by(name='Join').first()
     return dict(title = 'How to Join', main = main , page = page,
-                logged_in=authenticated_userid(request))
+                user=request.user)
     
 
     
@@ -105,7 +122,7 @@ def contact(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Page).filter_by(name='ContactUs').first()
     return dict(title = 'Contact Us', main = main, page = page,
-                logged_in=authenticated_userid(request))
+                user=request.user)
     
 @view_config(route_name='links', renderer='templates/links.pt')
 def links(request):
@@ -114,7 +131,7 @@ def links(request):
     
     headers = [column.name for column in page[0].__table__.columns]
     return dict(title = 'Links', main = main, links = page, header = headers,
-                logged_in=authenticated_userid(request))
+                user=request.user)
 
 
 @view_config(route_name='documents', renderer='templates/documents.pt',
@@ -126,21 +143,21 @@ def documents(request):
 
     
     return dict(title = 'Squad Documents', main = main,page = page, header = headers,
-                logged_in=authenticated_userid(request))
+                user=request.user)
 
 @view_config(route_name='minutes', renderer='templates/minutes.pt',
              permission = 'Member')
 def minutes(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Meeting Minutes', main = main,
-                logged_in=authenticated_userid(request))
+                user=request.user)
 
 @view_config(route_name='memberinfo', renderer='templates/memberinfo.pt',
              permission = 'Member')
 def memberinfo(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Member Information', main = main,
-                logged_in=authenticated_userid(request))
+                user=request.user)
     
 
 
@@ -149,7 +166,7 @@ def memberinfo(request):
 def standbys(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Stand-Bys', main = main,
-                logged_in=authenticated_userid(request)) 
+                user=request.user) 
 
 
 @view_config(route_name='duty_crew_calendar',
@@ -167,7 +184,7 @@ def duty_crew_calendar(request):
                 startDay = startDay,
                 days = days,
                 main = main,
-                logged_in=authenticated_userid(request))
+                user=request.user)
 
     
 @view_config(route_name='coverage', renderer='templates/coverage.pt',
@@ -175,7 +192,7 @@ def duty_crew_calendar(request):
 def coverage(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Coverage Requests', main = main,
-                logged_in=authenticated_userid(request))
+                user=request.user)
     
    
 
@@ -224,7 +241,7 @@ def adduser(request):
                 trainingOptions = trainingOptions,
                 administrativeOptions = administrativeOptions,
                 operationalOptions = operationalOptions,
-                logged_in=authenticated_userid(request)
+                user=request.user
                 )
 
 @view_config(route_name='edituser', renderer='templates/edituser.pt',
@@ -257,11 +274,11 @@ def edituser(request):
         
     if 'form.selected' in request.params:
         userselected = request.params['selecteduser']
-        editeduser  = DBSession.query(users).filter_by(username=userselected).first()
+        edit_user  = DBSession.query(users).filter_by(username=userselected).first()
     else:
         userselected = ''
-        editeduser = users('','','','','','','','','','','','','','','','','','','')
-    
+        edit_user = users('','','','','','','','','','','','','','','','','','','')
+
     Options = DBSession.query(privileges).all()
     privilegesOptions = [option.privilege for option in Options]
     Options = DBSession.query(traininglevel).all()
@@ -277,20 +294,21 @@ def edituser(request):
     return dict(title = 'Edit User',
                 main = main,
                 userselected = userselected,
-                editeduser = editeduser,
+                edit_user=edit_user,
                 users = allusernames,
                 privilegesOptions = privilegesOptions,
                 trainingOptions = trainingOptions,
                 administrativeOptions = administrativeOptions,
                 operationalOptions = operationalOptions,
-                logged_in=authenticated_userid(request))
+                user=request.user,
+                )
 
 @view_config(route_name='deleteuser', renderer='templates/deleteuser.pt',
              permission = 'admin')
 def deleteuser(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Delete User', main = main,
-                logged_in=authenticated_userid(request))
+                user=request.user)
     
 
 @view_config(route_name='editpages', renderer='templates/editpages.pt',
@@ -318,35 +336,35 @@ def editpages(request):
                 page = page, 
                 pagenames = pagenames, 
                 pageselected = pageselected,
-                logged_in=authenticated_userid(request))
+                user=request.user)
 
 @view_config(route_name='addeditlinks', renderer='templates/addeditlinks.pt',
              permission = 'admin')
 def addeditlinks(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Add/Edit Links', main = main,
-                logged_in=authenticated_userid(request))
+                user=request.user)
 
 @view_config(route_name='addeditdocuments', renderer='templates/addeditdocuments.pt',
              permission = 'admin')
 def addeditdocuments(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Add/Edit documents', main = main,
-                logged_in=authenticated_userid(request))
+                user=request.user)
 
 @view_config(route_name='addeditminutes', renderer='templates/addeditminutes.pt',
              permission = 'admin')
 def editmeetingminutes(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Add/Edit Meeting Minutes', main = main,
-                logged_in=authenticated_userid(request))
+                user=request.user)
 
 @view_config(route_name='addeditpictures', renderer='templates/addeditpictures.pt',
              permission = 'admin')
 def addeditpictures(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Add/Edit Pictures', main = main,
-                logged_in=authenticated_userid(request))
+                user=request.user)
 
 
 
@@ -356,28 +374,28 @@ def addeditpictures(request):
 def editportableNumbers(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Edit Portable Numbers', main = main,
-                logged_in=authenticated_userid(request))
+                user=request.user)
 
 @view_config(route_name='addeditcertifications', renderer='templates/addeditcertifications.pt',
              permission = 'admin')
 def addeditcertifications(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Add/Edit Certifications', main = main,
-                logged_in=authenticated_userid(request))
+                user=request.user)
     
 @view_config(route_name='addeditstandby', renderer='templates/addeditstandby.pt',
              permission = 'admin')
 def addeditstandby(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Add/Edit Standby', main = main,
-                logged_in=authenticated_userid(request))
+                user=request.user)
 
 @view_config(route_name='editdutycrew', renderer='templates/editdutycrew.pt',
              permission = 'admin')
 def editdutycrew(request):
     main = get_renderer('templates/template.pt').implementation()
     return dict(title = 'Edit Duty Crew', main = main,
-                logged_in=authenticated_userid(request))
+                user=request.user)
 
 @view_config(route_name='addeditannouncements', renderer='templates/addeditannouncements.pt',
              permission = 'admin')
@@ -388,7 +406,7 @@ def addeditannouncements(request):
     
     if 'form.submitted' in request.params:
         if request.params['option'] == 'New':
-            announcement = Announcements('','','','', '',' ')
+            announcement = Announcements('','','','','','')
             announcement.header = request.params['title']
             announcement.text  = request.params['body']
             announcement.priority = 0
@@ -406,7 +424,7 @@ def addeditannouncements(request):
     if 'form.selected' in request.params:
         if request.params['form.selected'] == 'New':
             announcementchosen = ''
-            announcement = Announcements('','','','', '','')
+            announcement = Announcements('','','','','')
             form = 'New'
         if request.params['form.selected'] == 'Load':
             announcementchosen = request.params['selectedannouncement']
@@ -419,7 +437,7 @@ def addeditannouncements(request):
             return HTTPFound(location = request.route_url('announcements'))
 
     else:
-        announcement = Announcements('','','','', '',' ')
+        announcement = Announcements('','','','','')
         announcementchosen = ''
     
     allannouncements = DBSession.query(Announcements).all() 
@@ -431,7 +449,8 @@ def addeditannouncements(request):
                 announcement=announcement,
                 form=form,
                 announcementchosen=announcementchosen,
-                logged_in=authenticated_userid(request))
+                user=request.user
+                )
 
 
 
@@ -439,10 +458,12 @@ def addeditannouncements(request):
              permission='admin')
 def addeditevents(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title='Add/Edit Events', main=main,
-                logged_in=authenticated_userid(request))
 
-
+    return dict(
+            title='Add/Edit Events', 
+            main=main,
+            user=request.user
+            )
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
@@ -475,7 +496,7 @@ def login(request):
         came_from = came_from,
         login = login,
         password = password,
-        logged_in=authenticated_userid(request))
+        user=request.user)
 
 @view_config(route_name='logout')
 def logout(request):
