@@ -193,20 +193,19 @@ def adduser(request):
         newuser.firstname = request.params['firstname']
         newuser.middlename = request.params['middlename']
         newuser.lastname = request.params['lastname']
-        newuser.birthday = request.params['birthday']
+        newuser.birthday = datetime.date(int(request.params['year']),int(request.params['month']),int(request.params['day']))
         newuser.street = request.params['street']
         newuser.city = request.params['city']
         newuser.state = request.params['state']
         newuser.zipcode = request.params['zipcode']
         newuser.residence = request.params['residence']
         newuser.roomnumber = request.params['roomnumber']
-        newuser.phonenumber = request.params[' phonenumber']
+        newuser.phonenumber = request.params['phonenumber']
         newuser.email = request.params['email']
-        newuser.privileges = "happy"
+        newuser.privileges = request.params['privileges']
         newuser.trainingvalue = request.params['trainingvalue']
         newuser.administrativevalue = request.params['administrativevalue']
         newuser.operationalvalue = request.params['operationalvalue']
-        newuser.portablenumber = request.params['portablenumber']
         DBSession.add(newuser)
     
     Options = DBSession.query(privileges).all()
@@ -232,7 +231,58 @@ def adduser(request):
              permission = 'admin')
 def edituser(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Edit User', main = main,
+    userselected = ''
+    
+    if 'form.submitted' in request.params:
+        editeduser = users('','','','','','','','','','','','','','','','','','','')
+        editeduser.username = request.params['username']
+        editeduser.password = request.params['password']
+        editeduser.firstname = request.params['firstname']
+        editeduser.middlename = request.params['middlename']
+        editeduser.lastname = request.params['lastname']
+        editeduser.birthday = datetime.date(int(request.params['year']),int(request.params['month']),int(request.params['day']))
+        editeduser.street = request.params['street']
+        editeduser.city = request.params['city']
+        editeduser.state = request.params['state']
+        editeduser.zipcode = request.params['zipcode']
+        editeduser.residence = request.params['residence']
+        editeduser.roomnumber = request.params['roomnumber']
+        editeduser.phonenumber = request.params['phonenumber']
+        editeduser.email = request.params['email']
+        editeduser.privileges = request.params['privileges']
+        editeduser.trainingvalue = request.params['trainingvalue']
+        editeduser.administrativevalue = request.params['administrativevalue']
+        editeduser.operationalvalue = request.params['operationalvalue']
+        DBSession.add(editeduser)
+        
+    if 'form.selected' in request.params:
+        userselected = request.params['selecteduser']
+        user  = DBSession.query(users).filter_by(username=userselected).first()
+    else:
+        userselected = ''
+        user = users('','','','','','','','','','','','','','','','','','','')
+
+    Options = DBSession.query(privileges).all()
+    privilegesOptions = [option.privilege for option in Options]
+    Options = DBSession.query(traininglevel).all()
+    trainingOptions = [option.traininglevel for option in Options]
+    Options = DBSession.query(administrativestatus).all()
+    administrativeOptions = [option.status for option in Options]
+    Options = DBSession.query(operationalstatus).all()
+    operationalOptions = [option.status for option in Options]
+    
+    allusers = DBSession.query(users).order_by(users.username).all() 
+    allusernames = [auser.username for auser in allusers]
+    
+    return dict(title = 'Edit User',
+                main = main,
+                userselected = userselected,
+                user = user,
+                users = allusernames,
+                privilegesOptions = privilegesOptions,
+                trainingOptions = trainingOptions,
+                administrativeOptions = administrativeOptions,
+                operationalOptions = operationalOptions,
                 logged_in=authenticated_userid(request))
 
 @view_config(route_name='deleteuser', renderer='templates/deleteuser.pt',
@@ -333,10 +383,8 @@ def editdutycrew(request):
              permission = 'admin')
 def addeditannouncements(request):
     main = get_renderer('templates/template.pt').implementation()
-    
     announcementchosen = ''
     form = ''
-    
     
     if 'form.submitted' in request.params:
         if request.params['option'] == 'New':
