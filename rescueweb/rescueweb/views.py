@@ -338,11 +338,11 @@ def login(request):
     if 'form.submitted' in request.params:
         login = request.params['login']
         password = request.params['password']
-
-        password_query = DBSession.query(users.password).filter(users.username == login).first()[0]
-        if password_query == password:
-            headers = remember(request, login)
-            return HTTPFound(location = came_from,
+        if DBSession.query(users.username).filter(users.username.like(login)).count() > 0:
+            password_query = DBSession.query(users.password).filter(users.username == login).first()[0]
+            if password_query == password:
+                headers = remember(request, login)
+                return HTTPFound(location = came_from,
                              headers = headers)
         message = 'Failed login'
 
