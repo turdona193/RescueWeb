@@ -1,3 +1,7 @@
+import calendar
+import datetime
+
+
 from pyramid.response import Response
 from pyramid.view import view_config
 from pyramid.renderers import get_renderer
@@ -38,7 +42,6 @@ from .models import (
     traininglevel,
     weblinks,
     )
-
 @view_config(route_name='home', renderer='templates/home.pt')
 def home(request):
     main = get_renderer('templates/template.pt').implementation()
@@ -67,7 +70,7 @@ def personnel(request):
 @view_config(route_name='announcements', renderer='templates/announcements.pt')
 def announcements(request):
     main = get_renderer('templates/template.pt').implementation()
-    page = DBSession.query(Announcements).all()
+    page = DBSession.query(Announcements).order_by(Announcements.posted.desc()).all()
     headers = [column.name for column in page[0].__table__.columns]
     return dict(title = 'Announcements', main = main,  announcements = page, headers = headers,
                 logged_in=authenticated_userid(request))
@@ -153,10 +156,6 @@ def standbys(request):
              renderer='templates/duty_crew_calendar.pt', permission = 'Member')
 def duty_crew_calendar(request):
     main = get_renderer('templates/template.pt').implementation()
-
-    import calendar
-    import datetime
-
     currentDate = datetime.date.today()
     year = currentDate.year
     month = currentDate.month
@@ -188,13 +187,36 @@ def adduser(request):
     headers = [column.name for column in users.__table__.columns][:-5]
 
     if 'form.submitted' in request.params:
-        print("hello")
-        
-    privilegesOptions = DBSession.query(privileges.privilege).all()
-    trainingOptions = DBSession.query(traininglevel.traininglevel).all()
-    administrativeOptions = DBSession.query(administrativestatus.status).all()
-    operationalOptions = DBSession.query(operationalstatus.status).all()
-
+        newuser = users('','','','','','','','','','','','','','','','','','','')
+        newuser.username = request.params['username']
+        newuser.password = request.params['password']
+        newuser.firstname = request.params['firstname']
+        newuser.middlename = request.params['middlename']
+        newuser.lastname = request.params['lastname']
+        newuser.birthday = request.params['birthday']
+        newuser.street = request.params['street']
+        newuser.city = request.params['city']
+        newuser.state = request.params['state']
+        newuser.zipcode = request.params['zipcode']
+        newuser.residence = request.params['residence']
+        newuser.roomnumber = request.params['roomnumber']
+        newuser.phonenumber = request.params[' phonenumber']
+        newuser.email = request.params['email']
+        newuser.privileges = "happy"
+        newuser.trainingvalue = request.params['trainingvalue']
+        newuser.administrativevalue = request.params['administrativevalue']
+        newuser.operationalvalue = request.params['operationalvalue']
+        newuser.portablenumber = request.params['portablenumber']
+        DBSession.add(newuser)
+    
+    Options = DBSession.query(privileges).all()
+    privilegesOptions = [option.privilege for option in Options]
+    Options = DBSession.query(traininglevel).all()
+    trainingOptions = [option.traininglevel for option in Options]
+    Options = DBSession.query(administrativestatus).all()
+    administrativeOptions = [option.status for option in Options]
+    Options = DBSession.query(operationalstatus).all()
+    operationalOptions = [option.status for option in Options]
     
     return dict(title = 'Add User',
                 main = main,
@@ -311,14 +333,65 @@ def editdutycrew(request):
              permission = 'admin')
 def addeditannouncements(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Add/Edit Announcements', main = main,
+    
+    announcementchosen = ''
+    form = ''
+    
+    
+    if 'form.submitted' in request.params:
+        if request.params['option'] == 'New':
+            announcement = Announcements('','','','', '',' ')
+            announcement.header = request.params['title']
+            announcement.text  = request.params['body']
+            announcement.priority = 0
+            announcement.username = authenticated_userid(request)
+            announcement.posted = datetime.datetime.today()
+            DBSession.add(announcement)
+
+        if request.params['option'] == 'Load':
+            editannounce = request.params['editannouncement']
+            announcement = DBSession.query(Announcements).filter_by(header = editannounce).first()
+            announcement.text = request.params['body']
+            DBSession.add(announcement)
+        return HTTPFound(location = request.route_url('announcements'))
+
+    if 'form.selected' in request.params:
+        if request.params['form.selected'] == 'New':
+            announcementchosen = ''
+            announcement = Announcements('','','','', '','')
+            form = 'New'
+        if request.params['form.selected'] == 'Load':
+            announcementchosen = request.params['selectedannouncement']
+            announcement  = DBSession.query(Announcements).filter_by(header=announcementchosen).first()
+            form = 'Load'
+        if request.params['form.selected'] == 'Delete':
+            announcementchosen = request.params['selectedannouncement']
+            announcement = DBSession.query(Announcements).filter_by(header=announcementchosen).first()
+            DBSession.delete(announcement)
+            return HTTPFound(location = request.route_url('announcements'))
+
+    else:
+        announcement = Announcements('','','','', '',' ')
+        announcementchosen = ''
+    
+    allannouncements = DBSession.query(Announcements).all() 
+    announcements = [announcement.header for announcement in allannouncements]
+    
+    return dict(title='Add/Edit Announcements',
+                main=main,
+                announcements=announcements,
+                announcement=announcement,
+                form=form,
+                announcementchosen=announcementchosen,
                 logged_in=authenticated_userid(request))
 
+
+
 @view_config(route_name='addeditevents', renderer='templates/addeditevents.pt',
-             permission = 'admin')
+             permission='admin')
 def addeditevents(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Add/Edit Events', main = main,
+    return dict(title='Add/Edit Events', main=main,
                 logged_in=authenticated_userid(request))
 
 

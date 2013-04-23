@@ -102,11 +102,11 @@ Campus Rescue runs on average approximately 150 calls and standbys each year."""
         DBSession.add(model)
         
         
-        model = Announcements(key = 1,header = 'Remember Paperwork', text = 'Please remember to submit all paperwork', priority = 1, username = 'turdona193')
+        model = Announcements(header = 'Remember Paperwork', text = 'Please remember to submit all paperwork', priority = 1, username = 'turdona193' , posted = datetime.datetime.today())
         DBSession.add(model)
-        model = Announcements(key = 2,header = 'Crew Chief Signup', text = 'Please remember to sign up on the Crew Chief Calendar', priority = 1, username = 'turdona193')
+        model = Announcements(header = 'Crew Chief Signup', text = 'Please remember to sign up on the Crew Chief Calendar', priority = 1, username = 'turdona193', posted = datetime.datetime.today())
         DBSession.add(model)
-        model = Announcements(key = 3,header = 'Mixer', text = 'Hey Guys, There is a mixer happening Wednesday, Bring friends.', priority = 1, username = 'turdona193')
+        model = Announcements(header = 'Mixer', text = 'Hey Guys, There is a mixer happening Wednesday, Bring friends.', priority = 1, username = 'turdona193', posted = datetime.datetime.today())
         DBSession.add(model)
 
         
