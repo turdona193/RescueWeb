@@ -257,11 +257,11 @@ def edituser(request):
         
     if 'form.selected' in request.params:
         userselected = request.params['selecteduser']
-        user  = DBSession.query(users).filter_by(username=userselected).first()
+        editeduser  = DBSession.query(users).filter_by(username=userselected).first()
     else:
         userselected = ''
-        user = users('','','','','','','','','','','','','','','','','','','')
-
+        editeduser = users('','','','','','','','','','','','','','','','','','','')
+    
     Options = DBSession.query(privileges).all()
     privilegesOptions = [option.privilege for option in Options]
     Options = DBSession.query(traininglevel).all()
@@ -277,7 +277,7 @@ def edituser(request):
     return dict(title = 'Edit User',
                 main = main,
                 userselected = userselected,
-                user = user,
+                editeduser = editeduser,
                 users = allusernames,
                 privilegesOptions = privilegesOptions,
                 trainingOptions = trainingOptions,
