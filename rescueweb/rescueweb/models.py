@@ -9,6 +9,7 @@ from sqlalchemy import (
     Date,
     DateTime,
     Boolean,
+    TIMESTAMP,
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -53,13 +54,14 @@ class Announcements(Base):
     text = Column(Text)
     priority = Column(Integer, ForeignKey('Privileges.privilegevalue'))
     username = Column(Text,ForeignKey('Users.username'))
+    posted = Column(TIMESTAMP)
     
-    def __init__(self,key, header, text, priority, username):
-        self.key = key
+    def __init__(self, header, text, priority, username,posted):
         self.header = header
         self.text  = text
         self.priority = priority
         self.username = username
+        self.posted = posted
         
 class Documents(Base):
     __tablename__ = 'documents'

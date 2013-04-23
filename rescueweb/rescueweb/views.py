@@ -1,3 +1,7 @@
+import calendar
+import datetime
+
+
 from pyramid.response import Response
 from pyramid.view import view_config
 from pyramid.renderers import get_renderer
@@ -37,7 +41,6 @@ from .models import (
     traininglevel,
     weblinks,
     )
-
 @view_config(route_name='home', renderer='templates/home.pt')
 def home(request):
     main = get_renderer('templates/template.pt').implementation()
@@ -81,7 +84,7 @@ def personnel(request):
 @view_config(route_name='announcements', renderer='templates/announcements.pt')
 def announcements(request):
     main = get_renderer('templates/template.pt').implementation()
-    page = DBSession.query(Announcements).all()
+    page = DBSession.query(Announcements).order_by(Announcements.posted.desc()).all()
     headers = [column.name for column in page[0].__table__.columns]
     return dict(
             title='Announcements', 
@@ -170,10 +173,6 @@ def standbys(request):
              renderer='templates/duty_crew_calendar.pt', permission = 'Member')
 def duty_crew_calendar(request):
     main = get_renderer('templates/template.pt').implementation()
-
-    import calendar
-    import datetime
-
     currentDate = datetime.date.today()
     year = currentDate.year
     month = currentDate.month
@@ -205,13 +204,35 @@ def adduser(request):
     headers = [column.name for column in users.__table__.columns][:-5]
 
     if 'form.submitted' in request.params:
-        print("hello")
-        
-    privilegesOptions = DBSession.query(privileges.privilege).all()
-    trainingOptions = DBSession.query(traininglevel.traininglevel).all()
-    administrativeOptions = DBSession.query(administrativestatus.status).all()
-    operationalOptions = DBSession.query(operationalstatus.status).all()
-
+        newuser = users('','','','','','','','','','','','','','','','','','','')
+        newuser.username = request.params['username']
+        newuser.password = request.params['password']
+        newuser.firstname = request.params['firstname']
+        newuser.middlename = request.params['middlename']
+        newuser.lastname = request.params['lastname']
+        newuser.birthday = datetime.date(int(request.params['year']),int(request.params['month']),int(request.params['day']))
+        newuser.street = request.params['street']
+        newuser.city = request.params['city']
+        newuser.state = request.params['state']
+        newuser.zipcode = request.params['zipcode']
+        newuser.residence = request.params['residence']
+        newuser.roomnumber = request.params['roomnumber']
+        newuser.phonenumber = request.params['phonenumber']
+        newuser.email = request.params['email']
+        newuser.privileges = request.params['privileges']
+        newuser.trainingvalue = request.params['trainingvalue']
+        newuser.administrativevalue = request.params['administrativevalue']
+        newuser.operationalvalue = request.params['operationalvalue']
+        DBSession.add(newuser)
+    
+    Options = DBSession.query(privileges).all()
+    privilegesOptions = [option.privilege for option in Options]
+    Options = DBSession.query(traininglevel).all()
+    trainingOptions = [option.traininglevel for option in Options]
+    Options = DBSession.query(administrativestatus).all()
+    administrativeOptions = [option.status for option in Options]
+    Options = DBSession.query(operationalstatus).all()
+    operationalOptions = [option.status for option in Options]
     
     return dict(title = 'Add User',
                 main = main,
@@ -227,8 +248,60 @@ def adduser(request):
              permission = 'admin')
 def edituser(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Edit User', main = main,
-                user=request.user)
+    userselected = ''
+    
+    if 'form.submitted' in request.params:
+        editeduser = users('','','','','','','','','','','','','','','','','','','')
+        editeduser.username = request.params['username']
+        editeduser.password = request.params['password']
+        editeduser.firstname = request.params['firstname']
+        editeduser.middlename = request.params['middlename']
+        editeduser.lastname = request.params['lastname']
+        editeduser.birthday = datetime.date(int(request.params['year']),int(request.params['month']),int(request.params['day']))
+        editeduser.street = request.params['street']
+        editeduser.city = request.params['city']
+        editeduser.state = request.params['state']
+        editeduser.zipcode = request.params['zipcode']
+        editeduser.residence = request.params['residence']
+        editeduser.roomnumber = request.params['roomnumber']
+        editeduser.phonenumber = request.params['phonenumber']
+        editeduser.email = request.params['email']
+        editeduser.privileges = request.params['privileges']
+        editeduser.trainingvalue = request.params['trainingvalue']
+        editeduser.administrativevalue = request.params['administrativevalue']
+        editeduser.operationalvalue = request.params['operationalvalue']
+        DBSession.add(editeduser)
+        
+    if 'form.selected' in request.params:
+        userselected = request.params['selecteduser']
+        edit_user  = DBSession.query(users).filter_by(username=userselected).first()
+    else:
+        userselected = ''
+        edit_user = users('','','','','','','','','','','','','','','','','','','')
+
+    Options = DBSession.query(privileges).all()
+    privilegesOptions = [option.privilege for option in Options]
+    Options = DBSession.query(traininglevel).all()
+    trainingOptions = [option.traininglevel for option in Options]
+    Options = DBSession.query(administrativestatus).all()
+    administrativeOptions = [option.status for option in Options]
+    Options = DBSession.query(operationalstatus).all()
+    operationalOptions = [option.status for option in Options]
+    
+    allusers = DBSession.query(users).order_by(users.username).all() 
+    allusernames = [auser.username for auser in allusers]
+    
+    return dict(title = 'Edit User',
+                main = main,
+                userselected = userselected,
+                edit_user=edit_user,
+                users = allusernames,
+                privilegesOptions = privilegesOptions,
+                trainingOptions = trainingOptions,
+                administrativeOptions = administrativeOptions,
+                operationalOptions = operationalOptions,
+                user=request.user,
+                )
 
 @view_config(route_name='deleteuser', renderer='templates/deleteuser.pt',
              permission = 'admin')
@@ -328,17 +401,69 @@ def editdutycrew(request):
              permission = 'admin')
 def addeditannouncements(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Add/Edit Announcements', main = main,
-                user=request.user)
+    announcementchosen = ''
+    form = ''
+    
+    if 'form.submitted' in request.params:
+        if request.params['option'] == 'New':
+            announcement = Announcements('','','','', '',' ')
+            announcement.header = request.params['title']
+            announcement.text  = request.params['body']
+            announcement.priority = 0
+            announcement.username = authenticated_userid(request)
+            announcement.posted = datetime.datetime.today()
+            DBSession.add(announcement)
+
+        if request.params['option'] == 'Load':
+            editannounce = request.params['editannouncement']
+            announcement = DBSession.query(Announcements).filter_by(header = editannounce).first()
+            announcement.text = request.params['body']
+            DBSession.add(announcement)
+        return HTTPFound(location = request.route_url('announcements'))
+
+    if 'form.selected' in request.params:
+        if request.params['form.selected'] == 'New':
+            announcementchosen = ''
+            announcement = Announcements('','','','', '','')
+            form = 'New'
+        if request.params['form.selected'] == 'Load':
+            announcementchosen = request.params['selectedannouncement']
+            announcement  = DBSession.query(Announcements).filter_by(header=announcementchosen).first()
+            form = 'Load'
+        if request.params['form.selected'] == 'Delete':
+            announcementchosen = request.params['selectedannouncement']
+            announcement = DBSession.query(Announcements).filter_by(header=announcementchosen).first()
+            DBSession.delete(announcement)
+            return HTTPFound(location = request.route_url('announcements'))
+
+    else:
+        announcement = Announcements('','','','', '',' ')
+        announcementchosen = ''
+    
+    allannouncements = DBSession.query(Announcements).all() 
+    announcements = [announcement.header for announcement in allannouncements]
+    
+    return dict(title='Add/Edit Announcements',
+                main=main,
+                announcements=announcements,
+                announcement=announcement,
+                form=form,
+                announcementchosen=announcementchosen,
+                user=request.user
+                )
+
+
 
 @view_config(route_name='addeditevents', renderer='templates/addeditevents.pt',
-             permission = 'admin')
+             permission='admin')
 def addeditevents(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Add/Edit Events', main = main,
-                user=request.user)
 
-
+    return dict(
+            title='Add/Edit Events', 
+            main=main,
+            user=request.user
+            )
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
@@ -355,11 +480,11 @@ def login(request):
     if 'form.submitted' in request.params:
         login = request.params['login']
         password = request.params['password']
-
-        password_query = DBSession.query(users.password).filter(users.username == login).first()[0]
-        if password_query == password:
-            headers = remember(request, login)
-            return HTTPFound(location = came_from,
+        if DBSession.query(users.username).filter(users.username.like(login)).count() > 0:
+            password_query = DBSession.query(users.password).filter(users.username == login).first()[0]
+            if password_query == password:
+                headers = remember(request, login)
+                return HTTPFound(location = came_from,
                              headers = headers)
         message = 'Failed login'
 
