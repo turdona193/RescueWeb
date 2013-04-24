@@ -32,7 +32,6 @@ from .models import (
     Documents,
     Events,
     Users,
-    EMTcert,
     Certifications,
     Privileges,
     OperationalStatus,
@@ -249,29 +248,33 @@ def adduser(request):
              permission = 'admin')
 def edituser(request):
     main = get_renderer('templates/template.pt').implementation()
-    userselected = ''
+    if 'userselected' in request.params:
+        userselected = request.params['userselected']
+    else:
+        userselected = ''
     
     if 'form.submitted' in request.params:
-        editeduser = Users('','','','','','','','','','','','','','','','','','','')
-        editeduser.username = request.params['username']
-        editeduser.password = request.params['password']
-        editeduser.firstname = request.params['firstname']
-        editeduser.middlename = request.params['middlename']
-        editeduser.lastname = request.params['lastname']
-        editeduser.birthday = datetime.date(int(request.params['year']),int(request.params['month']),int(request.params['day']))
-        editeduser.street = request.params['street']
-        editeduser.city = request.params['city']
-        editeduser.state = request.params['state']
-        editeduser.zipcode = request.params['zipcode']
-        editeduser.residence = request.params['residence']
-        editeduser.roomnumber = request.params['roomnumber']
-        editeduser.phonenumber = request.params['phonenumber']
-        editeduser.email = request.params['email']
-        editeduser.privileges = request.params['privileges']
-        editeduser.trainingvalue = request.params['trainingvalue']
-        editeduser.administrativevalue = request.params['administrativevalue']
-        editeduser.operationalvalue = request.params['operationalvalue']
-        DBSession.add(editeduser)
+        userselected = request.params['userselected']
+        edit_user  = DBSession.query(Users).filter_by(username=userselected).first()
+        edit_user.username = request.params['username']
+        edit_user.password = request.params['password']
+        edit_user.firstname = request.params['firstname']
+        edit_user.middlename = request.params['middlename']
+        edit_user.lastname = request.params['lastname']
+        edit_user.birthday = datetime.date(int(request.params['year']),int(request.params['month']),int(request.params['day']))
+        edit_user.street = request.params['street']
+        edit_user.city = request.params['city']
+        edit_user.state = request.params['state']
+        edit_user.zipcode = request.params['zipcode']
+        edit_user.residence = request.params['residence']
+        edit_user.roomnumber = request.params['roomnumber']
+        edit_user.phonenumber = request.params['phonenumber']
+        edit_user.email = request.params['email']
+        edit_user.privileges = request.params['privileges']
+        edit_user.trainingvalue = request.params['trainingvalue']
+        edit_user.administrativevalue = request.params['administrativevalue']
+        edit_user.operationalvalue = request.params['operationalvalue']
+        DBSession.add(edit_user)
         
     if 'form.selected' in request.params:
         userselected = request.params['selecteduser']
@@ -388,11 +391,27 @@ def addeditpictures(request):
 
 
 
-@view_config(route_name='editportableNumbers', renderer='templates/editportableNumbers.pt',
+@view_config(route_name='editportablenumbers', renderer='templates/editportablenumbers.pt',
              permission = 'admin')
-def editportableNumbers(request):
+def editportablenumbers(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Edit Portable Numbers', main = main,
+    
+    if 'form.submitted' in request.params:
+        allusers = DBSession.query(Users).order_by(Users.username).all() 
+        for changeuser in allusers:
+            i = int(request.params[changeuser.username])
+            if i:
+                changeuser.portablenumber = i
+                DBSession.add(changeuser)
+                print("should have Changed")
+            print(i)
+        
+    allusers = DBSession.query(Users).order_by(Users.username).all() 
+    allusernames = [[auser.username , auser.portablenumber] for auser in allusers]
+    
+    return dict(title = 'Edit Portable Numbers', 
+                main = main,
+                allusernames = allusernames,
                 user=request.user)
 
 @view_config(route_name='addeditcertifications', renderer='templates/addeditcertifications.pt',
@@ -413,7 +432,9 @@ def addeditstandby(request):
              permission = 'admin')
 def editdutycrew(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Edit Duty Crew', main = main,
+     
+    return dict(title = 'Edit Duty Crew', 
+                main = main,
                 user=request.user)
 
 @view_config(route_name='addeditannouncements', renderer='templates/addeditannouncements.pt',

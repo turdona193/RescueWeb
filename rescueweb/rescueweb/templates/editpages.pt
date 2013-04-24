@@ -4,7 +4,12 @@
         	<form method="post">
         		Pages: <select name="pagename">
 							<div tal:repeat = "pagename pagenames">
-  								<option value=${pagename}>${pagename}</option>
+								<span tal:condition="pageselected==pagename">
+  									<option value=${pagename} selected>${pagename}</option>
+  								</span>
+								<span tal:condition="not pageselected==pagename">
+  									<option value=${pagename}>${pagename}</option>
+  								</span>
   							</div>
 						</select><br/>
 				<input type="submit" name="form.selected" value="Load Page"/><br/>

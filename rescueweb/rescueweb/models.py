@@ -118,24 +118,18 @@ class Users(Base):
         self.operationalvalue = operationalvalue
         self.portablenumber = portablenumber
         
-class EMTcert(Base):
-    __tablename__ = 'EMTCertification'
-    username = Column(Text, ForeignKey('Users.username'), primary_key=True)
-    certnumber = Column(Integer)
-
-    def __init__(self, username,certnumber):
-        self.username = username
-        self.certnumber = certnumber
-        
+   
 class Certifications(Base):
     __tablename__ = 'Certifications'
     username = Column(Text, ForeignKey('Users.username'), primary_key=True)
     certification = Column(Text, primary_key=True)
+    certnumber = Column(Integer)
     expiration = Column(Text)
 
-    def __init__(self, username,certification,expiration):
+    def __init__(self, username,certification,certnumber,expiration):
         self.username = username
         self.certification = certification
+        self.certnumber = certnumber
         self.expiration = expiration
         
 class OperationalStatus(Base):

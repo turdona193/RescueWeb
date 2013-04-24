@@ -63,7 +63,7 @@ def main(global_config, **settings):
     config.add_route('addeditminutes' , '/addeditminutes')
     config.add_route('addeditpictures' , '/addeditpictures')
     
-    config.add_route('editportableNumbers' , '/editportableNumbers')
+    config.add_route('editportablenumbers' , '/editportablenumbers')
     config.add_route('addeditcertifications' , '/addeditcertifications')
     
     config.add_route('addeditstandby' , '/addeditstandby')

@@ -6,26 +6,25 @@ import datetime
 from sqlalchemy import engine_from_config
 
 from pyramid.paster import (
-    get_appsettings,
-    setup_logging,
+    get_appsettings, 
+    setup_logging, 
     )
 
 from ..models import (
-    DBSession,
-    Users,
-    Events,
-    EMTcert,
-    Certifications,
-    OperationalStatus,
-    AdministrativeStatus,
-    EboardPositions,
-    TrainingLevel,
-    Privileges,
-    Page,
-    Announcements,
-    Documents,
-    WebLinks,
-    Base,
+    DBSession, 
+    Users, 
+    Events, 
+    Certifications, 
+    OperationalStatus, 
+    AdministrativeStatus, 
+    EboardPositions, 
+    TrainingLevel, 
+    Privileges, 
+    Page, 
+    Announcements, 
+    Documents, 
+    WebLinks, 
+    Base, 
     )
 
 def usage(argv):
@@ -73,92 +72,85 @@ def main(argv = sys.argv):
         DBSession.add(model)
         
         user = Users(
-                username='turdona193',
-                password='nick',
-                firstname='Nicholas',
-                middlename='Anthony',
-                lastname='Turdo',
-                birthday=datetime.date(1991, 1, 26),
-                street = '3510 Barrington Dr',
-                city='Potsdam',
-                state='NY',
-                zipcode='13676',
-                residence='Townhouse',
-                roomnumber='A1-104',
-                phonenumber = 6462595690,
-                email='turdona193@potsdam.edu',
-                privileges=2,
-                trainingvalue=3,
-                administrativevalue=3,
-                operationalvalue=4,
+                username='turdona193', 
+                password='nick', 
+                firstname='Nicholas', 
+                middlename='Anthony', 
+                lastname='Turdo', 
+                birthday=datetime.date(1991, 1, 26), 
+                street = '3510 Barrington Dr', 
+                city='Potsdam', 
+                state='NY', 
+                zipcode='13676', 
+                residence='Townhouse', 
+                roomnumber='A1-104', 
+                phonenumber = 6462595690, 
+                email='turdona193@potsdam.edu', 
+                privileges=2, 
+                trainingvalue=3, 
+                administrativevalue=3, 
+                operationalvalue=4, 
                 portablenumber=10
                 )
         DBSession.add(user)
 
         user = Users(
                 username='muehlbjp193', 
-                password='jared',
-                firstname='Jared',
-                middlename='Paul',
-                lastname='Muehlbauer',
-                birthday=datetime.date(1991, 12, 26),
-                street = '2512 Barrington Dr',
-                city='Potsdam',
-                state='NY',
-                zipcode='13676',
-                residence='Townhouse',
-                roomnumber='A1-201',
-                phonenumber = 6462595690,
-                email='muehlbjp193@potsdam.edu',
-                privileges=2,
-                trainingvalue=3,
-                administrativevalue=4,
-                operationalvalue=6,
+                password='jared', 
+                firstname='Jared', 
+                middlename='Paul', 
+                lastname='Muehlbauer', 
+                birthday=datetime.date(1991, 12, 26), 
+                street = '2512 Barrington Dr', 
+                city='Potsdam', 
+                state='NY', 
+                zipcode='13676', 
+                residence='Townhouse', 
+                roomnumber='A1-201', 
+                phonenumber = 6462595690, 
+                email='muehlbjp193@potsdam.edu', 
+                privileges=2, 
+                trainingvalue=3, 
+                administrativevalue=4, 
+                operationalvalue=6, 
                 portablenumber=7
                 )
         DBSession.add(user)
 
         user = Users(
-                username='guarintb193',
-                password='tim',
-                firstname='Tim',
-                middlename='Bret',
-                lastname='Guarino',
-                birthday=datetime.date(1991, 10, 31),
-                street = '1459 Barrington Dr',
-                city='Potsdam',
-                state='NY',
-                zipcode='13676',
-                residence='Townhouse',
-                roomnumber='A1-204',
-                phonenumber = 6462595690,
-                email='guarintb193@potsdam.edu',
-                privileges=2,
-                trainingvalue=3,
-                administrativevalue=4,
-                operationalvalue=6,
+                username='guarintb193', 
+                password='tim', 
+                firstname='Tim', 
+                middlename='Bret', 
+                lastname='Guarino', 
+                birthday=datetime.date(1991, 10, 31), 
+                street = '1459 Barrington Dr', 
+                city='Potsdam', 
+                state='NY', 
+                zipcode='13676', 
+                residence='Townhouse', 
+                roomnumber='A1-204', 
+                phonenumber = 6462595690, 
+                email='guarintb193@potsdam.edu', 
+                privileges=2, 
+                trainingvalue=3, 
+                administrativevalue=4, 
+                operationalvalue=6, 
                 portablenumber=1
                 )
-        DBSession.add(user)
+        DBSession.add(user)    
         
-        cert = EMTcert(username='turdona193', certnumber=389992)
+        cert = Certifications(username='turdona193', certification='CPR', certnumber=None, expiration='02/2015')
         DBSession.add(cert)
-        cert = EMTcert(username='muehlbjp193', certnumber=380246)
+        cert = Certifications(username='turdona193', certification='EMT-Basic', certnumber=389992, expiration='06/2014')
         DBSession.add(cert)
-        cert = EMTcert(username='guarintb193', certnumber=384850)
+        cert = Certifications(username='muehlbjp193', certification='CPR', certnumber=None, expiration='05/2014')
+        DBSession.add(cert)
+        cert = Certifications(username='muehlbjp193', certification='EMT-Basic', certnumber=380246, expiration='06/2013')
+        DBSession.add(cert)
+        cert = Certifications(username='guarintb193', certification='CPR', certnumber=None, expiration='10/2014')
         DBSession.add(cert)        
-        
-        cert = Certifications(username='turdona193', certification='CPR', expiration='02/2015')
-        DBSession.add(cert)
-        cert = Certifications(username='turdona193', certification='EMT-Basic', expiration='06/2014')
-        DBSession.add(cert)
-        cert = Certifications(username='muehlbjp193', certification='CPR', expiration='05/2014')
-        DBSession.add(cert)
-        cert = Certifications(username='muehlbjp193', certification='EMT-Basic', expiration='06/2013')
-        DBSession.add(cert)
-        cert = Certifications(username='guarintb193', certification='CPR', expiration='10/2014')
-        DBSession.add(cert)        
-        cert = Certifications(username='guarintb193', certification='EMT-Basic', expiration='01/2014')
+        cert = Certifications(username='guarintb193', certification='EMT-Basic', certnumber=384850, expiration='01/2014')
         DBSession.add(cert)        
         
         status = OperationalStatus(operationalvalue=0, status='Inactive')
@@ -216,7 +208,7 @@ def main(argv = sys.argv):
         
         privilege = Privileges(
                 privilegevalue=0, 
-                privilege='Guest',
+                privilege='Guest', 
                 pyramidsecuritygroup='guest'
                 )
         DBSession.add(privilege)
@@ -235,11 +227,11 @@ def main(argv = sys.argv):
                 )
         DBSession.add(privilege)
 
-        event = Events(eventid=1,  startdatetime=datetime.datetime(2000,  1,  1),  enddatetime=datetime.datetime(2000,  1,  3),  name='Party',  notes='nothing',  privileges=0)
+        event = Events(eventid=1, startdatetime=datetime.datetime(2000, 1, 1), enddatetime=datetime.datetime(2000, 1, 3), name='Party', notes='nothing', privileges=0)
         DBSession.add(event);
-        event = Events(eventid=2,  startdatetime=datetime.datetime(2001,  2,  3),  enddatetime=datetime.datetime(2001,  10,  15),  name='Dance',  notes='not going',  privileges=0)
+        event = Events(eventid=2, startdatetime=datetime.datetime(2001, 2, 3), enddatetime=datetime.datetime(2001, 10, 15), name='Dance', notes='not going', privileges=0)
         DBSession.add(event);
-        event = Events(eventid=3,  startdatetime=datetime.datetime(2002,  5,  5),  enddatetime=datetime.datetime(2002,  5,  8),  name='Grad',  notes='we leave!',  privileges=0)
+        event = Events(eventid=3, startdatetime=datetime.datetime(2002, 5, 5), enddatetime=datetime.datetime(2002, 5, 8), name='Grad', notes='we leave!', privileges=0)
         DBSession.add(event);
 
         
