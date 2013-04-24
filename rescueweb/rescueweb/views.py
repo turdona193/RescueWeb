@@ -168,7 +168,8 @@ def memberinfo(request):
              permission = 'Member')
 def standbys(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Stand-Bys', main = main,
+    return dict(title='Stand-Bys',
+                main=main,
                 user=request.user) 
 
 @view_config(name='updates.json', renderer='json')
@@ -213,7 +214,6 @@ def coverage(request):
              permission = 'admin')
 def adduser(request):
     main = get_renderer('templates/template.pt').implementation()
-    headers = [column.name for column in Users.__table__.columns][:-5]
 
     if 'form.submitted' in request.params:
         newuser = Users('','','','','','','','','','','','','','','','','','','')
@@ -231,10 +231,16 @@ def adduser(request):
         newuser.roomnumber = request.params['roomnumber']
         newuser.phonenumber = request.params['phonenumber']
         newuser.email = request.params['email']
-        newuser.privileges = request.params['privileges']
-        newuser.trainingvalue = request.params['trainingvalue']
-        newuser.administrativevalue = request.params['administrativevalue']
-        newuser.operationalvalue = request.params['operationalvalue']
+        
+        list =  DBSession.query(Privileges).filter(Privileges.privilege ==request.params['privileges']).one()
+        newuser.privileges = list.privilegevalue
+        list =  DBSession.query(TrainingLevel).filter(TrainingLevel.traininglevel ==request.params['trainingvalue']).one()
+        newuser.trainingvalue = list.trainingvalue
+        list =  DBSession.query(AdministrativeStatus).filter(AdministrativeStatus.status ==request.params['administrativevalue']).one()
+        newuser.administrativevalue = list.administrativevalue
+        list =  DBSession.query(OperationalStatus).filter(OperationalStatus.status ==request.params['operationalvalue']).one()
+        newuser.operationalvalue = list.operationalvalue
+        
         DBSession.add(newuser)
         
             
@@ -249,7 +255,6 @@ def adduser(request):
     
     return dict(title = 'Add User',
                 main = main,
-                headers = headers,
                 privilegesOptions = privilegesOptions,
                 trainingOptions = trainingOptions,
                 administrativeOptions = administrativeOptions,
@@ -381,7 +386,54 @@ def editpages(request):
              permission = 'admin')
 def addeditlinks(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Add/Edit Links', main = main,
+    linkchosen = ''
+    selected = ''
+    message = 'Please select to Create a New Link or Edit/Delete an Existing one'
+    link = WebLinks("","")
+    if 'form.selected' in request.params:
+        selected = request.params['form.selected']
+        linkname = request.params['selectlink']
+        if selected == 'New' or linkname == 'New':
+            link = WebLinks("New","")
+            message = 'You have selected to Create a new link'
+        if selected == 'Load' and not linkname == 'New':
+            link = DBSession.query(WebLinks).filter_by(name=request.params['selectlink']).first()
+            linkchosen = link.name
+            message = 'You have selected to Edit an existing link'
+        if selected =='Delete':
+            if linkname == "New":
+                message = "Please Select a valid Link to delete/load or create a new link"
+            else:
+                link = DBSession.query(WebLinks).filter_by(name=request.params['selectlink']).first()
+                DBSession.delete(link)
+                message = 'You have selected to Delete {}'.format(link.name)
+
+    if 'form.submitted' in request.params:
+        name_of = request.params['name']
+        address_of=request.params['address']
+        if name_of and address_of:
+            link = DBSession.query(WebLinks).filter_by(name=name_of).first()
+            if link:
+                link.name=name_of
+                link.address=address_of
+            else:
+                link = WebLinks(name=name_of, address=address_of)
+            
+            DBSession.add(link)
+            message="{} has been entered something".format(name_of)
+        else:
+            message="Please enter something in both fields"
+            selected = request.params['selected']
+
+
+    links = DBSession.query(WebLinks).all()
+    linknames = ['New']+[weblink.name for weblink in links]
+    return dict(title='Add/Edit Links', 
+                main=main,
+                link=link,               #link to be edited and added to the database
+                linknames=linknames,     #name of all the links
+                selected = selected,     #If you chosen new,load,delete
+                message=message,         #Message to the User
                 user=request.user)
 
 @view_config(route_name='addeditdocuments', renderer='templates/addeditdocuments.pt',
