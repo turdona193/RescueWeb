@@ -39,7 +39,7 @@ Base = declarative_base()
 
 class Page(Base):
     """ The SQLAlchemy declarative model class for a Page object. """
-    __tablename__ = 'pages'
+    __tablename__ = 'Pages'
     name = Column(Text, primary_key = True)
     data = Column(Text)
 
@@ -48,7 +48,7 @@ class Page(Base):
         self.data = data
         
 class Announcements(Base):
-    __tablename__ = 'announcements'
+    __tablename__ = 'Announcements'
     key = Column(Integer, primary_key=True)
     header = Column(Text)
     text = Column(Text)
@@ -64,7 +64,7 @@ class Announcements(Base):
         self.posted = posted
         
 class Documents(Base):
-    __tablename__ = 'documents'
+    __tablename__ = 'Documents'
     name = Column(Text)
     fileName = Column(Text, primary_key = True)
     
@@ -73,7 +73,7 @@ class Documents(Base):
         self.fileName = fileName
         
         
-class users(Base):
+class Users(Base):
     __tablename__ = 'Users'
     username = Column(Text, primary_key=True)
     password = Column(Text)
@@ -90,7 +90,7 @@ class users(Base):
     phonenumber = Column(Integer)
     email = Column(Text)
     privileges = Column(Integer, ForeignKey('Privileges.privilegevalue'))
-    trainingvalue = Column(Integer, ForeignKey('TrainingLevels.trainingvalue'))
+    trainingvalue = Column(Integer, ForeignKey('TrainingLevel.trainingvalue'))
     administrativevalue = Column(Integer, ForeignKey('AdministrativeStatus.administrativevalue'))
     operationalvalue = Column(Integer, ForeignKey('OperationalStatus.operationalvalue'))
     portablenumber = Column(Integer)
@@ -118,7 +118,7 @@ class users(Base):
         self.operationalvalue = operationalvalue
         self.portablenumber = portablenumber
         
-class emtcert(Base):
+class EMTcert(Base):
     __tablename__ = 'EMTCertification'
     username = Column(Text, ForeignKey('Users.username'), primary_key=True)
     certnumber = Column(Integer)
@@ -127,7 +127,7 @@ class emtcert(Base):
         self.username = username
         self.certnumber = certnumber
         
-class certifications(Base):
+class Certifications(Base):
     __tablename__ = 'Certifications'
     username = Column(Text, ForeignKey('Users.username'), primary_key=True)
     certification = Column(Text, primary_key=True)
@@ -138,7 +138,7 @@ class certifications(Base):
         self.certification = certification
         self.expiration = expiration
         
-class operationalstatus(Base):
+class OperationalStatus(Base):
     __tablename__ = 'OperationalStatus'
     operationalvalue = Column(Integer, primary_key=True)
     status = Column(Text)
@@ -147,7 +147,7 @@ class operationalstatus(Base):
         self.operationalstatus = operationalvalue
         self.status = status
         
-class administrativestatus(Base):
+class AdministrativeStatus(Base):
     __tablename__ = 'AdministrativeStatus'
     administrativevalue = Column(Integer, primary_key=True)
     status = Column(Text)
@@ -156,8 +156,8 @@ class administrativestatus(Base):
         self.administrativestatus = administrativevalue
         self.status = status
         
-class eboardpositions(Base):
-    __tablename__ = 'Position'
+class EboardPositions(Base):
+    __tablename__ = 'EboardPosition'
     position = Column(Text, primary_key=True)
     username = Column(Text, ForeignKey('Users.username'))
 
@@ -165,8 +165,8 @@ class eboardpositions(Base):
         self.position = position
         self.username = username
       
-class traininglevel(Base):
-    __tablename__ = 'TrainingLevels'
+class TrainingLevel(Base):
+    __tablename__ = 'TrainingLevel'
     trainingvalue = Column(Integer, primary_key=True)
     traininglevel = Column(Text)
     
@@ -174,7 +174,7 @@ class traininglevel(Base):
         self.trainingvalue = trainingvalue
         self.traininglevel = traininglevel
         
-class privileges(Base):
+class Privileges(Base):
     __tablename__ = 'Privileges'
     privilegevalue = Column(Integer, primary_key=True)
     privilege = Column(Text)
@@ -185,7 +185,7 @@ class privileges(Base):
         self.privilege = privilege
         self.pyramidsecuritygroup = pyramidsecuritygroup
 
-class weblinks(Base):
+class WebLinks(Base):
     __tablename__ = 'Links'
     name = Column(Text, primary_key=True)
     address = Column(Text)
@@ -194,7 +194,7 @@ class weblinks(Base):
         self.name = name
         self.address = address
 
-class standBy(Base):
+class StandBy(Base):
     __tablename__ = 'StandBy'
     standbyid = Column(Integer, primary_key=True)
     event = Column(Text)
@@ -212,7 +212,7 @@ class standBy(Base):
         self.startdatetime = startdatetime
         self.enddatetime = enddatetime
     
-class standByPersonnel(Base):
+class StandByPersonnel(Base):
     __tablename__ = 'StandByPersonnel'
     standbyid = Column(Integer, ForeignKey('StandBy.standbyid'), primary_key=True)
     username = Column(Text, ForeignKey('Users.username'), primary_key=True)
@@ -227,7 +227,7 @@ class standByPersonnel(Base):
         self.coverrequested = coverrequested
         self.covered = covered
 
-class crewChiefSchedule(Base):
+class CrewChiefSchedule(Base):
     __tablename__ = 'CrewChiefSchedule'
     date = Column(Date, primary_key=True)
     ccusername = Column(Text, ForeignKey('Users.username'))
@@ -238,7 +238,7 @@ class crewChiefSchedule(Base):
         self.ccusername = ccusername
         self.pccusername = pccusername
 
-class events(Base):
+class Events(Base):
     __tablename__ = 'Events'
     eventid = Column(Integer, primary_key=True)
     startdatetime = Column(DateTime)
@@ -255,7 +255,7 @@ class events(Base):
         self.notes = notes
         self.privileges = privileges
 
-class attendees(Base):
+class Attendees(Base):
     __tablename__ = 'Attendees'
     eventid = Column(Integer, ForeignKey('Events.eventid'), primary_key=True)
     username = Column(Text, ForeignKey('Users.username'), primary_key=True)
@@ -264,7 +264,7 @@ class attendees(Base):
         self.eventid = eventid
         self.username = username
 
-class meetingMinutes(Base):
+class MeetingMinutes(Base):
     __tablename__ = 'MeetingMinutes'
     meetingindex = Column(Integer, primary_key=True)
     datetime = Column(DateTime)
@@ -273,7 +273,7 @@ class meetingMinutes(Base):
         self.meetingindex = meetingindex
         self.datetime = datetime
 
-class minutesContent(Base):
+class MinutesContent(Base):
     __tablename__ = 'MinutesContent'
     meetingindex = Column(Integer, ForeignKey('MinutesContent.meetingindex'), primary_key=True)
     header = Column(Text, primary_key=True)

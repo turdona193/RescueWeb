@@ -30,16 +30,16 @@ from .models import (
     Page,
     Announcements,
     Documents,
-    events,
-    users,
-    emtcert,
-    certifications,
-    privileges,
-    operationalstatus,
-    administrativestatus,
-    eboardpositions,
-    traininglevel,
-    weblinks,
+    Events,
+    Users,
+    EMTcert,
+    Certifications,
+    Privileges,
+    OperationalStatus,
+    AdministrativeStatus,
+    EboardPositions,
+    TrainingLevel,
+    WebLinks,
     )
 @view_config(route_name='home', renderer='templates/home.pt')
 def home(request):
@@ -68,7 +68,7 @@ def history(request):
 @view_config(route_name='personnel', renderer='templates/personnel.pt')
 def personnel(request):
     main = get_renderer('templates/template.pt').implementation()
-    page = DBSession.query(users).all()
+    page = DBSession.query(Users).all()
     
     headers = [column.name for column in page[0].__table__.columns]
 
@@ -95,7 +95,7 @@ def announcements(request):
 @view_config(route_name='events', renderer='templates/events.pt')
 def eventsV(request):
     main = get_renderer('templates/template.pt').implementation()
-    ev = DBSession.query(events).all()
+    ev = DBSession.query(Events).all()
     return dict(title = 'Events', main = main,
                 user=request.user,
                 ev = ev)
@@ -127,7 +127,7 @@ def contact(request):
 @view_config(route_name='links', renderer='templates/links.pt')
 def links(request):
     main = get_renderer('templates/template.pt').implementation()
-    page = DBSession.query(weblinks).all()
+    page = DBSession.query(WebLinks).all()
     
     headers = [column.name for column in page[0].__table__.columns]
     return dict(title = 'Links', main = main, links = page, header = headers,
@@ -201,10 +201,10 @@ def coverage(request):
              permission = 'admin')
 def adduser(request):
     main = get_renderer('templates/template.pt').implementation()
-    headers = [column.name for column in users.__table__.columns][:-5]
+    headers = [column.name for column in Users.__table__.columns][:-5]
 
     if 'form.submitted' in request.params:
-        newuser = users('','','','','','','','','','','','','','','','','','','')
+        newuser = Users('','','','','','','','','','','','','','','','','','','')
         newuser.username = request.params['username']
         newuser.password = request.params['password']
         newuser.firstname = request.params['firstname']
@@ -226,13 +226,13 @@ def adduser(request):
         DBSession.add(newuser)
         
             
-    Options = DBSession.query(privileges).all()
+    Options = DBSession.query(Privileges).all()
     privilegesOptions = [option.privilege for option in Options]
-    Options = DBSession.query(traininglevel).all()
+    Options = DBSession.query(TrainingLevel).all()
     trainingOptions = [option.traininglevel for option in Options]
-    Options = DBSession.query(administrativestatus).all()
+    Options = DBSession.query(AdministrativeStatus).all()
     administrativeOptions = [option.status for option in Options]
-    Options = DBSession.query(operationalstatus).all()
+    Options = DBSession.query(OperationalStatus).all()
     operationalOptions = [option.status for option in Options]
     
     return dict(title = 'Add User',
@@ -252,7 +252,7 @@ def edituser(request):
     userselected = ''
     
     if 'form.submitted' in request.params:
-        editeduser = users('','','','','','','','','','','','','','','','','','','')
+        editeduser = Users('','','','','','','','','','','','','','','','','','','')
         editeduser.username = request.params['username']
         editeduser.password = request.params['password']
         editeduser.firstname = request.params['firstname']
@@ -275,21 +275,21 @@ def edituser(request):
         
     if 'form.selected' in request.params:
         userselected = request.params['selecteduser']
-        edit_user  = DBSession.query(users).filter_by(username=userselected).first()
+        edit_user  = DBSession.query(Users).filter_by(username=userselected).first()
     else:
         userselected = ''
-        edit_user = users('','','','','','','','','','','','','','','','','','','')
+        edit_user = Users('','','','','','','','','','','','','','','','','','','')
 
-    Options = DBSession.query(privileges).all()
+    Options = DBSession.query(Privileges).all()
     privilegesOptions = [option.privilege for option in Options]
-    Options = DBSession.query(traininglevel).all()
+    Options = DBSession.query(TrainingLevel).all()
     trainingOptions = [option.traininglevel for option in Options]
-    Options = DBSession.query(administrativestatus).all()
+    Options = DBSession.query(AdministrativeStatus).all()
     administrativeOptions = [option.status for option in Options]
-    Options = DBSession.query(operationalstatus).all()
+    Options = DBSession.query(OperationalStatus).all()
     operationalOptions = [option.status for option in Options]
     
-    allusers = DBSession.query(users).order_by(users.username).all() 
+    allusers = DBSession.query(Users).order_by(Users.username).all() 
     allusernames = [auser.username for auser in allusers]
     
     return dict(title = 'Edit User',
@@ -312,7 +312,7 @@ def deleteuser(request):
     
     if 'form.submitted' in request.params:
             user_selected = request.params['delete_user']
-            delete_user = DBSession.query(users).filter_by(username=user_selected).first()
+            delete_user = DBSession.query(Users).filter_by(username=user_selected).first()
             if delete_user:
                 name = delete_user.username
                 DBSession.delete(delete_user)
@@ -320,7 +320,7 @@ def deleteuser(request):
             else:
                 message = "Please select a vaild username"
 
-    allusers = DBSession.query(users).order_by(users.username).all() 
+    allusers = DBSession.query(Users).order_by(Users.username).all() 
     allusernames = ["None"]+[auser.username for auser in allusers]
 
     return dict(title='Delete User', 
@@ -499,7 +499,7 @@ def login(request):
     if 'form.submitted' in request.params:
         login = request.params['login']
         password = request.params['password']
-        password_query = DBSession.query(users.password).filter(users.username == login).first()
+        password_query = DBSession.query(Users.password).filter(Users.username == login).first()
         if password_query:
             if password_query[0] == password:
                 headers = remember(request, login)

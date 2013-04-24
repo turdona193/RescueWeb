@@ -12,19 +12,19 @@ from pyramid.paster import (
 
 from ..models import (
     DBSession,
-    users,
-    events,
-    emtcert,
-    certifications,
-    operationalstatus,
-    administrativestatus,
-    eboardpositions,
-    traininglevel,
-    privileges,
+    Users,
+    Events,
+    EMTcert,
+    Certifications,
+    OperationalStatus,
+    AdministrativeStatus,
+    EboardPositions,
+    TrainingLevel,
+    Privileges,
     Page,
     Announcements,
     Documents,
-    weblinks,
+    WebLinks,
     Base,
     )
 
@@ -54,15 +54,15 @@ def main(argv = sys.argv):
         model = Documents(name='Standard Operating Guidelines', fileName='SOG.pdf')
         DBSession.add(model)
         
-        model = weblinks(name='Potsdam Rescue', address='http://www.pvrs.org/')
+        model = WebLinks(name='Potsdam Rescue', address='http://www.pvrs.org/')
         DBSession.add(model)
-        model = weblinks(name='NYS Department of Health', address='http://www.health.state.ny.us/')
+        model = WebLinks(name='NYS Department of Health', address='http://www.health.state.ny.us/')
         DBSession.add(model)
-        model = weblinks(name='FEMA Training Website', address='http://training.fema.gov/')
+        model = WebLinks(name='FEMA Training Website', address='http://training.fema.gov/')
         DBSession.add(model)
-        model = weblinks(name='North Country EMS', address='http://www.canton.edu/NCEMS')
+        model = WebLinks(name='North Country EMS', address='http://www.canton.edu/NCEMS')
         DBSession.add(model)
-        model = weblinks(name='ICS Courses', address='http://hamradio.arc.nasa.gov/ICScourses.html')
+        model = WebLinks(name='ICS Courses', address='http://hamradio.arc.nasa.gov/ICScourses.html')
         DBSession.add(model)
         
         model = Announcements(header = 'Remember Paperwork', text = 'Please remember to submit all paperwork', priority = 1, username = 'turdona193' , posted = datetime.datetime.today())
@@ -72,7 +72,7 @@ def main(argv = sys.argv):
         model = Announcements(header = 'Mixer', text = 'Hey Guys, There is a mixer happening Wednesday, Bring friends.', priority = 1, username = 'turdona193', posted = datetime.datetime.today())
         DBSession.add(model)
         
-        user = users(
+        user = Users(
                 username='turdona193',
                 password='nick',
                 firstname='Nicholas',
@@ -95,7 +95,7 @@ def main(argv = sys.argv):
                 )
         DBSession.add(user)
 
-        user = users(
+        user = Users(
                 username='muehlbjp193', 
                 password='jared',
                 firstname='Jared',
@@ -118,7 +118,7 @@ def main(argv = sys.argv):
                 )
         DBSession.add(user)
 
-        user = users(
+        user = Users(
                 username='guarintb193',
                 password='tim',
                 firstname='Tim',
@@ -141,106 +141,109 @@ def main(argv = sys.argv):
                 )
         DBSession.add(user)
         
-        cert = emtcert(username='turdona193', certnumber=389992)
+        cert = EMTcert(username='turdona193', certnumber=389992)
         DBSession.add(cert)
-        cert = emtcert(username='muehlbjp193', certnumber=380246)
+        cert = EMTcert(username='muehlbjp193', certnumber=380246)
         DBSession.add(cert)
-        cert = emtcert(username='guarintb193', certnumber=384850)
+        cert = EMTcert(username='guarintb193', certnumber=384850)
         DBSession.add(cert)        
         
-        cert = certifications(username='turdona193', certification='CPR', expiration='02/2015')
+        cert = Certifications(username='turdona193', certification='CPR', expiration='02/2015')
         DBSession.add(cert)
-        cert = certifications(username='turdona193', certification='EMT-Basic', expiration='06/2014')
+        cert = Certifications(username='turdona193', certification='EMT-Basic', expiration='06/2014')
         DBSession.add(cert)
-        cert = certifications(username='muehlbjp193', certification='CPR', expiration='05/2014')
+        cert = Certifications(username='muehlbjp193', certification='CPR', expiration='05/2014')
         DBSession.add(cert)
-        cert = certifications(username='muehlbjp193', certification='EMT-Basic', expiration='06/2013')
+        cert = Certifications(username='muehlbjp193', certification='EMT-Basic', expiration='06/2013')
         DBSession.add(cert)
-        cert = certifications(username='guarintb193', certification='CPR', expiration='10/2014')
+        cert = Certifications(username='guarintb193', certification='CPR', expiration='10/2014')
         DBSession.add(cert)        
-        cert = certifications(username='guarintb193', certification='EMT-Basic', expiration='01/2014')
+        cert = Certifications(username='guarintb193', certification='EMT-Basic', expiration='01/2014')
         DBSession.add(cert)        
         
-        status = operationalstatus(operationalvalue=0, status='Inactive')
+        status = OperationalStatus(operationalvalue=0, status='Inactive')
         DBSession.add(status)
-        status = operationalstatus(operationalvalue=1, status='Probationary')
+        status = OperationalStatus(operationalvalue=1, status='Probationary')
         DBSession.add(status)
-        status = operationalstatus(operationalvalue=2, status='Observational')
+        status = OperationalStatus(operationalvalue=2, status='Observational')
         DBSession.add(status)
-        status = operationalstatus(operationalvalue=3, status='Active')
+        status = OperationalStatus(operationalvalue=3, status='Active')
         DBSession.add(status)
-        status = operationalstatus(operationalvalue=4, status='Active-EMT')
+        status = OperationalStatus(operationalvalue=4, status='Active-EMT')
         DBSession.add(status)
-        status = operationalstatus(operationalvalue=5, status='ProbationaryCrewChief')
+        status = OperationalStatus(operationalvalue=5, status='ProbationaryCrewChief')
         DBSession.add(status)
-        status = operationalstatus(operationalvalue=6, status='CrewChief')
+        status = OperationalStatus(operationalvalue=6, status='CrewChief')
         DBSession.add(status)
-        status = operationalstatus(operationalvalue=7, status='MedicalDirector')
+        status = OperationalStatus(operationalvalue=7, status='MedicalDirector')
         DBSession.add(status)
       
-        status = administrativestatus(administrativevalue=0, status='Inactive')
+        status = AdministrativeStatus(administrativevalue=0, status='Inactive')
         DBSession.add(status)
-        status = administrativestatus(administrativevalue=1, status='Probationary')
+        status = AdministrativeStatus(administrativevalue=1, status='Probationary')
         DBSession.add(status)
-        status = administrativestatus(administrativevalue=2, status='Observational')
+        status = AdministrativeStatus(administrativevalue=2, status='Observational')
         DBSession.add(status)
-        status = administrativestatus(administrativevalue=3, status='Active')
+        status = AdministrativeStatus(administrativevalue=3, status='Active')
         DBSession.add(status)
-        status = administrativestatus(administrativevalue=4, status='EBoard')
+        status = AdministrativeStatus(administrativevalue=4, status='EBoard')
         DBSession.add(status)
-        status = administrativestatus(administrativevalue=5, status='HonorRoll')
+        status = AdministrativeStatus(administrativevalue=5, status='HonorRoll')
         DBSession.add(status)
-        status = administrativestatus(administrativevalue=6, status='Advisor')
+        status = AdministrativeStatus(administrativevalue=6, status='Advisor')
         DBSession.add(status)
-        status = administrativestatus(administrativevalue=7, status='MedicalDirector')
+        status = AdministrativeStatus(administrativevalue=7, status='MedicalDirector')
         DBSession.add(status)
 
         
-        position = eboardpositions(position='Chief', username='guarintb193')
+        position = EboardPositions(position='Chief', username='guarintb193')
         DBSession.add(position)
-        position = eboardpositions(position='Parliamentarian', username='muehlbjp193')
+        position = EboardPositions(position='Parliamentarian', username='muehlbjp193')
         DBSession.add(position)
         
-        training = traininglevel(trainingvalue=0, traininglevel='none')
+        training = TrainingLevel(trainingvalue=0, traininglevel='none')
         DBSession.add(training)
-        training = traininglevel(trainingvalue=1, traininglevel='CPR')
+        training = TrainingLevel(trainingvalue=1, traininglevel='CPR')
         DBSession.add(training)
-        training = traininglevel(trainingvalue=2, traininglevel='EMT-Student')
+        training = TrainingLevel(trainingvalue=2, traininglevel='EMT-Student')
         DBSession.add(training)
-        training = traininglevel(trainingvalue=3, traininglevel='EMT-Basic')
+        training = TrainingLevel(trainingvalue=3, traininglevel='EMT-Basic')
         DBSession.add(training)
-        training = traininglevel(trainingvalue=4, traininglevel='AEMT-Critical Care')
+        training = TrainingLevel(trainingvalue=4, traininglevel='AEMT-Critical Care')
         DBSession.add(training)
-        training = traininglevel(trainingvalue=5, traininglevel='AEMT-Paramedic')
+        training = TrainingLevel(trainingvalue=5, traininglevel='AEMT-Paramedic')
         DBSession.add(training)
         
-        privilege = privileges(
+        privilege = Privileges(
                 privilegevalue=0, 
                 privilege='Guest',
                 pyramidsecuritygroup='guest'
                 )
         DBSession.add(privilege)
 
-        privilege = privileges(
+        privilege = Privileges(
                 privilegevalue=1, 
                 privilege='Member', 
                 pyramidsecuritygroup='member'
                 )
         DBSession.add(privilege)
 
-        privilege = privileges(
+        privilege = Privileges(
                 privilegevalue=2, 
                 privilege='Admin', 
                 pyramidsecuritygroup='admin'
                 )
         DBSession.add(privilege)
 
-        event = events(eventid=1,  startdatetime=datetime.datetime(2000,  1,  1),  enddatetime=datetime.datetime(2000,  1,  3),  name='Party',  notes='nothing',  privileges=0)
+        event = Events(eventid=1,  startdatetime=datetime.datetime(2000,  1,  1),  enddatetime=datetime.datetime(2000,  1,  3),  name='Party',  notes='nothing',  privileges=0)
         DBSession.add(event);
-        event = events(eventid=2,  startdatetime=datetime.datetime(2001,  2,  3),  enddatetime=datetime.datetime(2001,  10,  15),  name='Dance',  notes='not going',  privileges=0)
+        event = Events(eventid=2,  startdatetime=datetime.datetime(2001,  2,  3),  enddatetime=datetime.datetime(2001,  10,  15),  name='Dance',  notes='not going',  privileges=0)
         DBSession.add(event);
-        event = events(eventid=3,  startdatetime=datetime.datetime(2002,  5,  5),  enddatetime=datetime.datetime(2002,  5,  8),  name='Grad',  notes='we leave!',  privileges=0)
+        event = Events(eventid=3,  startdatetime=datetime.datetime(2002,  5,  5),  enddatetime=datetime.datetime(2002,  5,  8),  name='Grad',  notes='we leave!',  privileges=0)
         DBSession.add(event);
+
+        
+        
 
         model = Page(name='Home', data=("""Welcome to the SUNY Potsdam Campus Rescue Squad website! </br>
 Currently the CRS staff consists of approximately 22 members, many of which have completed the NYS EMT Curriculum. Also, many of the members are currently enrolled in the EMT basic class. </br>

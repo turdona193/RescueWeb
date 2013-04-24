@@ -4,8 +4,8 @@ from pyramid.security import (
 
 from .models import (
     DBSession,
-    users,
-    privileges,
+    Users,
+    Privileges,
     )
 
 def get_user(request):
@@ -14,11 +14,11 @@ def get_user(request):
     if userid:
         # This should return None if the user doesn't exist in the database
         return DBSession.query(
-                    users.username, 
-                    privileges.privilege,
-                    privileges.pyramidsecuritygroup).\
-                    join(privileges).\
-                    filter(users.username == userid[0]).first()
+                    Users.username, 
+                    Privileges.privilege,
+                    Privileges.pyramidsecuritygroup).\
+                    join(Privileges).\
+                    filter(Users.username == userid[0]).first()
 
 def groupfinder(userid, request):
     """Returns every security group a username is associated with.
