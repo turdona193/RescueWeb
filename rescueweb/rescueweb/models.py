@@ -197,9 +197,8 @@ class StandBy(Base):
     startdatetime = Column(DateTime)
     enddatetime = Column(DateTime)
 
-    def __init__(self, standbyid, event, location, notes, startdatetime,
+    def __init__(self, event, location, notes, startdatetime,
                  enddatetime):
-        self.standbyid = standbyid
         self.event = event
         self.location = location
         self.notes = notes
