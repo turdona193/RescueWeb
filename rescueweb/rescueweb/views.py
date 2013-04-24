@@ -40,6 +40,7 @@ from .models import (
     EboardPositions,
     TrainingLevel,
     WebLinks,
+    StandBy,
     )
 
 
@@ -93,16 +94,18 @@ def announcements(request):
             title='Announcements', 
             main=main,
             announcements=page, headers=headers,
-                user=request.user)
+            user=request.user)
     
 @view_config(route_name='events', renderer='templates/events.pt')
 def eventsV(request):
     main = get_renderer('templates/template.pt').implementation()
     ev = DBSession.query(Events).all()
-    return dict(title = 'Events', main = main,
-                user=request.user,
-                ev = ev)
-
+    return dict(
+            title='Events', 
+            main=main,
+            user=request.user,
+            ev=ev
+            )
 
 @view_config(route_name='pictures', renderer='templates/pictures.pt')
 def pictures(request):
@@ -162,24 +165,32 @@ def memberinfo(request):
     return dict(title = 'Member Information', main = main,
                 user=request.user)
     
-
-
 @view_config(route_name='standbys', renderer='templates/standbys.pt',
-             permission = 'Member')
+             permission='Member')
 def standbys(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Stand-Bys', main = main,
-                user=request.user) 
 
-@view_config(name='updates.json', renderer='json')
+
+    return dict(
+            title='Stand-Bys', 
+            main=main,
+            user=request.user
+            )
+
+@view_config(name='event_updates.json', renderer='json')
 def updates_view(self):
-    return [
-        random.randint(0,100),
-        random.randint(0,100),
-        random.randint(0,100),
-        random.randint(0,100),
-        888,
-    ]
+    event_query = DBSession.query(StandBy).all()
+    for event in event_query:
+        print(event.startdatetime, event.enddatetime)
+    return [ ('{}/{}/{}'.format(
+        event.startdatetime.month, 
+        event.startdatetime.day,
+        event.startdatetime.year
+        ),
+        '{}/{}/{}'.format(
+            event.enddatetime.month,
+            event.enddatetime.day, 
+            event.enddatetime.year)) for event in event_query ]
 
 @view_config(route_name='duty_crew_calendar',
              renderer='templates/duty_crew_calendar.pt', permission = 'Member')

@@ -25,6 +25,7 @@ from ..models import (
     Documents, 
     WebLinks, 
     Base, 
+    StandBy,
     )
 
 def usage(argv):
@@ -265,7 +266,6 @@ def main(argv = sys.argv):
         DBSession.add_all(
                 [
                     Events(
-                        eventid=1, 
                         startdatetime=datetime.datetime(2000, 1, 1),
                         enddatetime=datetime.datetime(2000, 1, 3),
                         name='Party',
@@ -274,7 +274,6 @@ def main(argv = sys.argv):
                         ),
 
                     Events(
-                        eventid=2,
                         startdatetime=datetime.datetime(2001, 2, 3),
                         enddatetime=datetime.datetime(2001, 10, 15),
                         name='Dance',
@@ -283,13 +282,42 @@ def main(argv = sys.argv):
                         ),
 
                     Events(
-                        eventid=3,
                         startdatetime=datetime.datetime(2002, 5, 5),
                         enddatetime=datetime.datetime(2002, 5, 8),
                         name='Grad',
                         notes='we leave!',
                         privileges=0
                         )
+                ])
+
+        DBSession.add_all(
+                [
+                    StandBy(
+                        event='5K run',
+                        location='Maxci Field House',
+                        notes='''This is a very important standby! A lot of people
+                        are bound to get hurt!''',
+                        startdatetime=datetime.datetime(2013, 4, 15),
+                        enddatetime=datetime.datetime(2013, 4, 15)
+                        ),
+
+                    StandBy(
+                        event='Relay for Life',
+                        location='Stillman Hall',
+                        notes='''Another event where an ambulance is surely
+                        needed!''',
+                        startdatetime=datetime.datetime(2013, 4, 20),
+                        enddatetime=datetime.datetime(2013, 4, 20)
+                        ),
+
+                    StandBy(
+                        event='Bake Sale',
+                        location='Townhouse J4',
+                        notes='''Would you really trust a Bake Sale at Townhouse
+                        J4?''',
+                        startdatetime=datetime.datetime(2013, 4, 1),
+                        enddatetime=datetime.datetime(2013, 4, 1)
+                        ),
                 ])
 
         DBSession.add_all(

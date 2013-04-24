@@ -22,6 +22,11 @@ li.menuhover span, li.menuhover li.menuhover span {color:#fff; background:#4876b
 
 .main {font:13px Verdana,Arial; color:#000; background:#fff; margin-left:10%; margin-right:10%; margin-top:10px; margin-bottom:100px}
 
+td.highlight {
+    background-color: red;
+    border: 1px blue solid;
+}
+
 .footer {
 width:100%;
 height:20px;

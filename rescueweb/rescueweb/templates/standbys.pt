@@ -3,35 +3,50 @@
         <p>This is the ${title} page!</p>
         <p>You are all on stand-by, or not, that is all.</p>
         <script>
+        // List that gets populated with the Standby dates
+        var dates = [];
         $(function() {
             function get_updates () {
-                $.getJSON('/updates.json', function(data) {
+                $.getJSON('/event_updates.json', function(data) {
                     // Add random numbers to the unordered list
                     var target = $('#sidebar ul');
                     $.each(data, function (key, val) {
-                        target.append('<li>Update #' + val + '</li>');
+                        // Push the start date and end date onto the dates array
+                        dates.push(val[0]);
+                        dates.push(val[1]);
                     });
 
                     // Display the calendar
                     $('#datepicker').datepicker( {
                         onSelect: function(date) {
                             alert(date);
-                        }
+                        },
+                        beforeShowDay: highlightDays
                     });
+
+                    function highlightDays(date) {
+                        for (var i = 0; i < dates.length; i++) {
+                            if (new Date(dates[i]).toString() == date.toString())
+                                return [true, 'highlight'];
+                        }
+
+                        return [true, ''];
+                    }
                 });
             }
+
+            get_updates();
 
             $('#sidebar a').click(function () {
                 get_updates();
             });
 
-            get_updates();
         });
+
         $('#sidebar a').click(function () {
             get_updates();
         });
 
-        get_updates();
         </script>
         <div id="sidebar">
             <h2>Updates</h2>
