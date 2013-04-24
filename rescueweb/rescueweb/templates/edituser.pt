@@ -63,8 +63,8 @@
 	  								</div>
 							    </select><br/>	    
 				
-				
-	          <input type="submit" name="form.submitted" value="Add User"/>
+				<input type="hidden" name="userselected" value="${userselected}" />	
+	          <input type="submit" name="form.submitted" value="Edit User" />
 	        </form>
 		</span>
     </div>

@@ -1,5 +1,6 @@
 import calendar
 import datetime
+import random
 
 
 from pyramid.response import Response
@@ -32,7 +33,6 @@ from .models import (
     Documents,
     Events,
     Users,
-    EMTcert,
     Certifications,
     Privileges,
     OperationalStatus,
@@ -41,6 +41,9 @@ from .models import (
     TrainingLevel,
     WebLinks,
     )
+
+
+
 @view_config(route_name='home', renderer='templates/home.pt')
 def home(request):
     main = get_renderer('templates/template.pt').implementation()
@@ -168,6 +171,15 @@ def standbys(request):
     return dict(title = 'Stand-Bys', main = main,
                 user=request.user) 
 
+@view_config(name='updates.json', renderer='json')
+def updates_view(self):
+    return [
+        random.randint(0,100),
+        random.randint(0,100),
+        random.randint(0,100),
+        random.randint(0,100),
+        888,
+    ]
 
 @view_config(route_name='duty_crew_calendar',
              renderer='templates/duty_crew_calendar.pt', permission = 'Member')
@@ -249,29 +261,37 @@ def adduser(request):
              permission = 'admin')
 def edituser(request):
     main = get_renderer('templates/template.pt').implementation()
-    userselected = ''
+    if 'userselected' in request.params:
+        userselected = request.params['userselected']
+    else:
+        userselected = ''
     
     if 'form.submitted' in request.params:
-        editeduser = Users('','','','','','','','','','','','','','','','','','','')
-        editeduser.username = request.params['username']
-        editeduser.password = request.params['password']
-        editeduser.firstname = request.params['firstname']
-        editeduser.middlename = request.params['middlename']
-        editeduser.lastname = request.params['lastname']
-        editeduser.birthday = datetime.date(int(request.params['year']),int(request.params['month']),int(request.params['day']))
-        editeduser.street = request.params['street']
-        editeduser.city = request.params['city']
-        editeduser.state = request.params['state']
-        editeduser.zipcode = request.params['zipcode']
-        editeduser.residence = request.params['residence']
-        editeduser.roomnumber = request.params['roomnumber']
-        editeduser.phonenumber = request.params['phonenumber']
-        editeduser.email = request.params['email']
-        editeduser.privileges = request.params['privileges']
-        editeduser.trainingvalue = request.params['trainingvalue']
-        editeduser.administrativevalue = request.params['administrativevalue']
-        editeduser.operationalvalue = request.params['operationalvalue']
-        DBSession.add(editeduser)
+        userselected = request.params['userselected']
+        edit_user  = DBSession.query(Users).filter_by(username=userselected).first()
+        edit_user.username = request.params['username']
+        edit_user.password = request.params['password']
+        edit_user.firstname = request.params['firstname']
+        edit_user.middlename = request.params['middlename']
+        edit_user.lastname = request.params['lastname']
+        edit_user.birthday = datetime.date(int(request.params['year']),int(request.params['month']),int(request.params['day']))
+        edit_user.street = request.params['street']
+        edit_user.city = request.params['city']
+        edit_user.state = request.params['state']
+        edit_user.zipcode = request.params['zipcode']
+        edit_user.residence = request.params['residence']
+        edit_user.roomnumber = request.params['roomnumber']
+        edit_user.phonenumber = request.params['phonenumber']
+        edit_user.email = request.params['email']
+        list =  DBSession.query(Privileges).filter(Privileges.privilege ==request.params['privileges']).one()
+        edit_user.privileges = list.privilegevalue
+        list =  DBSession.query(TrainingLevel).filter(TrainingLevel.traininglevel ==request.params['trainingvalue']).one()
+        edit_user.trainingvalue = list.trainingvalue
+        list =  DBSession.query(AdministrativeStatus).filter(AdministrativeStatus.status ==request.params['administrativevalue']).one()
+        edit_user.administrativevalue = list.administrativevalue
+        list =  DBSession.query(OperationalStatus).filter(OperationalStatus.status ==request.params['operationalvalue']).one()
+        edit_user.operationalvalue = list.operationalvalue
+        DBSession.add(edit_user)
         
     if 'form.selected' in request.params:
         userselected = request.params['selecteduser']
@@ -388,11 +408,27 @@ def addeditpictures(request):
 
 
 
-@view_config(route_name='editportableNumbers', renderer='templates/editportableNumbers.pt',
+@view_config(route_name='editportablenumbers', renderer='templates/editportablenumbers.pt',
              permission = 'admin')
-def editportableNumbers(request):
+def editportablenumbers(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Edit Portable Numbers', main = main,
+    
+    if 'form.submitted' in request.params:
+        allusers = DBSession.query(Users).order_by(Users.username).all() 
+        for changeuser in allusers:
+            i = int(request.params[changeuser.username])
+            if i:
+                changeuser.portablenumber = i
+                DBSession.add(changeuser)
+                print("should have Changed")
+            print(i)
+        
+    allusers = DBSession.query(Users).order_by(Users.username).all() 
+    allusernames = [[auser.username , auser.portablenumber] for auser in allusers]
+    
+    return dict(title = 'Edit Portable Numbers', 
+                main = main,
+                allusernames = allusernames,
                 user=request.user)
 
 @view_config(route_name='addeditcertifications', renderer='templates/addeditcertifications.pt',
@@ -413,7 +449,9 @@ def addeditstandby(request):
              permission = 'admin')
 def editdutycrew(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Edit Duty Crew', main = main,
+     
+    return dict(title = 'Edit Duty Crew', 
+                main = main,
                 user=request.user)
 
 @view_config(route_name='addeditannouncements', renderer='templates/addeditannouncements.pt',

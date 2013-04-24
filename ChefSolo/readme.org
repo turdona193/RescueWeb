@@ -1,0 +1,64 @@
+* Introducing Chef Solo
+** Chef is an automated tool for provisioning and deploying servers
+*** Provisioning is ensuring correct software and configurations
+*** Deployment means putting a given revision of code up
+** In its native state, Chef is a client/server based package
+*** Extensive authentication required
+*** Deploying machine runs client/configured machines attach
+*** Pull oriented
+** Chef Solo instead runs from a local directory full of files
+*** Copy over a Chef configuration
+*** Run Chef Solo and the recipes specified are run
+*** Push oriented
+** Downsides of Chef (for us)
+*** Written (including recipes) in Ruby
+*** Has a particular view of how an application is deployed
+**** Far from simple
+
+* Getting Started
+** Copy the ChefSolo subtree into your project. 
+*** Directory structure is simple(ish)
+- <Root of Project>
+  readme.org                 this file
+  deploy.sh                  local shell script to kick off install
+  - chef                     copied to remote machine
+    install.sh               shell script run on remote for git + ruby
+    solo.json                json description of the application recipe
+    solo.rb                  
+    - cookbooks
+      - cis420
+        - files
+          - default
+            wrap-ssh4git.sh  wrapper to let git use an ssh-key
+            serverKey        private key for cs.potsdam.edu
+            serverKey.pub    public key matching above
+        - recipes
+          default.rb         recipe for installing cis420 stuff
+          metadata.rb        list of recipe dependencies
+      - build-essential      required by python
+      - yum                  required by python
+      - python               required by cis420
+  - src
+    ... source code for project ...
+
+* Installing the scripts
+** Copy the ChefSolo (and all subdirectories) into your project
+ChefSolo
+- deploy.sh
+- install.sh
+- solo.json
+- solo.rb
+- cookbooks
+  - cis420
+    - recipes
+      - default.rb
+
+* Launching the application
+in root directory
+cd myapp
+source bin/activate
+cd teamNothing/computers
+python setup.py develop
+../../bin/initialize_computers_db development.ini
+../../bin/pserve development.ini
+

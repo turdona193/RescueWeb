@@ -1,0 +1,72 @@
+* Introducing Chef Solo
+** Chef is an automated tool for provisioning and deploying servers
+*** Provisioning is ensuring correct software and configurations
+*** Deployment means putting a given revision of code up
+** In its native state, Chef is a client/server based package
+*** Extensive authentication required
+*** Deploying machine runs client/configured machines attach
+*** Pull oriented
+** Chef Solo instead runs from a local directory full of files
+*** Copy over a Chef configuration
+*** Run Chef Solo and the recipes specified are run
+*** Push oriented
+** Downsides of Chef (for us)
+*** Written (including recipes) in Ruby
+*** Has a particular view of how an application is deployed
+**** Far from simple
+
+
+* Getting Started
+** Copy the ChefSolo subtree into your project. 
+*** Directory structure is simple(ish)
+- <Root of Project>
+  - deploy.sh
+  - chef
+  - src
+
+* Installing the scripts
+** Copy the ChefSolo (and all subdirectories) into your project
+ChefSolo
+- deploy.sh
+- install.sh
+- solo.json
+- solo.rb
+- cookbooks
+  - cis420
+    - recipes
+      - default.rb
+      - metadata.rb
+
+* Creating and formatting a data disk
+** Using Elastic Block Store 
+** EBS Volumes on EC2 Console
+*** Create a standard volume of the given size
+*** Specify appropriate region if necessary
+*** After creation, associate volume with running machine
+**** This could also have been done during creation of instance
+     so long as volume existed
+** A newly created EBS volume is a brand-new, unpartitioned, unformatted disk
+*** Assume it is associated with /dev/xvdf on the running instance
+*** Partition and format
+http://support.rightscale.com/06-FAQs/FAQ_0012_-_How_do_I_partition,_format_and_mount_an_EBS_volume%3F
+**** % sudo fdisk /dev/xvdf
+***** m - for menu
+***** n - add New partition
+***** 1 - for first partition
+***** <Enter> - Accept beginning of disk
+***** <Enter> - Accept end of disk
+***** w - write partition table and exit
+**** sudo mkfs -t ext4 /dev/xvdf1
+** Make a mount point (if necessary)
+*** sudo mkdir -p /mnt/data_crs
+** Mount a formatted disk
+*** sudo mount /dev/xvdf /mnt/data_crs
+
+* Using an Elastic IP
+** An Elastic IP is a "fixed" IP address for your running machine
+** An Elastic IP costs money
+** An Elastic IP can be associated with multiple VMs over its life
+** Click Elastic IPs on EC2 console
+*** Request an IP
+*** Attach to running instance
+*** Can detach or attach to other instance through interface
