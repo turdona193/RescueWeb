@@ -40,6 +40,9 @@ from .models import (
     TrainingLevel,
     WebLinks,
     )
+
+
+
 @view_config(route_name='home', renderer='templates/home.pt')
 def home(request):
     main = get_renderer('templates/template.pt').implementation()
@@ -270,10 +273,14 @@ def edituser(request):
         edit_user.roomnumber = request.params['roomnumber']
         edit_user.phonenumber = request.params['phonenumber']
         edit_user.email = request.params['email']
-        edit_user.privileges = request.params['privileges']
-        edit_user.trainingvalue = request.params['trainingvalue']
-        edit_user.administrativevalue = request.params['administrativevalue']
-        edit_user.operationalvalue = request.params['operationalvalue']
+        list =  DBSession.query(Privileges).filter(Privileges.privilege ==request.params['privileges']).one()
+        edit_user.privileges = list.privilegevalue
+        list =  DBSession.query(TrainingLevel).filter(TrainingLevel.traininglevel ==request.params['trainingvalue']).one()
+        edit_user.trainingvalue = list.trainingvalue
+        list =  DBSession.query(AdministrativeStatus).filter(AdministrativeStatus.status ==request.params['administrativevalue']).one()
+        edit_user.administrativevalue = list.administrativevalue
+        list =  DBSession.query(OperationalStatus).filter(OperationalStatus.status ==request.params['operationalvalue']).one()
+        edit_user.operationalvalue = list.operationalvalue
         DBSession.add(edit_user)
         
     if 'form.selected' in request.params:
