@@ -1,7 +1,15 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
         <p>
-          ${title}
+          	<form method="post">
+        		Delete User: <select name="delete_user">
+							    	<div tal:repeat = "user allusernames">
+  										<option value="${user}">${user}</option>
+  									</div>
+							   </select> <br/><br/>
+				<input type="submit" name="form.submitted" value="Delete"/><br/>
+			</form>
+			${message}
         </p>
     </div>
 </div>

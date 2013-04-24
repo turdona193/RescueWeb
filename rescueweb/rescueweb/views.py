@@ -224,7 +224,8 @@ def adduser(request):
         newuser.administrativevalue = request.params['administrativevalue']
         newuser.operationalvalue = request.params['operationalvalue']
         DBSession.add(newuser)
-    
+        
+            
     Options = DBSession.query(privileges).all()
     privilegesOptions = [option.privilege for option in Options]
     Options = DBSession.query(traininglevel).all()
@@ -307,7 +308,25 @@ def edituser(request):
              permission = 'admin')
 def deleteuser(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Delete User', main = main,
+    message = ''
+    
+    if 'form.submitted' in request.params:
+            user_selected = request.params['delete_user']
+            delete_user = DBSession.query(users).filter_by(username=user_selected).first()
+            if delete_user:
+                name = delete_user.username
+                DBSession.delete(delete_user)
+                message = "{} has been deleted".format(name)
+            else:
+                message = "Please select a vaild username"
+
+    allusers = DBSession.query(users).order_by(users.username).all() 
+    allusernames = ["None"]+[auser.username for auser in allusers]
+
+    return dict(title='Delete User', 
+                main=main,
+                allusernames=allusernames,
+                message=message,
                 user=request.user)
     
 
@@ -480,9 +499,9 @@ def login(request):
     if 'form.submitted' in request.params:
         login = request.params['login']
         password = request.params['password']
-        if DBSession.query(users.username).filter(users.username.like(login)).count() > 0:
-            password_query = DBSession.query(users.password).filter(users.username == login).first()[0]
-            if password_query == password:
+        password_query = DBSession.query(users.password).filter(users.username == login).first()
+        if password_query:
+            if password_query[0] == password:
                 headers = remember(request, login)
                 return HTTPFound(location = came_from,
                              headers = headers)

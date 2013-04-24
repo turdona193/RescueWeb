@@ -2,7 +2,7 @@
     <div metal:fill-slot="content">
     
            	<form method="post">
-        		Announcements: <select name="selecteduser">
+        		Select User: <select name="selecteduser">
 							    	<div tal:repeat = "user users">
 							    		<span tal:condition="edit_user.username==user">
   											<option value="${user}" selected>${user}</option>

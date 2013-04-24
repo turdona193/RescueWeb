@@ -12,6 +12,7 @@
 			Day: <input type="text" name="day" value=""/><br/>
 			Month: <input type="text" name="month" value=""/><br/>
 			Year: <input type="text" name="year" value=""/><br/>
+			
 			Street: <input type="text" name="street" value=""/><br/>
 			City: <input type="text" name="city" value=""/><br/>
 			State: <input type="text" name="state" value=""/><br/>
