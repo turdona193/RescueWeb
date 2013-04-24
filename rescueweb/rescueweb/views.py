@@ -1,5 +1,6 @@
 import calendar
 import datetime
+import random
 
 
 from pyramid.response import Response
@@ -167,6 +168,15 @@ def standbys(request):
     return dict(title = 'Stand-Bys', main = main,
                 user=request.user) 
 
+@view_config(name='updates.json', renderer='json')
+def updates_view(self):
+    return [
+        random.randint(0,100),
+        random.randint(0,100),
+        random.randint(0,100),
+        random.randint(0,100),
+        888,
+    ]
 
 @view_config(route_name='duty_crew_calendar',
              renderer='templates/duty_crew_calendar.pt', permission = 'Member')
