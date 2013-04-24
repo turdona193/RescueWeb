@@ -16,8 +16,10 @@
 		
 	<table border=3 bordercolor=8C0303 cellspacing=3 cellpadding=3>
 	<tr>
-		<th colspan="7" align=center tal:content= "month"> </th></tr>
-		<tr>
+	     <th colspan="7" align=center tal:content= "month"> 
+	</tr>
+	
+	<tr>
 	    <th align=center>Sunday</th>
 	    <th align=center>Monday</th>
 	    <th align=center>Tuesday</th>
@@ -26,20 +28,21 @@
 	    <th align=center>Friday</th>
 	    <th align=center>Saturday</th>
 	</tr>
+	
 	<tr>
 	   <div tal:repeat = " i range(start_day)" >
 	       <td> </td>
 	   </div>
 	   <div tal:repeat= " day range(1, 8 - start_day)" >
-	       <td align=center tal:content= "repeat.day.number"> </td>
+	       <td align=center tal:content= "repeat.day.number">
 	   </div>
-	 </tr>
+	</tr>
 	<tr tal:repeat= "week range(1, int((no_of_days - 6 + start_day)/4) +1 )">
 	     <div tal:repeat="day range(week*7 - start_day, min((week+1) *7-start_day, no_of_days))">
-	         <td align=center tal:content="day+1"> </td>
+	         <td align=center tal:content="day+1">
 	     </div>
 	</tr>
-         </table>
+        </table>
 	
 	</div>
 	</div>
