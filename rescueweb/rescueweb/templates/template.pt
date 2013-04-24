@@ -25,6 +25,27 @@
   <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
   <link rel="stylesheet" href="/resources/demos/style.css" />
   <!-- End JQuery datepicker stuff -->
+
+  <!-- Alternating table colors script -->
+	<script type="text/javascript">
+	function altRows(id){
+	if(document.getElementsByTagName){  	
+		var table = document.getElementById(id);  
+		var rows = table.getElementsByTagName("tr"); 
+		for(i = 0; i < rows.length; i++){          
+			if(i % 2 == 0){
+				rows[i].className = "evenrowcolor";
+			}else{
+				rows[i].className = "oddrowcolor";
+			}      
+		}
+	}
+	}
+	window.onload=function(){
+	altRows('alternatecolor');
+	}
+</script>
+<!-- End Alternating table colors script -->
 </head>
 
 <body>

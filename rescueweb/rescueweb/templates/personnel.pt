@@ -1,11 +1,42 @@
+<head>
+<style type="text/css">
+
+table.altrowstable {
+	font-family: verdana,arial,sans-serif;
+	font-size:11px;
+	color:#333333;
+	border-width: 1px;
+	border-color: #a9c6c9;
+	border-collapse: collapse;
+}
+table.altrowstable th {
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #a9c6c9;
+}
+table.altrowstable td {
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #a9c6c9;
+}
+.oddrowcolor{
+	background-color:#d4e3e5;
+}
+.evenrowcolor{
+	background-color:#c3dde0;
+}
+</style>
+</head>
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-
-          <table>
+          <table class="altrowstable" id="alternatecolor">
 			<tr> 
-				<div tal:repeat = "header headers">
-            		<th>${header}</th>
-				</div>
+				<th>User</th> <th>Password</th> <th>First</th> <th>Middle</th> <th>Last</th> <th>Birthday</th>
+				<th>Street</th> <th>City</th> <th>State</th> <th>Zip</th> <th>Residence</th> <th>Room</th>
+				<th>Phone</th> <th>EMail</th> <th>Priv.</th> <th>Training</th> <th>Admin</th> <th>Operational</th>
+				<th>Portable</th>
 			</tr>
             <div tal:repeat="content personnel">
               <tr>
@@ -15,7 +46,5 @@
               </tr>
             </div>
           </table>
-
-
     </div>
 </div>
