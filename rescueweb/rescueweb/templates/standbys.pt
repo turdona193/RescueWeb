@@ -2,5 +2,49 @@
     <div metal:fill-slot="content">
         <p>This is the ${title} page!</p>
         <p>You are all on stand-by, or not, that is all.</p>
+        <script>
+        $(function() {
+        });
+        $(function() {
+            function get_updates () {
+                $.getJSON('/updates.json', function(data) {
+                    // Add random numbers to the unordered list
+                    var target = $('#sidebar ul');
+                    $.each(data, function (key, val) {
+                        target.append('<li>Update #' + val + '</li>');
+                    });
+
+                    // Display the calendar
+                    $('#datepicker').datepicker( {
+                        onSelect: function(date) {
+                            alert(date);
+                        },
+                        selectWeek: true,
+                        startDate: '01/01/2000',
+                        firstDay: 1
+                    });
+                });
+            }
+
+            $('#sidebar a').click(function () {
+                get_updates();
+            });
+
+            get_updates();
+        });
+        $('#sidebar a').click(function () {
+            get_updates();
+        });
+
+        get_updates();
+        </script>
+        <div id="sidebar">
+            <h2>Updates</h2>
+            <ul></ul>
+            <p><a href="#">reload</a></p>
+        </div>
+        <div class="demo">
+          Date: <div id="datepicker"></div>
+        </div>
     </div>
 </div>

@@ -4,19 +4,27 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       metal:define-macro="template">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <title>SUNY Potsdam Campus Rescue Squad</title>
 
-<!-- Determine which stylesheet to use for the menu !-->
-<link tal:condition="user" rel="stylesheet" href="${request.static_url('rescueweb:static/tinydropdown.css')}" type="text/css" />
-<link tal:condition="not: user" rel="stylesheet" href="${request.static_url('rescueweb:static/tinydropdownGuest.css')}" type="text/css" />
+  <!-- Determine which stylesheet to use for the menu !-->
+  <link tal:condition="user" rel="stylesheet" href="${request.static_url('rescueweb:static/tinydropdown.css')}" type="text/css" />
+  <link tal:condition="not: user" rel="stylesheet" href="${request.static_url('rescueweb:static/tinydropdownGuest.css')}" type="text/css" />
 
-<!-- Thanks go to Michael for menu script
-Javascript Dropdown Menu
-April 18, 2013
-http://www.scriptiny.com/2011/04/javascript-dropdown-menu/
-!-->
-<script type="text/javascript" src="${request.static_url('rescueweb:static/tinydropdown.js')}"></script>
+  <!-- Thanks go to Michael for menu script
+  Javascript Dropdown Menu
+  April 18, 2013
+  http://www.scriptiny.com/2011/04/javascript-dropdown-menu/
+  !-->
+  <script type="text/javascript" src="${request.static_url('rescueweb:static/tinydropdown.js')}"></script>
+
+  <!-- JQuery datepicker stuff -->
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+  <link rel="stylesheet" href="/resources/demos/style.css" />
+  <!-- End JQuery datepicker stuff -->
+</head>
 
 <body>
 <div>
