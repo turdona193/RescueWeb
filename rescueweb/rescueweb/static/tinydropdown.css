@@ -9,12 +9,14 @@ body {font:13px Verdana,Arial; color:#000; background:#fff}
 .menu ul {display:none; position:absolute; font:normal 13px Arial,Verdana; top:38px; left:0; background:#020069; display:none; list-style:none}
 .menu ul li {float:none; border-top:1px solid #ccc; width:120px}
 .menu ul li a, li.menuhover li a, li.menuhover li.menuhover li a {float:none; display:block; background:none; height:38px; padding-top:5px}
-.menu ul li a:hover, li.menuhover li a:hover, li.menuhover li.menuhover li a:hover {background:#020069; color:#fff}
+.menu ul li a:hover, li.menuhover li a:hover, li.menuhover li.menuhover li a:hover {background:#4876b9; color:#fff}
 .menu ul li span, li.menuhover li span, li.menuhover li.menuhover li span {float:none; display:block; background:none; height:38px; padding-top:5px}
 .menu ul ul {left:120px; top:0}
 .menu li.submenu {font-weight:bold}
+.menu li.submenu.menuhover {background:#4876b9;}
+
 .menu li.noborder {border-top:none}
-li.menuhover a, li.menuhover li.menuhover a {color:#fff; background:#020069}
+li.menuhover a, li.menuhover li.menuhover a {color:#fff; background:#4876b9}
 li.menuhover span, li.menuhover li.menuhover span {color:#fff; background:#4876b9}
 #info {width:120px; background:#eee}
 #info li {width:160px; border-top:none; padding:8px 10px; color:#666; text-shadow:1px 1px #fff; text-align:left}
