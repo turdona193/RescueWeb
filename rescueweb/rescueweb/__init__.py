@@ -69,7 +69,7 @@ def main(global_config, **settings):
     config.add_route('addeditstandby' , '/addeditstandby')
     config.add_route('editdutycrew' , '/editdutycrew')
     
-    config.add_route('addeditannouncements' , '/addeditannouncements')
+    config.add_route('add_edit_announcements' , '/add_edit_announcements')
     config.add_route('addeditevents' , '/addeditevents')
 
     # Attach a `user' attribute to the request object that's passed around

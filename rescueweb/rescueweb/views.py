@@ -603,9 +603,9 @@ def editdutycrew(request):
             user=request.user
             )
 
-@view_config(route_name='addeditannouncements', renderer='templates/addeditannouncements.pt',
+@view_config(route_name='add_edit_announcements', renderer='templates/add_edit_announcements.pt',
              permission='admin')
-def addeditannouncements(request):
+def add_edit_announcements(request):
     main = get_renderer('templates/template.pt').implementation()
     announcementchosen = ''
     form = ''

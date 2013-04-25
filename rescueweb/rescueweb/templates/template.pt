@@ -164,7 +164,7 @@
         		
         		<li class="submenu"><span>Tools</span>
         			<ul>
-        				<li class="noborder"><a href="/addeditannouncements">Add/Edit Announcements</a></li>
+        				<li class="noborder"><a href="/add_edit_announcements">Add/Edit Announcements</a></li>
         				<li><a href="/addeditevents">Add/Edit Events</a></li>
         			</ul>
         		</li>
