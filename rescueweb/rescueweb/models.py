@@ -1,5 +1,3 @@
-#LoginIns table still needs to be added along with the dutycrew stuff
-
 from sqlalchemy import (
     Column,
     Integer,
@@ -26,6 +24,7 @@ from pyramid.security import (
     Everyone,
     ALL_PERMISSIONS,
     )
+
 class RootFactory(object):
     __acl__ = [ (Allow,  Everyone     , 'Guest'),
                 (Allow, 'Member', 'Member'),
@@ -95,9 +94,10 @@ class Users(Base):
     operationalvalue = Column(Integer, ForeignKey('OperationalStatus.operationalvalue'))
     portablenumber = Column(Integer)
     
-    def __init__(self, username, password,firstname,middlename,lastname,birthday,street,city,
-                 state,zipcode,residence,roomnumber,phonenumber,email,privileges,
-                 trainingvalue,administrativevalue,operationalvalue,portablenumber):
+    def __init__(self, username, password, firstname, middlename, lastname,
+            birthday, street, city, state, zipcode, residence, roomnumber,
+            phonenumber, email, privileges, trainingvalue, administrativevalue,
+            operationalvalue, portablenumber):
         self.username = username
         self.password = password
         self.firstname =firstname
@@ -277,10 +277,3 @@ class MinutesContent(Base):
         self.header = header
         self.subheader = subheader
         self.content = content
-
-
-
-
-
-
-

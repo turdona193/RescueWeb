@@ -302,13 +302,13 @@ def add_user(request):
         newuser.phonenumber = request.params['phonenumber']
         newuser.email = request.params['email']
         
-        list =  DBSession.query(Privileges).filter(Privileges.privilege ==request.params['privileges']).one()
+        list = DBSession.query(Privileges).filter(Privileges.privilege == request.params['privileges']).one()
         newuser.privileges = list.privilegevalue
-        list =  DBSession.query(TrainingLevel).filter(TrainingLevel.traininglevel ==request.params['trainingvalue']).one()
+        list = DBSession.query(TrainingLevel).filter(TrainingLevel.traininglevel == request.params['trainingvalue']).one()
         newuser.trainingvalue = list.trainingvalue
-        list =  DBSession.query(AdministrativeStatus).filter(AdministrativeStatus.status ==request.params['administrativevalue']).one()
+        list = DBSession.query(AdministrativeStatus).filter(AdministrativeStatus.status == request.params['administrativevalue']).one()
         newuser.administrativevalue = list.administrativevalue
-        list =  DBSession.query(OperationalStatus).filter(OperationalStatus.status ==request.params['operationalvalue']).one()
+        list = DBSession.query(OperationalStatus).filter(OperationalStatus.status == request.params['operationalvalue']).one()
         newuser.operationalvalue = list.operationalvalue
         
         DBSession.add(newuser)
@@ -358,19 +358,19 @@ def edit_user(request):
         edited_user.roomnumber = request.params['roomnumber']
         edited_user.phonenumber = request.params['phonenumber']
         edited_user.email = request.params['email']
-        list = DBSession.query(Privileges).filter(Privileges.privilege ==request.params['privileges']).one()
+        list = DBSession.query(Privileges).filter(Privileges.privilege == request.params['privileges']).one()
         edited_user.privileges = list.privilegevalue
-        list = DBSession.query(TrainingLevel).filter(TrainingLevel.traininglevel ==request.params['trainingvalue']).one()
+        list = DBSession.query(TrainingLevel).filter(TrainingLevel.traininglevel == request.params['trainingvalue']).one()
         edited_user.trainingvalue = list.trainingvalue
-        list = DBSession.query(AdministrativeStatus).filter(AdministrativeStatus.status ==request.params['administrativevalue']).one()
+        list = DBSession.query(AdministrativeStatus).filter(AdministrativeStatus.status == request.params['administrativevalue']).one()
         edited_user.administrativevalue = list.administrativevalue
-        list = DBSession.query(OperationalStatus).filter(OperationalStatus.status ==request.params['operationalvalue']).one()
+        list = DBSession.query(OperationalStatus).filter(OperationalStatus.status == request.params['operationalvalue']).one()
         edited_user.operationalvalue = list.operationalvalue
         DBSession.add(edited_user)
         
     if 'form.selected' in request.params:
         userselected = request.params['selecteduser']
-        edited_user  = DBSession.query(Users).filter_by(username=userselected).first()
+        edited_user = DBSession.query(Users).filter_by(username=userselected).first()
     else:
         userselected = ''
         edited_user = Users('','','','','','','','','','','','','','','','','','','')
@@ -614,7 +614,7 @@ def add_edit_announcements(request):
         if request.params['option'] == 'New':
             announcement = Announcements('','','','','','')
             announcement.header = request.params['title']
-            announcement.text  = request.params['body']
+            announcement.text = request.params['body']
             announcement.priority = 0
             announcement.username = authenticated_userid(request)
             announcement.posted = datetime.datetime.today()
@@ -634,7 +634,7 @@ def add_edit_announcements(request):
             form = 'New'
         if request.params['form.selected'] == 'Load':
             announcementchosen = request.params['selectedannouncement']
-            announcement  = DBSession.query(Announcements).filter_by(header=announcementchosen).first()
+            announcement = DBSession.query(Announcements).filter_by(header=announcementchosen).first()
             form = 'Load'
         if request.params['form.selected'] == 'Delete':
             announcementchosen = request.params['selectedannouncement']
