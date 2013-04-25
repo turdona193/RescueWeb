@@ -104,7 +104,7 @@
 	                    <ul>
 	                        <li class="noborder"><a href="/documents">Documents</a></li>
 	                        <li><a href="/minutes">Meeting Minutes</a></li>
-	                        <li><a href="/memberinfo">Member Info</a></li>
+	                        <li><a href="/member_info">Member Info</a></li>
 	                    </ul>
 	            </li>
 				<li class="submenu">
@@ -125,13 +125,13 @@
 	        			<li class = "submenu"><span>User</span>
 	        				<ul>
 		        				<li class="noborder"><a href="/add_user">Add User</a></li>
-		        				<li><a href="/edituser">Edit User</a></li>
+		        				<li><a href="/edit_user">Edit User</a></li>
 		        				<li><a href="/deleteuser">Delete User</a></li>
 	        				</ul>
 	        			</li>
 	        			<li class = "submenu"><span>Website</span>
 	        				<ul>
-		        				<li class="noborder"><a href="/editpages">Edit Pages</a></li>
+		        				<li class="noborder"><a href="/edit_pages">Edit Pages</a></li>
 		        				<li><a href="/add_edit_links">Add/Edit Links</a></li>
 		        				<li><a href="/add_edit_documents">Add/Edit<br/>Documents</a></li>
 		        				<li><a href="/add_edit_minutes">Add/Edit Meeting Minutes</a></li>
@@ -145,7 +145,7 @@
         			<ul>
         				<li class="submenu"><span>User</span>
         					<ul>
-        						<li class="noborder"><a href="/editportablenumbers">Edit Portable Numbers</a></li>
+        						<li class="noborder"><a href="/edit_portable_numbers">Edit Portable Numbers</a></li>
 		        				<li><a href="/add_edit_certifications">Add/Edit Certifications</a></li>
         				
         					</ul>
@@ -154,7 +154,7 @@
         				<li class="submenu"><span>Tools</span>
         					<ul>
         						<li class="noborder"><a href="/add_edit_standby">Add/Edit Stand-by</a></li>
-		        				<li><a href="/editdutycrew">Edit Duty Crew Schedule</a></li>
+		        				<li><a href="/edit_duty_crew">Edit Duty Crew Schedule</a></li>
         				
         					</ul>
         				</li>	

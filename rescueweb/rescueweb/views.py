@@ -180,9 +180,9 @@ def minutes(request):
             user=request.user
             )
 
-@view_config(route_name='memberinfo', renderer='templates/memberinfo.pt',
+@view_config(route_name='member_info', renderer='templates/member_info.pt',
              permission='Member')
-def memberinfo(request):
+def member_info(request):
     main = get_renderer('templates/template.pt').implementation()
 
     return dict(
@@ -332,9 +332,9 @@ def add_user(request):
             user=request.user
             )
 
-@view_config(route_name='edituser', renderer='templates/edituser.pt',
+@view_config(route_name='edit_user', renderer='templates/edit_user.pt',
              permission='admin')
-def edituser(request):
+def edit_user(request):
     main = get_renderer('templates/template.pt').implementation()
     if 'userselected' in request.params:
         userselected = request.params['userselected']
@@ -343,37 +343,37 @@ def edituser(request):
     
     if 'form.submitted' in request.params:
         userselected = request.params['userselected']
-        edit_user = DBSession.query(Users).filter_by(username=userselected).first()
-        edit_user.username = request.params['username']
-        edit_user.password = request.params['password']
-        edit_user.firstname = request.params['firstname']
-        edit_user.middlename = request.params['middlename']
-        edit_user.lastname = request.params['lastname']
-        edit_user.birthday = datetime.date(int(request.params['year']), int(request.params['month']), int(request.params['day']))
-        edit_user.street = request.params['street']
-        edit_user.city = request.params['city']
-        edit_user.state = request.params['state']
-        edit_user.zipcode = request.params['zipcode']
-        edit_user.residence = request.params['residence']
-        edit_user.roomnumber = request.params['roomnumber']
-        edit_user.phonenumber = request.params['phonenumber']
-        edit_user.email = request.params['email']
+        edited_user = DBSession.query(Users).filter_by(username=userselected).first()
+        edited_user.username = request.params['username']
+        edited_user.password = request.params['password']
+        edited_user.firstname = request.params['firstname']
+        edited_user.middlename = request.params['middlename']
+        edited_user.lastname = request.params['lastname']
+        edited_user.birthday = datetime.date(int(request.params['year']), int(request.params['month']), int(request.params['day']))
+        edited_user.street = request.params['street']
+        edited_user.city = request.params['city']
+        edited_user.state = request.params['state']
+        edited_user.zipcode = request.params['zipcode']
+        edited_user.residence = request.params['residence']
+        edited_user.roomnumber = request.params['roomnumber']
+        edited_user.phonenumber = request.params['phonenumber']
+        edited_user.email = request.params['email']
         list = DBSession.query(Privileges).filter(Privileges.privilege ==request.params['privileges']).one()
-        edit_user.privileges = list.privilegevalue
+        edited_user.privileges = list.privilegevalue
         list = DBSession.query(TrainingLevel).filter(TrainingLevel.traininglevel ==request.params['trainingvalue']).one()
-        edit_user.trainingvalue = list.trainingvalue
+        edited_user.trainingvalue = list.trainingvalue
         list = DBSession.query(AdministrativeStatus).filter(AdministrativeStatus.status ==request.params['administrativevalue']).one()
-        edit_user.administrativevalue = list.administrativevalue
+        edited_user.administrativevalue = list.administrativevalue
         list = DBSession.query(OperationalStatus).filter(OperationalStatus.status ==request.params['operationalvalue']).one()
-        edit_user.operationalvalue = list.operationalvalue
-        DBSession.add(edit_user)
+        edited_user.operationalvalue = list.operationalvalue
+        DBSession.add(edited_user)
         
     if 'form.selected' in request.params:
         userselected = request.params['selecteduser']
-        edit_user  = DBSession.query(Users).filter_by(username=userselected).first()
+        edited_user  = DBSession.query(Users).filter_by(username=userselected).first()
     else:
         userselected = ''
-        edit_user = Users('','','','','','','','','','','','','','','','','','','')
+        edited_user = Users('','','','','','','','','','','','','','','','','','','')
 
     Options = DBSession.query(Privileges).all()
     privilegesOptions = [option.privilege for option in Options]
@@ -391,7 +391,7 @@ def edituser(request):
             title='Edit User',
             main=main,
             userselected=userselected,
-            edit_user=edit_user,
+            edited_user=edited_user,
             users=allusernames,
             privilegesOptions=privilegesOptions,
             trainingOptions=trainingOptions,
@@ -427,9 +427,9 @@ def deleteuser(request):
             user=request.user
             )
 
-@view_config(route_name='editpages', renderer='templates/editpages.pt',
+@view_config(route_name='edit_pages', renderer='templates/edit_pages.pt',
              permission='admin')
-def editpages(request):
+def edit_pages(request):
     main = get_renderer('templates/template.pt').implementation()
     pagenames = ['Home', 'History', 'Join', 'ContactUs']    
     if 'form.submitted' in request.params:
@@ -546,9 +546,9 @@ def add_edit_pictures(request):
             user=request.user
             )
 
-@view_config(route_name='editportablenumbers', renderer='templates/editportablenumbers.pt',
+@view_config(route_name='edit_portable_numbers', renderer='templates/edit_portable_numbers.pt',
              permission='admin')
-def editportablenumbers(request):
+def edit_portable_numbers(request):
     main = get_renderer('templates/template.pt').implementation()
     
     if 'form.submitted' in request.params:
@@ -592,9 +592,9 @@ def add_edit_standby(request):
             user=request.user
             )
 
-@view_config(route_name='editdutycrew', renderer='templates/editdutycrew.pt',
+@view_config(route_name='edit_duty_crew', renderer='templates/edit_duty_crew.pt',
              permission='admin')
-def editdutycrew(request):
+def edit_duty_crew(request):
     main = get_renderer('templates/template.pt').implementation()
      
     return dict(
