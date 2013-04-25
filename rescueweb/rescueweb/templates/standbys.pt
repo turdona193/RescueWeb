@@ -7,11 +7,12 @@
         var dates = [];
         $(function() {
             function get_updates () {
-                $.getJSON('/event_updates.json', function(data) {
+                $.getJSON('/standby_dates.json', function(data) {
                     // Add random numbers to the unordered list
                     var target = $('#sidebar ul');
                     $.each(data, function (key, val) {
-                        // Push the start date and end date onto the dates array
+                        // Add the start date and end date onto the dates array
+                        // for so `highlightDays' knows which dates to highlight.
                         dates.push(val[0]);
                         dates.push(val[1]);
                     });
@@ -19,11 +20,28 @@
                     // Display the calendar
                     $('#datepicker').datepicker( {
                         onSelect: function(date) {
-                            alert(date);
+                            $.ajax({
+                                type: "POST",
+                                url: '/standby_info.json',
+                                data: { date: date }
+                                }).done(function(msg) {
+                                    $.each(msg, function (key, val) {
+                                        // Clear out the standbys display area and
+                                        // add all information about the standbys
+                                        // happening that day.
+                                        $('#standbys').empty();
+                                        $('#standbys').append('Event: ' + val[0] + '<br />');
+                                        $('#standbys').append('Location: ' + val[1] + '<br />');
+                                        $('#standbys').append('Notes: ' + val[2] + '<br />');
+                                        $('#standbys').append('Start date: ' + val[3] + '<br />');
+                                        $('#standbys').append('End date: ' + val[4] + '<br />');
+                                    });
+                            });
                         },
                         beforeShowDay: highlightDays
                     });
 
+                    // Highlights the days in the `dates' array
                     function highlightDays(date) {
                         for (var i = 0; i < dates.length; i++) {
                             if (new Date(dates[i]).toString() == date.toString())
@@ -43,10 +61,6 @@
 
         });
 
-        $('#sidebar a').click(function () {
-            get_updates();
-        });
-
         </script>
         <div id="sidebar">
             <h2>Updates</h2>
@@ -54,5 +68,6 @@
             <p><a href="#">reload</a></p>
         </div>
         <div id="datepicker"></div>
+        <p id="standbys"><p>
     </div>
 </div>

@@ -43,8 +43,6 @@ from .models import (
     StandBy,
     )
 
-
-
 @view_config(route_name='home', renderer='templates/home.pt')
 def home(request):
     main = get_renderer('templates/template.pt').implementation()
@@ -73,7 +71,6 @@ def history(request):
 def personnel(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Users).all()
-    
     headers = [column.name for column in page[0].__table__.columns]
 
     return dict(
@@ -90,6 +87,7 @@ def announcements(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Announcements).order_by(Announcements.posted.desc()).all()
     headers = [column.name for column in page[0].__table__.columns]
+
     return dict(
             title='Announcements', 
             main=main,
@@ -100,6 +98,7 @@ def announcements(request):
 def eventsV(request):
     main = get_renderer('templates/template.pt').implementation()
     ev = DBSession.query(Events).all()
+
     return dict(
             title='Events', 
             main=main,
@@ -110,88 +109,149 @@ def eventsV(request):
 @view_config(route_name='pictures', renderer='templates/pictures.pt')
 def pictures(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Pictures', main = main,
-                user=request.user)   
+
+    return dict(title='Pictures',
+            main=main,
+            user=request.user
+            )
 
 
 @view_config(route_name='join', renderer='templates/join.pt')
 def join(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Page).filter_by(name='Join').first()
-    return dict(title = 'How to Join', main = main , page = page,
-                user=request.user)
-    
 
+    return dict(
+            title='How to Join',
+            main=main,
+            page=page,
+            user=request.user
+            )
     
 @view_config(route_name='contact', renderer='templates/contact.pt')
 def contact(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Page).filter_by(name='ContactUs').first()
-    return dict(title = 'Contact Us', main = main, page = page,
-                user=request.user)
+
+    return dict(
+            title='Contact Us', 
+            main=main,
+            page=page,
+            user=request.user
+            )
     
 @view_config(route_name='links', renderer='templates/links.pt')
 def links(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(WebLinks).all()
-    
     headers = [column.name for column in page[0].__table__.columns]
-    return dict(title = 'Links', main = main, links = page, header = headers,
-                user=request.user)
 
+    return dict(
+            title='Links', 
+            main=main,
+            links=page, 
+            header=headers,
+            user=request.user
+            )
 
 @view_config(route_name='documents', renderer='templates/documents.pt',
-             permission = 'Member')
+             permission='Member')
 def documents(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Documents).all()
     headers = [column.name for column in page[0].__table__.columns]
 
-    
-    return dict(title = 'Squad Documents', main = main,page = page, header = headers,
-                user=request.user)
+    return dict(
+            title='Squad Documents', 
+            main=main,
+            page=page, 
+            header=headers,
+            user=request.user
+            )
 
 @view_config(route_name='minutes', renderer='templates/minutes.pt',
-             permission = 'Member')
+             permission='Member')
 def minutes(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Meeting Minutes', main = main,
-                user=request.user)
+
+    return dict(
+            title='Meeting Minutes',
+            main=main,
+            user=request.user
+            )
 
 @view_config(route_name='memberinfo', renderer='templates/memberinfo.pt',
-             permission = 'Member')
+             permission='Member')
 def memberinfo(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Member Information', main = main,
-                user=request.user)
+
+    return dict(
+            title='Member Information',
+            main=main,
+            user=request.user
+            )
     
 @view_config(route_name='standbys', renderer='templates/standbys.pt',
              permission='Member')
 def standbys(request):
     main = get_renderer('templates/template.pt').implementation()
+
     return dict(
             title='Stand-Bys', 
             main=main,
             user=request.user
             )
 
-@view_config(name='event_updates.json', renderer='json')
-def updates_view(self):
-    event_query = DBSession.query(StandBy).all()
-    for event in event_query:
-        print(event.startdatetime, event.enddatetime)
-    return [ ('{}/{}/{}'.format(
-        event.startdatetime.month, 
-        event.startdatetime.day,
-        event.startdatetime.year
-        ),
-        '{}/{}/{}'.format(
-            event.enddatetime.month,
-            event.enddatetime.day, 
-            event.enddatetime.year)) for event in event_query ]
+@view_config(name='standby_dates.json', renderer='json')
+def standby_dates(request):
+    """Serves up Standby dates via JSON back to the calendar. 
+    
+    This function is called when the calendar is first loaded. The calendar uses
+    this information to highlight days Standbys are scheduled.
+
+    """
+    standby_query = DBSession.query(StandBy).all()
+
+    return [ 
+        (
+            '{}/{}/{}'.format(
+                standby.startdatetime.month, 
+                standby.startdatetime.day,
+                standby.startdatetime.year
+                             ),
+            '{}/{}/{}'.format(
+                standby.enddatetime.month,
+                standby.enddatetime.day, 
+                standby.enddatetime.year
+                             )
+        ) for standby in standby_query 
+           ]
+
+@view_config(name='standby_info.json', renderer='json')
+def standby_information(request):
+    """Serves up information about Standbys on a particular date via JSON"""
+    # No date was sent
+    if 'date' not in request.POST:
+        return 'No Date'
+
+    # Grab the date from the AJAX request
+    month, day, year = request.POST['date'].split('/')
+    standby_date = datetime.datetime(int(year), int(month), int(day))
+    standby_query = DBSession.query(StandBy).filter(StandBy.startdatetime == standby_date)
+
+    # Return all of the Standby dates occurring on this date
+    return [
+        (
+            standby.event,
+            standby.location,
+            standby.notes,
+            str(standby.startdatetime),
+            str(standby.enddatetime),
+        ) for standby in standby_query 
+           ]
 
 @view_config(route_name='duty_crew_calendar',
-             renderer='templates/duty_crew_calendar.pt', permission = 'Member')
+             renderer='templates/duty_crew_calendar.pt', permission='Member')
 def duty_crew_calendar(request):
     main = get_renderer('templates/template.pt').implementation()
     currentDate = datetime.date.today()
@@ -200,26 +260,28 @@ def duty_crew_calendar(request):
     monthName = calendar.month_name[month]
     startDay, days = calendar.monthrange(year, month)
     startDay = (startDay +1)%7
-    return dict(title = 'Duty Crew Calendar',
-                monthName = monthName,
-                startDay = startDay,
-                days = days,
-                main = main,
-                user=request.user)
 
-    
+    return dict(
+            title='Duty Crew Calendar',
+            monthName=monthName,
+            startDay=startDay,
+            days=days,
+            main=main,
+            user=request.user
+            )
+
 @view_config(route_name='coverage', renderer='templates/coverage.pt',
-             permission = 'Member')
+             permission='Member')
 def coverage(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Coverage Requests', main = main,
-                user=request.user)
-    
-   
-
+    return dict(
+            title='Coverage Requests',
+            main=main,
+            user=request.user
+            )
     
 @view_config(route_name='adduser', renderer='templates/adduser.pt',
-             permission = 'admin')
+             permission='admin')
 def adduser(request):
     main = get_renderer('templates/template.pt').implementation()
 
@@ -250,7 +312,6 @@ def adduser(request):
         newuser.operationalvalue = list.operationalvalue
         
         DBSession.add(newuser)
-        
             
     Options = DBSession.query(Privileges).all()
     privilegesOptions = [option.privilege for option in Options]
@@ -261,17 +322,18 @@ def adduser(request):
     Options = DBSession.query(OperationalStatus).all()
     operationalOptions = [option.status for option in Options]
     
-    return dict(title = 'Add User',
-                main = main,
-                privilegesOptions = privilegesOptions,
-                trainingOptions = trainingOptions,
-                administrativeOptions = administrativeOptions,
-                operationalOptions = operationalOptions,
-                user=request.user
-                )
+    return dict(
+            title='Add User',
+            main=main,
+            privilegesOptions=privilegesOptions,
+            trainingOptions=trainingOptions,
+            administrativeOptions=administrativeOptions,
+            operationalOptions=operationalOptions,
+            user=request.user
+            )
 
 @view_config(route_name='edituser', renderer='templates/edituser.pt',
-             permission = 'admin')
+             permission='admin')
 def edituser(request):
     main = get_renderer('templates/template.pt').implementation()
     if 'userselected' in request.params:
@@ -281,13 +343,13 @@ def edituser(request):
     
     if 'form.submitted' in request.params:
         userselected = request.params['userselected']
-        edit_user  = DBSession.query(Users).filter_by(username=userselected).first()
+        edit_user = DBSession.query(Users).filter_by(username=userselected).first()
         edit_user.username = request.params['username']
         edit_user.password = request.params['password']
         edit_user.firstname = request.params['firstname']
         edit_user.middlename = request.params['middlename']
         edit_user.lastname = request.params['lastname']
-        edit_user.birthday = datetime.date(int(request.params['year']),int(request.params['month']),int(request.params['day']))
+        edit_user.birthday = datetime.date(int(request.params['year']), int(request.params['month']), int(request.params['day']))
         edit_user.street = request.params['street']
         edit_user.city = request.params['city']
         edit_user.state = request.params['state']
@@ -296,13 +358,13 @@ def edituser(request):
         edit_user.roomnumber = request.params['roomnumber']
         edit_user.phonenumber = request.params['phonenumber']
         edit_user.email = request.params['email']
-        list =  DBSession.query(Privileges).filter(Privileges.privilege ==request.params['privileges']).one()
+        list = DBSession.query(Privileges).filter(Privileges.privilege ==request.params['privileges']).one()
         edit_user.privileges = list.privilegevalue
-        list =  DBSession.query(TrainingLevel).filter(TrainingLevel.traininglevel ==request.params['trainingvalue']).one()
+        list = DBSession.query(TrainingLevel).filter(TrainingLevel.traininglevel ==request.params['trainingvalue']).one()
         edit_user.trainingvalue = list.trainingvalue
-        list =  DBSession.query(AdministrativeStatus).filter(AdministrativeStatus.status ==request.params['administrativevalue']).one()
+        list = DBSession.query(AdministrativeStatus).filter(AdministrativeStatus.status ==request.params['administrativevalue']).one()
         edit_user.administrativevalue = list.administrativevalue
-        list =  DBSession.query(OperationalStatus).filter(OperationalStatus.status ==request.params['operationalvalue']).one()
+        list = DBSession.query(OperationalStatus).filter(OperationalStatus.status ==request.params['operationalvalue']).one()
         edit_user.operationalvalue = list.operationalvalue
         DBSession.add(edit_user)
         
@@ -325,20 +387,21 @@ def edituser(request):
     allusers = DBSession.query(Users).order_by(Users.username).all() 
     allusernames = [auser.username for auser in allusers]
     
-    return dict(title = 'Edit User',
-                main = main,
-                userselected = userselected,
-                edit_user=edit_user,
-                users = allusernames,
-                privilegesOptions = privilegesOptions,
-                trainingOptions = trainingOptions,
-                administrativeOptions = administrativeOptions,
-                operationalOptions = operationalOptions,
-                user=request.user,
-                )
+    return dict(
+            title='Edit User',
+            main=main,
+            userselected=userselected,
+            edit_user=edit_user,
+            users=allusernames,
+            privilegesOptions=privilegesOptions,
+            trainingOptions=trainingOptions,
+            administrativeOptions=administrativeOptions,
+            operationalOptions=operationalOptions,
+            user=request.user,
+            )
 
 @view_config(route_name='deleteuser', renderer='templates/deleteuser.pt',
-             permission = 'admin')
+             permission='admin')
 def deleteuser(request):
     main = get_renderer('templates/template.pt').implementation()
     message = ''
@@ -356,18 +419,19 @@ def deleteuser(request):
     allusers = DBSession.query(Users).order_by(Users.username).all() 
     allusernames = ["None"]+[auser.username for auser in allusers]
 
-    return dict(title='Delete User', 
-                main=main,
-                allusernames=allusernames,
-                message=message,
-                user=request.user)
-    
+    return dict(
+            title='Delete User', 
+            main=main,
+            allusernames=allusernames,
+            message=message,
+            user=request.user
+            )
 
 @view_config(route_name='editpages', renderer='templates/editpages.pt',
-             permission = 'admin')
+             permission='admin')
 def editpages(request):
     main = get_renderer('templates/template.pt').implementation()
-    pagenames = ['Home' , 'History' ,'Join', 'ContactUs' ]    
+    pagenames = ['Home', 'History', 'Join', 'ContactUs']    
     if 'form.submitted' in request.params:
         pageselected = request.params['editpage']
         page = DBSession.query(Page).filter_by(name = pageselected).first()
@@ -383,15 +447,17 @@ def editpages(request):
         page = Page('' ,'')
         pageselected = ''
         
-    return dict(title = 'Edit Pages', 
-                main = main, 
-                page = page, 
-                pagenames = pagenames, 
-                pageselected = pageselected,
-                user=request.user)
+    return dict(
+            title = 'Edit Pages', 
+            main = main, 
+            page = page, 
+            pagenames = pagenames, 
+            pageselected = pageselected,
+            user=request.user
+            )
 
 @view_config(route_name='addeditlinks', renderer='templates/addeditlinks.pt',
-             permission = 'admin')
+             permission='admin')
 def addeditlinks(request):
     main = get_renderer('templates/template.pt').implementation()
     linkchosen = ''
@@ -436,40 +502,52 @@ def addeditlinks(request):
 
     links = DBSession.query(WebLinks).all()
     linknames = ['New']+[weblink.name for weblink in links]
-    return dict(title='Add/Edit Links', 
-                main=main,
-                link=link,               #link to be edited and added to the database
-                linknames=linknames,     #name of all the links
-                selected = selected,     #If you chosen new,load,delete
-                message=message,         #Message to the User
-                user=request.user)
+
+    return dict(
+            title='Add/Edit Links', 
+            main=main,
+            link=link,               #link to be edited and added to the database
+            linknames=linknames,     #name of all the links
+            selected = selected,     #If you chosen new,load,delete
+            message=message,         #Message to the User
+            user=request.user
+            )
 
 @view_config(route_name='addeditdocuments', renderer='templates/addeditdocuments.pt',
-             permission = 'admin')
+             permission='admin')
 def addeditdocuments(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Add/Edit documents', main = main,
-                user=request.user)
+
+    return dict(
+            title='Add/Edit documents',
+            main=main,
+            user=request.user
+            )
 
 @view_config(route_name='addeditminutes', renderer='templates/addeditminutes.pt',
-             permission = 'admin')
+             permission='admin')
 def editmeetingminutes(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Add/Edit Meeting Minutes', main = main,
-                user=request.user)
+
+    return dict(
+            title='Add/Edit Meeting Minutes',
+            main=main,
+            user=request.user
+            )
 
 @view_config(route_name='addeditpictures', renderer='templates/addeditpictures.pt',
-             permission = 'admin')
+             permission='admin')
 def addeditpictures(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Add/Edit Pictures', main = main,
-                user=request.user)
 
-
-
+    return dict(
+            title='Add/Edit Pictures',
+            main=main,
+            user=request.user
+            )
 
 @view_config(route_name='editportablenumbers', renderer='templates/editportablenumbers.pt',
-             permission = 'admin')
+             permission='admin')
 def editportablenumbers(request):
     main = get_renderer('templates/template.pt').implementation()
     
@@ -486,36 +564,47 @@ def editportablenumbers(request):
     allusers = DBSession.query(Users).order_by(Users.username).all() 
     allusernames = [[auser.username , auser.portablenumber] for auser in allusers]
     
-    return dict(title = 'Edit Portable Numbers', 
-                main = main,
-                allusernames = allusernames,
-                user=request.user)
+    return dict(
+            title='Edit Portable Numbers', 
+            main=main,
+            allusernames=allusernames,
+            user=request.user
+            )
 
 @view_config(route_name='addeditcertifications', renderer='templates/addeditcertifications.pt',
-             permission = 'admin')
+             permission='admin')
 def addeditcertifications(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Add/Edit Certifications', main = main,
-                user=request.user)
+
+    return dict(
+            title='Add/Edit Certifications',
+            main=main,
+            user=request.user
+            )
     
 @view_config(route_name='addeditstandby', renderer='templates/addeditstandby.pt',
-             permission = 'admin')
+             permission='admin')
 def addeditstandby(request):
     main = get_renderer('templates/template.pt').implementation()
-    return dict(title = 'Add/Edit Standby', main = main,
-                user=request.user)
+
+    return dict(title='Add/Edit Standby',
+            main=main,
+            user=request.user
+            )
 
 @view_config(route_name='editdutycrew', renderer='templates/editdutycrew.pt',
-             permission = 'admin')
+             permission='admin')
 def editdutycrew(request):
     main = get_renderer('templates/template.pt').implementation()
      
-    return dict(title = 'Edit Duty Crew', 
-                main = main,
-                user=request.user)
+    return dict(
+            title='Edit Duty Crew', 
+            main=main,
+            user=request.user
+            )
 
 @view_config(route_name='addeditannouncements', renderer='templates/addeditannouncements.pt',
-             permission = 'admin')
+             permission='admin')
 def addeditannouncements(request):
     main = get_renderer('templates/template.pt').implementation()
     announcementchosen = ''
@@ -560,16 +649,15 @@ def addeditannouncements(request):
     allannouncements = DBSession.query(Announcements).all() 
     announcements = [announcement.header for announcement in allannouncements]
     
-    return dict(title='Add/Edit Announcements',
-                main=main,
-                announcements=announcements,
-                announcement=announcement,
-                form=form,
-                announcementchosen=announcementchosen,
-                user=request.user
-                )
-
-
+    return dict(
+            title='Add/Edit Announcements',
+            main=main,
+            announcements=announcements,
+            announcement=announcement,
+            form=form,
+            announcementchosen=announcementchosen,
+            user=request.user
+            )
 
 @view_config(route_name='addeditevents', renderer='templates/addeditevents.pt',
              permission='admin')
@@ -606,21 +694,23 @@ def login(request):
         message = 'Failed login'
 
     return dict(
-        main = main,
-        title = 'Login',
-        message = message,
-        url = request.application_url + '/login',
-        came_from = came_from,
-        login = login,
-        password = password,
-        user=request.user)
+        main=main,
+        title='Login',
+        message=message,
+        url=request.application_url + '/login',
+        came_from=came_from,
+        login=login,
+        password=password,
+        user=request.user,
+        )
 
 @view_config(route_name='logout')
 def logout(request):
     headers = forget(request)
-    return HTTPFound(location = request.route_url('home'),
-                     headers = headers,
-                     )
+    return HTTPFound(
+            location=request.route_url('home'),
+            headers=headers,
+            )
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
@@ -637,4 +727,3 @@ might be caused by one of the following things:
 After you fix the problem, please restart the Pyramid application to
 try it again.
 """
-
