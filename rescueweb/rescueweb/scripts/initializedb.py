@@ -318,6 +318,14 @@ def main(argv = sys.argv):
                         startdatetime=datetime.datetime(2013, 4, 1),
                         enddatetime=datetime.datetime(2013, 4, 1)
                         ),
+
+                    StandBy(
+                        event='Cookies for Sale',
+                        location='Barrington Union',
+                        notes='''The REAL Bake sale.''',
+                        startdatetime=datetime.datetime(2013, 4, 1),
+                        enddatetime=datetime.datetime(2013, 4, 1)
+                        ),
                 ])
 
         DBSession.add_all(
