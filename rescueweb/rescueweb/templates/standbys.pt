@@ -1,7 +1,7 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-        <p>This is the ${title} page!</p>
-        <p>You are all on stand-by, or not, that is all.</p>
+        <h1>${title}</h1>
+
         <script>
         // List that gets populated with the Standby dates
         var dates = [];
@@ -9,7 +9,6 @@
             function get_updates () {
                 $.getJSON('/standby_dates.json', function(data) {
                     // Add random numbers to the unordered list
-                    var target = $('#sidebar ul');
                     $.each(data, function (key, val) {
                         // Add the start date and end date onto the dates array
                         // for so `highlightDays' knows which dates to highlight.
@@ -25,16 +24,17 @@
                                 url: '/standby_info.json',
                                 data: { date: date }
                                 }).done(function(msg) {
+                                    $('#standbys').empty();
                                     $.each(msg, function (key, val) {
                                         // Clear out the standbys display area and
                                         // add all information about the standbys
                                         // happening that day.
-                                        $('#standbys').empty();
                                         $('#standbys').append('Event: ' + val[0] + '<br />');
                                         $('#standbys').append('Location: ' + val[1] + '<br />');
                                         $('#standbys').append('Notes: ' + val[2] + '<br />');
                                         $('#standbys').append('Start date: ' + val[3] + '<br />');
                                         $('#standbys').append('End date: ' + val[4] + '<br />');
+                                        $('#standbys').append('<br />');
                                     });
                             });
                         },
@@ -53,21 +53,19 @@
                 });
             }
 
-            get_updates();
-
-            $('#sidebar a').click(function () {
+            // Test Calendar stuff by clicking the title
+            $('h1').click(function () {
                 get_updates();
             });
 
-        });
+            // Get the Standby days from the server and highlight them on the
+            // calendar.
+            get_updates();
 
+        });
         </script>
-        <div id="sidebar">
-            <h2>Updates</h2>
-            <ul></ul>
-            <p><a href="#">reload</a></p>
-        </div>
-        <div id="datepicker"></div>
+
+        <div id="datepicker" style="float:right;"></div>
         <p id="standbys"><p>
     </div>
 </div>

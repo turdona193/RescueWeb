@@ -230,8 +230,8 @@ def standby_dates(request):
 @view_config(name='standby_info.json', renderer='json')
 def standby_information(request):
     """Serves up information about Standbys on a particular date via JSON"""
-    # No date was sent
     if 'date' not in request.POST:
+        # No date was sent
         return 'No Date'
 
     # Grab the date from the AJAX request
