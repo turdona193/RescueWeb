@@ -55,7 +55,7 @@ def main(global_config, **settings):
     
     config.add_route('add_user' , '/add_user')
     config.add_route('edit_user' , '/edit_user')
-    config.add_route('deleteuser' , '/deleteuser')
+    config.add_route('delete_user' , '/delete_user')
     
     config.add_route('edit_pages' , '/edit_pages')
     config.add_route('add_edit_links' , '/add_edit_links')

@@ -400,21 +400,21 @@ def edit_user(request):
             user=request.user,
             )
 
-@view_config(route_name='deleteuser', renderer='templates/deleteuser.pt',
+@view_config(route_name='delete_user', renderer='templates/delete_user.pt',
              permission='admin')
-def deleteuser(request):
+def delete_user(request):
     main = get_renderer('templates/template.pt').implementation()
     message = ''
     
     if 'form.submitted' in request.params:
-            user_selected = request.params['delete_user']
-            delete_user = DBSession.query(Users).filter_by(username=user_selected).first()
-            if delete_user:
-                name = delete_user.username
-                DBSession.delete(delete_user)
-                message = "{} has been deleted".format(name)
-            else:
-                message = "Please select a vaild username"
+        user_selected = request.params['delete_user']
+        deleted_user = DBSession.query(Users).filter_by(username=user_selected).first()
+        if deleted_user:
+            name = deleted_user.username
+            DBSession.delete(deleted_user)
+            message = "{} has been deleted".format(name)
+        else:
+            message = "Please select a vaild username"
 
     allusers = DBSession.query(Users).order_by(Users.username).all() 
     allusernames = ["None"]+[auser.username for auser in allusers]

@@ -126,7 +126,7 @@
 	        				<ul>
 		        				<li class="noborder"><a href="/add_user">Add User</a></li>
 		        				<li><a href="/edit_user">Edit User</a></li>
-		        				<li><a href="/deleteuser">Delete User</a></li>
+		        				<li><a href="/delete_user">Delete User</a></li>
 	        				</ul>
 	        			</li>
 	        			<li class = "submenu"><span>Website</span>
