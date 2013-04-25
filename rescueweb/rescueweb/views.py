@@ -280,9 +280,9 @@ def coverage(request):
             user=request.user
             )
     
-@view_config(route_name='adduser', renderer='templates/adduser.pt',
+@view_config(route_name='add_user', renderer='templates/add_user.pt',
              permission='admin')
-def adduser(request):
+def add_user(request):
     main = get_renderer('templates/template.pt').implementation()
 
     if 'form.submitted' in request.params:
@@ -456,9 +456,9 @@ def editpages(request):
             user=request.user
             )
 
-@view_config(route_name='addeditlinks', renderer='templates/addeditlinks.pt',
+@view_config(route_name='add_edit_links', renderer='templates/add_edit_links.pt',
              permission='admin')
-def addeditlinks(request):
+def add_edit_links(request):
     main = get_renderer('templates/template.pt').implementation()
     linkchosen = ''
     selected = ''
@@ -513,9 +513,9 @@ def addeditlinks(request):
             user=request.user
             )
 
-@view_config(route_name='addeditdocuments', renderer='templates/addeditdocuments.pt',
+@view_config(route_name='add_edit_documents', renderer='templates/add_edit_documents.pt',
              permission='admin')
-def addeditdocuments(request):
+def add_edit_documents(request):
     main = get_renderer('templates/template.pt').implementation()
 
     return dict(
@@ -524,7 +524,7 @@ def addeditdocuments(request):
             user=request.user
             )
 
-@view_config(route_name='addeditminutes', renderer='templates/addeditminutes.pt',
+@view_config(route_name='add_edit_minutes', renderer='templates/add_edit_minutes.pt',
              permission='admin')
 def editmeetingminutes(request):
     main = get_renderer('templates/template.pt').implementation()
@@ -535,9 +535,9 @@ def editmeetingminutes(request):
             user=request.user
             )
 
-@view_config(route_name='addeditpictures', renderer='templates/addeditpictures.pt',
+@view_config(route_name='add_edit_pictures', renderer='templates/add_edit_pictures.pt',
              permission='admin')
-def addeditpictures(request):
+def add_edit_pictures(request):
     main = get_renderer('templates/template.pt').implementation()
 
     return dict(
@@ -571,9 +571,9 @@ def editportablenumbers(request):
             user=request.user
             )
 
-@view_config(route_name='addeditcertifications', renderer='templates/addeditcertifications.pt',
+@view_config(route_name='add_edit_certifications', renderer='templates/add_edit_certifications.pt',
              permission='admin')
-def addeditcertifications(request):
+def add_edit_certifications(request):
     main = get_renderer('templates/template.pt').implementation()
 
     return dict(
@@ -582,9 +582,9 @@ def addeditcertifications(request):
             user=request.user
             )
     
-@view_config(route_name='addeditstandby', renderer='templates/addeditstandby.pt',
+@view_config(route_name='add_edit_standby', renderer='templates/add_edit_standby.pt',
              permission='admin')
-def addeditstandby(request):
+def add_edit_standby(request):
     main = get_renderer('templates/template.pt').implementation()
 
     return dict(title='Add/Edit Standby',
@@ -659,9 +659,9 @@ def add_edit_announcements(request):
             user=request.user
             )
 
-@view_config(route_name='addeditevents', renderer='templates/addeditevents.pt',
+@view_config(route_name='add_edit_events', renderer='templates/add_edit_events.pt',
              permission='admin')
-def addeditevents(request):
+def add_edit_events(request):
     main = get_renderer('templates/template.pt').implementation()
 
     return dict(

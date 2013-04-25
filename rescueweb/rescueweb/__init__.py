@@ -53,24 +53,24 @@ def main(global_config, **settings):
     config.add_route('duty_crew_calendar', '/duty_crew_calendar')
     config.add_route('coverage' , '/coverage')
     
-    config.add_route('adduser' , '/adduser')
+    config.add_route('add_user' , '/add_user')
     config.add_route('edituser' , '/edituser')
     config.add_route('deleteuser' , '/deleteuser')
     
     config.add_route('editpages' , '/editpages')
-    config.add_route('addeditlinks' , '/addeditlinks')
-    config.add_route('addeditdocuments' , '/addeditdocuments')
-    config.add_route('addeditminutes' , '/addeditminutes')
-    config.add_route('addeditpictures' , '/addeditpictures')
+    config.add_route('add_edit_links' , '/add_edit_links')
+    config.add_route('add_edit_documents' , '/add_edit_documents')
+    config.add_route('add_edit_minutes' , '/add_edit_minutes')
+    config.add_route('add_edit_pictures' , '/add_edit_pictures')
     
     config.add_route('editportablenumbers' , '/editportablenumbers')
-    config.add_route('addeditcertifications' , '/addeditcertifications')
+    config.add_route('add_edit_certifications' , '/add_edit_certifications')
     
-    config.add_route('addeditstandby' , '/addeditstandby')
+    config.add_route('add_edit_standby' , '/add_edit_standby')
     config.add_route('editdutycrew' , '/editdutycrew')
     
     config.add_route('add_edit_announcements' , '/add_edit_announcements')
-    config.add_route('addeditevents' , '/addeditevents')
+    config.add_route('add_edit_events' , '/add_edit_events')
 
     # Attach a `user' attribute to the request object that's passed around
     # everywhere. This user object only has `username' and `privileges'
