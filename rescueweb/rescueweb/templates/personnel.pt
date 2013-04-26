@@ -31,20 +31,21 @@ table.altrowstable td {
 </head>
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
+		<center>
           <table class="altrowstable" id="alternatecolor">
 			<tr> 
-				<th>User</th> <th>Password</th> <th>First</th> <th>Middle</th> <th>Last</th> <th>Birthday</th>
-				<th>Street</th> <th>City</th> <th>State</th> <th>Zip</th> <th>Residence</th> <th>Room</th>
-				<th>Phone</th> <th>EMail</th> <th>Priv.</th> <th>Training</th> <th>Admin</th> <th>Operational</th>
-				<th>Portable</th>
+			<div tal:repeat="header headers">
+				<th>${header}</th>
+			</div>
 			</tr>
             <div tal:repeat="content personnel">
               <tr>
-				<div tal:repeat = "header headers">
-					<td>${getattr(content,header)}</td>
+				<div tal:repeat = "cell content">
+					<td>${cell}</td>
 				</div>
               </tr>
             </div>
           </table>
+		</center>
     </div>
 </div>

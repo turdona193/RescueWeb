@@ -70,8 +70,10 @@ def history(request):
 @view_config(route_name='personnel', renderer='templates/personnel.pt')
 def personnel(request):
     main = get_renderer('templates/template.pt').implementation()
-    page = DBSession.query(Users).all()
-    headers = [column.name for column in page[0].__table__.columns]
+    page = DBSession.query(Users.portablenumber, Users.username,
+			Certifications.certification, OperationalStatus.status).\
+			join(Certifications) .join(OperationalStatus).order_by(Users.portablenumber)
+    headers = ['Portable', 'Member', 'Certification', 'Status']
 
     return dict(
             title='Personnel', 
