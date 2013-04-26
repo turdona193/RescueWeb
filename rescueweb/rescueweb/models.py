@@ -8,6 +8,7 @@ from sqlalchemy import (
     DateTime,
     Boolean,
     TIMESTAMP,
+
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -15,6 +16,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import (
     scoped_session,
     sessionmaker,
+    column_property,
     )
 
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -79,6 +81,7 @@ class Users(Base):
     firstname = Column(Text)
     middlename = Column(Text)
     lastname = Column(Text)
+    fullname = column_property(firstname + " " + lastname)
     birthday = Column(Date)
     street = Column(Text)
     city =Column(Text)

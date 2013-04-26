@@ -7,17 +7,19 @@ table.altrowstable {
 	color:#333333;
 	border-width: 1px;
 	border-color: #a9c6c9;
-	border-collapse: collapse;
+	border-collapse: collapse
 }
 table.altrowstable th {
-	border-width: 1px;
+	border-width: 0px;
 	padding: 8px;
 	border-style: solid;
+	border-collapse: collapse
 	border-color: #a9c6c9;
 }
 table.altrowstable td {
 	border-width: 1px;
 	padding: 8px;
+	border-collapse: collapse
 	border-style: solid;
 	border-color: #a9c6c9;
 }
@@ -33,8 +35,8 @@ table.altrowstable td {
     <div metal:fill-slot="content">
 		<center>
           <table class="altrowstable" id="alternatecolor">
-			<tr> 
-			<div tal:repeat="header headers">
+			<tr> 			
+			<div tal:repeat="header headers"> 
 				<th>${header}</th>
 			</div>
 			</tr>
