@@ -29,7 +29,7 @@ from pyramid.security import (
 
 class RootFactory(object):
     __acl__ = [ (Allow,  Everyone     , 'Guest'),
-                (Allow, 'Member', 'Member'),
+                (Allow, 'member', 'Member'),
                 (Allow, 'admin' ,  ALL_PERMISSIONS) ]
     def __init__(self, request):
         pass

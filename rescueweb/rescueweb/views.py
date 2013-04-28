@@ -71,9 +71,9 @@ def history(request):
 def personnel(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Users.portablenumber, Users.fullname,
-			Certifications.certification, OperationalStatus.status).\
-			join(Certifications) .join(OperationalStatus).order_by(Users.portablenumber)
-    headers = ['Portable', 'Name', 'Certification', 'Status']
+			AdministrativeStatus.status, OperationalStatus.status).\
+			join(AdministrativeStatus) .join(OperationalStatus).order_by(Users.portablenumber)
+    headers = ['Portable', 'Name', 'Administrative', 'Operational']
 
     return dict(
             title='Personnel', 
@@ -577,10 +577,12 @@ def edit_portable_numbers(request):
              permission='admin')
 def add_edit_certifications(request):
     main = get_renderer('templates/template.pt').implementation()
-
+    allusers = DBSession.query(Users).order_by(Users.username).all() 
+    allusernames = [auser.username for auser in allusers]
     return dict(
             title='Add/Edit Certifications',
             main=main,
+            allusers = allusernames,
             user=request.user
             )
     
@@ -614,7 +616,7 @@ def add_edit_announcements(request):
     
     if 'form.submitted' in request.params:
         if request.params['option'] == 'New':
-            announcement = Announcements('','','','','','')
+            announcement = Announcements('','','','','',)
             announcement.header = request.params['title']
             announcement.text = request.params['body']
             announcement.priority = 0
