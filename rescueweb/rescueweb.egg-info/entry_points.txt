@@ -1,0 +1,5 @@
+      [paste.app_factory]
+      main = rescueweb:main
+      [console_scripts]
+      initialize_rescueweb_db = rescueweb.scripts.initializedb:main
+      

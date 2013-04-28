@@ -3,11 +3,13 @@ import transaction
 
 from pyramid import testing
 
-from .models import DBSession
-
+#from .models import DBSession
+def main():
+    print("tests.py is functional")
 
 class ViewTests(unittest.TestCase):
     def setUp(self):
+        self.session = _initTestingDB()
         self.config = testing.setUp()
         #from sqlalchemy import create_engine
         #engine = create_engine('sqlite://')
@@ -24,11 +26,18 @@ class ViewTests(unittest.TestCase):
 
     def tearDown(self):
         #DBSession.remove()
+        self.session.remove()
         testing.tearDown()
 
+    def _callFUT(self, request):
+        from tutorial.views import view_page
+        return view_page(request)
+
     def test_it(self):
+        from tutorial.models import Page
+        request = DBSession.DummyRequest()
+        request = matchdict['pagename'] = 'IDoExist'
         #from .views import my_view
-        #request = testing.DummyRequest()
         #info = my_view(request)
         #self.assertEqual(info['one'].name, 'one')
         #self.assertEqual(info['project'], 'rescueweb')
@@ -60,3 +69,7 @@ class FunctionalTests(unittest.TestCase):
         for page, title in zip(pages, content):
             res = self.testapp.get(page, status=200)
             self.assertIn(bytes(title, 'utf-8'), res.body)
+
+
+
+main()
