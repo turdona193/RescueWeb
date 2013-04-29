@@ -41,6 +41,7 @@ from .models import (
     TrainingLevel,
     WebLinks,
     StandBy,
+    MeetingMinutes,
     )
 
 @view_config(route_name='home', renderer='templates/home.pt')
@@ -530,10 +531,30 @@ def add_edit_documents(request):
              permission='admin')
 def editmeetingminutes(request):
     main = get_renderer('templates/template.pt').implementation()
+    message = ''
+    allminutes = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime)
+    alldates = [minute.datetime.timetuple()[:3] for minute in allminutes]
+    allminutes = []
+    minutes = ''
+    date = ''
+    
+    if 'date.selected' in request.params:
+        datestring = request.params['selected_date']
+        date = datetime.datetime.strptime(datestring,'(%Y, %m, %d)')
+        allminutesdatabase = DBSession.query(MeetingMinutes.header,MeetingMinutes.subheader).filter_by(datetime = date).all()
+        allminutes = [[minutes.header,minutes.subheader] for minutes in allminutesdatabase]
+
+    if 'report.selected' in request.params:
+        date = request.params['selected_date']
+        minutesdatabase = DBSession.query(MeetingMinutes).filter_by(datetime = datetime.datetime.strptime(date,'(%Y, %m, %d)'),).all()
+        minutes = minutesdatabase
 
     return dict(
             title='Add/Edit Meeting Minutes',
             main=main,
+            alldates=alldates,
+            allminutes = allminutes,
+            minutes = minutes,
             user=request.user
             )
 
@@ -577,12 +598,16 @@ def edit_portable_numbers(request):
              permission='admin')
 def add_edit_certifications(request):
     main = get_renderer('templates/template.pt').implementation()
-    allusers = DBSession.query(Users).order_by(Users.username).all() 
-    allusernames = [auser.username for auser in allusers]
+    all_users = DBSession.query(Users).order_by(Users.username).all() 
+    all_usernames = [auser.username for auser in allusers]
+    all_certifications = []
+    name_of_certs = []
+    
     return dict(
             title='Add/Edit Certifications',
             main=main,
-            allusers = allusernames,
+            allusers = all_usernames,
+            
             user=request.user
             )
     

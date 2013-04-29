@@ -263,20 +263,12 @@ class MeetingMinutes(Base):
     __tablename__ = 'MeetingMinutes'
     meetingindex = Column(Integer, primary_key=True)
     datetime = Column(DateTime)
-
-    def __init__(self, eventid, username):
-        self.meetingindex = meetingindex
-        self.datetime = datetime
-
-class MinutesContent(Base):
-    __tablename__ = 'MinutesContent'
-    meetingindex = Column(Integer, ForeignKey('MinutesContent.meetingindex'), primary_key=True)
-    header = Column(Text, primary_key=True)
-    subheader = Column(Text, primary_key=True)
+    header = Column(Text)
+    subheader = Column(Text)
     content = Column(Text)
 
-    def __init__(Base, meetingindex, header, subheader, content):
-        self.meetingindex = meetingindex
+    def __init__(self, datetime, header, subheader, content):
+        self.datetime = datetime
         self.header = header
         self.subheader = subheader
         self.content = content
