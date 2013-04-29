@@ -96,8 +96,7 @@
                 <li><a href="/links">Links</a></li><!-- Move Links to a different menu!-->
             </ul>
         </li>
-		<span tal:condition = "user and (user.pyramidsecuritygroup == 'member' or user.pyramidsecuritygroup == 'admin')">
-        <li tal:condition="user"><span>Members</span>
+        <li tal:condition = "user and (user.pyramidsecuritygroup == 'member' or user.pyramidsecuritygroup == 'admin')"><span>Members</span>
 			<ul>
 				<li class="submenu">
 	                    <span>Administrative</span>
@@ -117,10 +116,8 @@
 				</li>
 			</ul>  
         </li>
-        </span>
         
-		<span tal:condition = "user and user.pyramidsecuritygroup == 'admin'">
-        <li tal:condition="user"><span>Website Tools</span>
+        <li tal:condition = "user and user.pyramidsecuritygroup == 'admin'"><span>Website Tools</span>
         	<ul>
         		<li class = "submenu"><span>Administrative</span>
         			<ul>
@@ -173,8 +170,7 @@
         		      			
         	
         	</ul>
-        </li>
-        </span>    
+        </li>   
     </ul>
 </div>
 <script type="text/javascript">

@@ -9,6 +9,10 @@ from pyramid.renderers import get_renderer
 
 from sqlalchemy.exc import DBAPIError
 
+from pyramid_mailer import get_mailer
+from pyramid_mailer.message import Message
+
+
 from pyramid.httpexceptions import (
     HTTPFound,
     HTTPNotFound,
@@ -698,6 +702,24 @@ def add_edit_events(request):
             main=main,
             user=request.user
             )
+@view_config(route_name='email', renderer='templates/email.pt',
+             permission='admin')
+def email(request):
+    main = get_renderer('templates/template.pt').implementation()
+    mailer = get_mailer(request)
+    
+    message = Message(subject = "testing",
+                      sender = "rosejp194@potsdam.edu",
+                      recipients = ["jeremy.rose09@gmail.com"],
+                      body = "hopefully this thing works")
+    #mailer.send(message)
+    
+    return dict(
+             title = 'Email',
+             main = main,
+             user = request.user
+             )
+
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
