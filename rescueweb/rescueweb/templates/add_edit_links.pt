@@ -1,0 +1,36 @@
+<div metal:use-macro="main.macros['template']">
+    <div metal:fill-slot="content">
+        <p>
+			Links: 
+			<form>
+				<select name="selectlink">
+					<div tal:repeat = "alink linknames">
+						<span tal:condition="alink==link.name">
+		 	 				<option value="${alink}" selected>${alink}</option>
+		  				</span>
+		  				<span tal:condition="not alink==link.name">
+		 	 				<option value="${alink}">${alink}</option>
+		  				</span>
+					</div>
+				</select><br/>
+			<input type="submit" name="form.selected" value="New"/><br/>		
+			<input type="submit" name="form.selected" value="Load"/><br/>
+			<input type="submit" name="form.selected" value="Delete"/><br/>
+			</form>
+			
+			<br/>
+			${message}
+			<br/><br/>
+			<span tal:condition=" selected=='Load' or selected=='New' ">
+				<form>
+					Name:    <input type="text" name="name" value="${link.name}" /><br/>
+					Address: <input type="text" name="address" value="${link.address}" /><br/>
+
+					<input type="hidden" name="linkchosen" value="${link.name}" />
+	        		<input type="hidden" name="selected" value="${selected}" />
+				<input type="submit" name="form.submitted" value="Save"/><br/>		
+				</form>
+			</span>
+        </p>
+    </div>
+</div>

@@ -5,6 +5,7 @@
       metal:define-macro="template">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="shortcut icon" href="${request.static_url('rescueweb:static/favicon.ico')}" />
   <title>SUNY Potsdam Campus Rescue Squad</title>
 
   <!-- Determine which stylesheet to use for the menu !-->
@@ -24,6 +25,27 @@
   <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
   <link rel="stylesheet" href="/resources/demos/style.css" />
   <!-- End JQuery datepicker stuff -->
+
+  <!-- Alternating table colors script -->
+	<script type="text/javascript">
+	function altRows(id){
+	if(document.getElementsByTagName){  	
+		var table = document.getElementById(id);  
+		var rows = table.getElementsByTagName("tr"); 
+		for(i = 0; i < rows.length; i++){          
+			if(i % 2 == 0){
+				rows[i].className = "evenrowcolor";
+			}else{
+				rows[i].className = "oddrowcolor";
+			}      
+		}
+	}
+	}
+	window.onload=function(){
+	altRows('alternatecolor');
+	}
+</script>
+<!-- End Alternating table colors script -->
 </head>
 
 <body>
@@ -74,7 +96,7 @@
                 <li><a href="/links">Links</a></li><!-- Move Links to a different menu!-->
             </ul>
         </li>
-
+		<span tal:condition = "user and (user.pyramidsecuritygroup == 'member' or user.pyramidsecuritygroup == 'admin')">
         <li tal:condition="user"><span>Members</span>
 			<ul>
 				<li class="submenu">
@@ -82,7 +104,7 @@
 	                    <ul>
 	                        <li class="noborder"><a href="/documents">Documents</a></li>
 	                        <li><a href="/minutes">Meeting Minutes</a></li>
-	                        <li><a href="/memberinfo">Member Info</a></li>
+	                        <li><a href="/member_info">Member Info</a></li>
 	                    </ul>
 	            </li>
 				<li class="submenu">
@@ -95,25 +117,27 @@
 				</li>
 			</ul>  
         </li>
+        </span>
         
+		<span tal:condition = "user and user.pyramidsecuritygroup == 'admin'">
         <li tal:condition="user"><span>Website Tools</span>
         	<ul>
         		<li class = "submenu"><span>Administrative</span>
         			<ul>
 	        			<li class = "submenu"><span>User</span>
 	        				<ul>
-		        				<li class="noborder"><a href="/adduser">Add User</a></li>
-		        				<li><a href="/edituser">Edit User</a></li>
-		        				<li><a href="/deleteuser">Delete User</a></li>
+		        				<li class="noborder"><a href="/add_user">Add User</a></li>
+		        				<li><a href="/edit_user">Edit User</a></li>
+		        				<li><a href="/delete_user">Delete User</a></li>
 	        				</ul>
 	        			</li>
 	        			<li class = "submenu"><span>Website</span>
 	        				<ul>
-		        				<li class="noborder"><a href="/editpages">Edit Pages</a></li>
-		        				<li><a href="/addeditlinks">Add/Edit Links</a></li>
-		        				<li><a href="/addeditdocuments">Add/Edit<br/>Documents</a></li>
-		        				<li><a href="/addeditminutes">Add/Edit Meeting Minutes</a></li>
-		        				<li><a href="/addeditpictures">Add/Edit Pictures</a></li>
+		        				<li class="noborder"><a href="/edit_pages">Edit Pages</a></li>
+		        				<li><a href="/add_edit_links">Add/Edit Links</a></li>
+		        				<li><a href="/add_edit_documents">Add/Edit<br/>Documents</a></li>
+		        				<li><a href="/add_edit_minutes">Add/Edit Meeting Minutes</a></li>
+		        				<li><a href="/add_edit_pictures">Add/Edit Pictures</a></li>
 	        				</ul>
 	        			</li>
         			</ul>
@@ -123,16 +147,16 @@
         			<ul>
         				<li class="submenu"><span>User</span>
         					<ul>
-        						<li class="noborder"><a href="/editportablenumbers">Edit Portable Numbers</a></li>
-		        				<li><a href="/addeditcertifications">Add/Edit Certifications</a></li>
+        						<li class="noborder"><a href="/edit_portable_numbers">Edit Portable Numbers</a></li>
+		        				<li><a href="/add_edit_certifications">Add/Edit Certifications</a></li>
         				
         					</ul>
         				</li>
         				
         				<li class="submenu"><span>Tools</span>
         					<ul>
-        						<li class="noborder"><a href="/addeditstandby">Add/Edit Stand-by</a></li>
-		        				<li><a href="/editdutycrew">Edit Duty Crew Schedule</a></li>
+        						<li class="noborder"><a href="/add_edit_standby">Add/Edit Stand-by</a></li>
+		        				<li><a href="/edit_duty_crew">Edit Duty Crew Schedule</a></li>
         				
         					</ul>
         				</li>	
@@ -142,14 +166,15 @@
         		
         		<li class="submenu"><span>Tools</span>
         			<ul>
-        				<li class="noborder"><a href="/addeditannouncements">Add/Edit Announcements</a></li>
-        				<li><a href="/addeditevents">Add/Edit Events</a></li>
+        				<li class="noborder"><a href="/add_edit_announcements">Add/Edit Announcements</a></li>
+        				<li><a href="/add_edit_events">Add/Edit Events</a></li>
         			</ul>
         		</li>
         		      			
         	
         	</ul>
-        </li>    
+        </li>
+        </span>    
     </ul>
 </div>
 <script type="text/javascript">

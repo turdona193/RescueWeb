@@ -1,5 +1,3 @@
-#LoginIns table still needs to be added along with the dutycrew stuff
-
 from sqlalchemy import (
     Column,
     Integer,
@@ -10,6 +8,7 @@ from sqlalchemy import (
     DateTime,
     Boolean,
     TIMESTAMP,
+
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -17,6 +16,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import (
     scoped_session,
     sessionmaker,
+    column_property,
     )
 
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -26,9 +26,10 @@ from pyramid.security import (
     Everyone,
     ALL_PERMISSIONS,
     )
+
 class RootFactory(object):
     __acl__ = [ (Allow,  Everyone     , 'Guest'),
-                (Allow, 'Member', 'Member'),
+                (Allow, 'member', 'Member'),
                 (Allow, 'admin' ,  ALL_PERMISSIONS) ]
     def __init__(self, request):
         pass
@@ -80,6 +81,7 @@ class Users(Base):
     firstname = Column(Text)
     middlename = Column(Text)
     lastname = Column(Text)
+    fullname = column_property(firstname + " " + lastname)
     birthday = Column(Date)
     street = Column(Text)
     city =Column(Text)
@@ -95,9 +97,10 @@ class Users(Base):
     operationalvalue = Column(Integer, ForeignKey('OperationalStatus.operationalvalue'))
     portablenumber = Column(Integer)
     
-    def __init__(self, username, password,firstname,middlename,lastname,birthday,street,city,
-                 state,zipcode,residence,roomnumber,phonenumber,email,privileges,
-                 trainingvalue,administrativevalue,operationalvalue,portablenumber):
+    def __init__(self, username, password, firstname, middlename, lastname,
+            birthday, street, city, state, zipcode, residence, roomnumber,
+            phonenumber, email, privileges, trainingvalue, administrativevalue,
+            operationalvalue, portablenumber):
         self.username = username
         self.password = password
         self.firstname =firstname
@@ -240,8 +243,7 @@ class Events(Base):
     notes = Column(Text)
     privileges = Column(Integer, ForeignKey('Privileges.privilegevalue'))
 
-    def __init__(self, eventid, startdatetime, enddatetime, name, notes, privileges):
-        self.eventid = eventid
+    def __init__(self, startdatetime, enddatetime, name, notes, privileges):
         self.startdatetime = startdatetime
         self.enddatetime = enddatetime
         self.name = name
@@ -278,10 +280,3 @@ class MinutesContent(Base):
         self.header = header
         self.subheader = subheader
         self.content = content
-
-
-
-
-
-
-

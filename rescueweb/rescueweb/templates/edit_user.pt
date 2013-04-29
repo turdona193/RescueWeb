@@ -4,10 +4,10 @@
            	<form method="post">
         		Select User: <select name="selecteduser">
 							    	<div tal:repeat = "user users">
-							    		<span tal:condition="edit_user.username==user">
+							    		<span tal:condition="edited_user.username==user">
   											<option value="${user}" selected>${user}</option>
   										</span>
-  										<span tal:condition="not edit_user.username==user">
+  										<span tal:condition="not edited_user.username==user">
   											<option value="${user}">${user}</option>
   										</span>
   										
@@ -21,23 +21,23 @@
     	<span tal:condition="userselected">
     
 	        <form method="post">
-				Login: <input type="text" name="username" value="${edit_user.username}"/><br/>
-				Password: <input type="password" name="password" value="${edit_user.password}"/><br/>
-				First Name: <input type="text" name="firstname" value="${edit_user.firstname}"/><br/>
-				Middle Name: <input type="text" name="middlename" value="${edit_user.middlename}"/><br/>
-				Last Name: <input type="text" name="lastname" value="${edit_user.lastname}"/><br/>
+				Login: <input type="text" name="username" value="${edited_user.username}"/><br/>
+				Password: <input type="password" name="password" value="${edited_user.password}"/><br/>
+				First Name: <input type="text" name="firstname" value="${edited_user.firstname}"/><br/>
+				Middle Name: <input type="text" name="middlename" value="${edited_user.middlename}"/><br/>
+				Last Name: <input type="text" name="lastname" value="${edited_user.lastname}"/><br/>
 				Birtday: <br/>
-				Day: <input type="text" name="day" value="${edit_user.birthday.day}"/><br/>
-				Month: <input type="text" name="month" value="${edit_user.birthday.month}"/><br/>
-				Year: <input type="text" name="year" value="${edit_user.birthday.year}"/><br/>
-				Street: <input type="text" name="street" value="${edit_user.street}"/><br/>
-				City: <input type="text" name="city" value="${edit_user.city}"/><br/>
-				State: <input type="text" name="state" value="${edit_user.state}"/><br/>
-				Zipcode: <input type="text" name="zipcode" value="${edit_user.zipcode}"/><br/>
-				Residence: <input type="text" name="residence" value="${edit_user.residence}"/><br/>
-				Room Number: <input type="text" name="roomnumber" value="${edit_user.roomnumber}"/><br/>
-				Phone Number: <input type="text" name="phonenumber" value="${edit_user.phonenumber}"/><br/>
-				Email: <input type="text" name="email" value="${edit_user.email}"/><br/>
+				Day: <input type="text" name="day" value="${edited_user.birthday.day}"/><br/>
+				Month: <input type="text" name="month" value="${edited_user.birthday.month}"/><br/>
+				Year: <input type="text" name="year" value="${edited_user.birthday.year}"/><br/>
+				Street: <input type="text" name="street" value="${edited_user.street}"/><br/>
+				City: <input type="text" name="city" value="${edited_user.city}"/><br/>
+				State: <input type="text" name="state" value="${edited_user.state}"/><br/>
+				Zipcode: <input type="text" name="zipcode" value="${edited_user.zipcode}"/><br/>
+				Residence: <input type="text" name="residence" value="${edited_user.residence}"/><br/>
+				Room Number: <input type="text" name="roomnumber" value="${edited_user.roomnumber}"/><br/>
+				Phone Number: <input type="text" name="phonenumber" value="${edited_user.phonenumber}"/><br/>
+				Email: <input type="text" name="email" value="${edited_user.email}"/><br/>
 	
 				Privileges: <select name="privileges">
 							  	<div tal:repeat = "priv privilegesOptions">

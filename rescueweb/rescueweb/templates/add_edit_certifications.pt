@@ -1,0 +1,17 @@
+<div metal:use-macro="main.macros['template']">
+    <div metal:fill-slot="content">
+        <p>
+          ${title}
+          <form>
+				<select name="selectlink">
+					<div tal:repeat = "username allusers">
+		 	 				<option value="${username}">${username}</option>
+					</div>
+				</select><br/>
+			<input type="submit" name="form.selected" value="Load"/><br/>
+			</form>
+          
+          
+        </p>
+    </div>
+</div>
