@@ -26,6 +26,7 @@ from ..models import (
     WebLinks, 
     Base, 
     StandBy,
+	Pictures,
     )
 
 def usage(argv):
@@ -398,4 +399,9 @@ def main(argv = sys.argv):
                     Office Location: Sission Basement </br>
                     """
                     ),
+                ])
+        DBSession.add_all(
+                [
+                    Pictures(picture='/pictures/eqptip.jpg',description="This is a picture of our equipment."),
+                    Pictures(picture='/pictures/mock1.jpg',description="Pictures from our 2004 Mock DWI event."),
                 ])

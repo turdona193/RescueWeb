@@ -41,6 +41,7 @@ from .models import (
     TrainingLevel,
     WebLinks,
     StandBy,
+	Pictures,
     )
 
 @view_config(route_name='home', renderer='templates/home.pt')
@@ -715,6 +716,24 @@ def logout(request):
             location=request.route_url('home'),
             headers=headers,
             )
+
+@view_config(route_name='pictures', renderer='templates/pictures.pt')
+def pictures(request):
+    main = get_renderer('templates/template.pt').implementation()
+    allpictures = []
+    pictures = ''
+
+    pictures = DBSession.query(Pictures).all()
+    allpictures = [[apicture.picture,apicture.description] for apicture in pictures] 
+
+    return dict(title = 'Pictures',
+				main = main,
+				user=request.user,
+				pictures = allpictures,
+               )
+				
+
+
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
