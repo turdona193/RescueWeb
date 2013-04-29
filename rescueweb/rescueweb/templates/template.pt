@@ -186,11 +186,7 @@ var dropdown=new TINY.dropdown.init("dropdown", {id:'menu', active:'menuhover'})
 </body>
 <footer>
 	<div class="footer">
-	<table style="width: 100%;">
-		<tr>
-			<td><font color=#fff>Copyright &copy; Databases Spring 2013</font></td>
-		</tr>
-	</table>
+		<p>Copyright &copy; Databases Spring 2013</p>
 	</div>
 </footer>
 </html>
