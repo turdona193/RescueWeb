@@ -27,6 +27,7 @@ from ..models import (
     Base, 
     StandBy,
     MeetingMinutes,
+	Pictures,
     )
 
 def usage(argv):
@@ -401,6 +402,7 @@ def main(argv = sys.argv):
                     ),
                 ])
         DBSession.add_all(
+
                 [MeetingMinutes(datetime = datetime.datetime(2013,4,28),
                                 header = 'Officers Report' ,
                                 subheader = 'President' ,
@@ -462,4 +464,9 @@ def main(argv = sys.argv):
                                 content = 'week before:Be prepared' ,
                                 ),
                         ])
+        DBSession.add_all(
+                [
+                    Pictures(picture='/pictures/eqptip.jpg',description="This is a picture of our equipment."),
+                    Pictures(picture='/pictures/mock1.jpg',description="Pictures from our 2004 Mock DWI event."),
+                ])
 

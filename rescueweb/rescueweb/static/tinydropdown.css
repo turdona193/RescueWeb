@@ -35,11 +35,12 @@ height:20px;
 position:fixed;
 bottom:0;
 vertical-align: top;
+margin: 0 auto;
 text-align: center;
 font-family: Verdana,Arial;
-font-size: 15px;
+font-size: 12px;
+color: #fff;
 background: #020069;
-text-shadow:1px 1px #888;
 }
 
 .push {
