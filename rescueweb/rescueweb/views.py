@@ -709,16 +709,16 @@ def email(request):
     main = get_renderer('templates/template.pt').implementation()
     mailer = get_mailer(request)
     
-    message = Message(subject = "testing",
-                      sender = "rosejp194@potsdam.edu",
-                      recipients = ["jeremy.rose09@gmail.com"],
-                      body = "hopefully this thing works")
-    #mailer.send(message)
+    message = Message(subject="testing",
+                      sender="rosejp194@potsdam.edu",
+                      recipients=["jeremy.rose09@gmail.com"],
+                      body="hopefully this thing works")
+    mailer.send(message)
     
     return dict(
-             title = 'Email',
-             main = main,
-             user = request.user
+             title='Email',
+             main=main,
+             user=request.user
              )
 
 
