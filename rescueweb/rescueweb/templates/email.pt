@@ -1,0 +1,17 @@
+<div metal:use-macro="main.macros['template']">
+    <div metal:fill-slot="content">
+        <p>
+          <b>Subject:</b>
+          	<form method="post">
+			<input input = "text" name="title"  /> <br/>
+			
+          		<textarea name="body" rows="16" cols="80"> </textarea> <br/>
+
+			<input type="submit" name="form.submitted" value="Send"/><br/>
+        	</form>
+
+        </p>
+    </div>
+</div>
+
+

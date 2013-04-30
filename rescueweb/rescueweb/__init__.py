@@ -71,6 +71,8 @@ def main(global_config, **settings):
     
     config.add_route('add_edit_announcements' , '/add_edit_announcements')
     config.add_route('add_edit_events' , '/add_edit_events')
+    
+    config.add_route('email' , '/email')
 
     # Attach a `user' attribute to the request object that's passed around
     # everywhere. This user object only has `username' and `privileges'
