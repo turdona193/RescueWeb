@@ -688,7 +688,7 @@ def email(request):
                       sender= "rosejp194@potsdam.edu",
                       recipients= ["jeremy.rose09@gmail.com"],
                       body= "hopefully this thing works")
-    #mailer.send(message)
+    mailer.send(message)
     
     return dict(
              title = 'Email',
