@@ -3,29 +3,27 @@ import transaction
 
 from pyramid import testing
 
-#from .models import DBSession
-def main():
-    print("tests.py is functional")
+def _initTestingDB():
+    from sqlalchemy import create_engine
+    from rescueweb.models import (
+        DBSession,
+        Page,
+        Base
+        )
+    engine = create_engine('sqlite://')
+    Base.metadata.create_all(engine)
+    DBSession.configure(bind=engine)
+    with transaction.manager:
+        model = Page('FrontPage', 'This is the front page')
+        DBSession.add(model)
+    return DBSession
 
-class ViewTests(unittest.TestCase):
+class ViewPageTests(unittest.TestCase):
     def setUp(self):
         self.session = _initTestingDB()
         self.config = testing.setUp()
-        #from sqlalchemy import create_engine
-        #engine = create_engine('sqlite://')
-        #from .models import (
-        #    Base,
-        #    MyModel,
-        #    )
-        #DBSession.configure(bind=engine)
-        #Base.metadata.create_all(engine)
-        #
-        #with transaction.manager:
-        #    model = MyModel(name='one', value=55)
-        #    DBSession.add(model)
 
     def tearDown(self):
-        #DBSession.remove()
         self.session.remove()
         testing.tearDown()
 
@@ -36,12 +34,12 @@ class ViewTests(unittest.TestCase):
     def test_it(self):
         from tutorial.models import Page
         request = DBSession.DummyRequest()
-        request = matchdict['pagename'] = 'IDoExist'
-        #from .views import my_view
-        #info = my_view(request)
-        #self.assertEqual(info['one'].name, 'one')
-        #self.assertEqual(info['project'], 'rescueweb')
-        pass
+        request.matchdict['history'] = 'DoIExist?'
+        page = Page('DoIExist?', 'blah blah something')
+        self.registerRoutes(self.config)
+        info = self._callFUT(request)
+        self.assertEqual(info['page'], page)
+        self.assertEqual('testing', 'failure')
 
 class FunctionalTests(unittest.TestCase):
     def setUp(self):
@@ -69,7 +67,3 @@ class FunctionalTests(unittest.TestCase):
         for page, title in zip(pages, content):
             res = self.testapp.get(page, status=200)
             self.assertIn(bytes(title, 'utf-8'), res.body)
-
-
-
-main()
