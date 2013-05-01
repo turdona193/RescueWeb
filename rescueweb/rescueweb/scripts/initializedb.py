@@ -332,12 +332,12 @@ def main(argv = sys.argv):
 
         DBSession.add_all(
                 [
-                    Page(name='Home', data=("""Welcome to the SUNY Potsdam
-                    Campus Rescue Squad website! </br> Currently the CRS staff
+                    Page(name='Home', data=("""<b>Welcome to the SUNY Potsdam
+                    Campus Rescue Squad website!</b> </br> Currently the CRS staff
                     consists of approximately 22 members, many of which have
                     completed the NYS EMT Curriculum. Also, many of the members
                     are currently enrolled in the EMT basic class. </br> If you
-                    wish to report a medical emergency please call x2222 and ask
+                    wish to report a medical emergency please call <b>x2222</b> and ask
                     for CRS assistance and be ready to give the following
                     information: a reason for calling (the medical emergency),
                     your name, the location of the medical emergency, and

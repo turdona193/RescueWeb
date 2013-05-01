@@ -16,7 +16,7 @@
   Javascript Dropdown Menu
   April 18, 2013
   http://www.scriptiny.com/2011/04/javascript-dropdown-menu/
-  !-->
+  -->
   <script type="text/javascript" src="${request.static_url('rescueweb:static/tinydropdown.js')}"></script>
 
   <!-- JQuery datepicker stuff -->
@@ -55,7 +55,7 @@
 	<tr>
 	<th rowspan="2"><div style="width: 175px"><font size="4" color="#020069" style="font-family:serif">${title}</font></div></th>
 	<th rowspan="2">
-	<img src="${request.static_url('rescueweb:static/CRSbanner.jpg')}" alt="CRS Banner"/>
+	<a href="/"><img src="${request.static_url('rescueweb:static/CRSbanner.jpg')}" alt="CRS Banner"/></a>
 	</th>
 		<span tal:condition="user">
    			<td style="width:175px;text-align:center"><a href="/">${user.username}</a></td>
