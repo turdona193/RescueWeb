@@ -282,11 +282,13 @@ class MinutesContent(Base):
         self.content = content
 
 class Pictures(Base):
-	__tablename__ = 'Pictures'
-	pictureindex = Column(Integer, primary_key=True)
-	picture = Column(Text)
-	description = Column(Text)
+    __tablename__ = 'Pictures'
+    pictureindex = Column(Integer, primary_key=True)
+    picture = Column(Text)
+    description = Column(Text)
+    category = Column(Text)
 
-	def __init__(self, picture, description):
-		self.picture = picture
-		self.description = description
+    def __init__(self, picture, description, category):
+        self.picture = picture
+        self.description = description
+        self.category = category
