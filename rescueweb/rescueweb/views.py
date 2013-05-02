@@ -747,8 +747,9 @@ def pictures(request):
     allpictures = []
     pictures = ''
 
-    pictures = DBSession.query(Pictures).all()
-    allpictures = [[apicture.picture,apicture.description] for apicture in pictures] 
+    categories = DBSession.query(distinct(Pictures.category)).all()
+    pictures = [DBSession.query(Pictures).filter(Pictures.category == cate[0]).first() for cate in categories]   
+    allpictures = [[apicture.picture,apicture.description, apicture.category] for apicture in pictures] 
 
     return dict(title = 'Pictures',
 				main = main,
