@@ -8,7 +8,6 @@ from sqlalchemy import (
     DateTime,
     Boolean,
     TIMESTAMP,
-
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -155,7 +154,7 @@ class AdministrativeStatus(Base):
         
 class EboardPositions(Base):
     __tablename__ = 'EboardPosition'
-    position = Column(Text, primary_key=True)
+    eboardposition = Column(Text, primary_key=True)
     username = Column(Text, ForeignKey('Users.username'))
 
     def __init__(self, position,username):
@@ -214,14 +213,12 @@ class StandByPersonnel(Base):
     username = Column(Text, ForeignKey('Users.username'), primary_key=True)
     standbyposition = Column(Text)
     coverrequested = Column(Boolean)
-    covered = Column(Text, ForeignKey('Users.username'))
 
-    def __init__(self, standbyid, username, standbyposition, coverrequested, covered):
+    def __init__(self, standbyid, username, standbyposition, coverrequested):
         self.standbyid = standbyid
         self.username = username
         self.standbyposition = standbyposition
         self.coverrequested = coverrequested
-        self.covered = covered
 
 class CrewChiefSchedule(Base):
     __tablename__ = 'CrewChiefSchedule'
@@ -282,4 +279,33 @@ class Pictures(Base):
 	def __init__(self, picture, description):
 		self.picture = picture
 		self.description = description
-
+        
+class DutyCrews(Base):
+    __tablename__ = 'Duty_Crews'
+    crewnumber = Column(Integer, primary_key=True)
+    username = Column(Text, ForeignKey('Users.username'), primary_key=True)
+    def __init__(self, crewnumber, username):
+        self.crewnumber = crewnumber
+        self.username = username
+        
+class DutyCrewCalendar(Base):
+    __tablename__ = 'Duty_Crew_Calendar'
+    day = Column(Date, primary_key = True)
+    crewnumber = Column(Integer,ForeignKey('Duty_Crews.crewnumber'))
+    def __init__(self,day,crewnumber):
+        self.day = day
+        self.crewnumber = crewnumber
+        
+class DutyCrewSchedule(Base):
+    __tablename__ = 'Duty_Crew_Schedule'
+    day = Column(Date, primary_key = True)
+    username = Column(Text, ForeignKey('Users.username'), primary_key=True)
+    coveragerequest = Column(Boolean)
+    def __init__(self,day,username,coveragerequest):
+        self.day = day
+        self.username = username
+        self.coveragerequest = coveragerequest
+        
+class LoginIns(Base):
+    username = Column(Text, ForeignKey('Users.username'), primary_key=True)
+    TSTAMP = Column(TIMESTAMP)

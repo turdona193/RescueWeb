@@ -93,13 +93,14 @@ def personnel(request):
 @view_config(route_name='announcements', renderer='templates/announcements.pt')
 def announcements(request):
     main = get_renderer('templates/template.pt').implementation()
-    page = DBSession.query(Announcements).order_by(Announcements.posted.desc()).all()
-    headers = [column.name for column in page[0].__table__.columns]
+    announcements = DBSession.query(Announcements).order_by(Announcements.posted.desc()).all()
+    headers = [column.name for column in announcements[0].__table__.columns]
 
     return dict(
             title='Announcements', 
             main=main,
-            announcements=page, headers=headers,
+            announcements=announcements,
+            headers=headers,
             user=request.user)
     
 @view_config(route_name='events', renderer='templates/events.pt')
@@ -181,10 +182,16 @@ def documents(request):
              permission='Member')
 def minutes(request):
     main = get_renderer('templates/template.pt').implementation()
+    meeting_minutes = DBSession.query(MeetingMinutes).order_by(MeetingMinutes.datetime.desc()).all()
+    headers = [column.name for column in meeting_minutes[0].__table__.columns]
+    alldates = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime.desc())
 
     return dict(
             title='Meeting Minutes',
             main=main,
+            meeting_minutes=meeting_minutes,
+            headers=headers,
+            alldates=alldates,
             user=request.user
             )
 
@@ -538,21 +545,40 @@ def editmeetingminutes(request):
     main = get_renderer('templates/template.pt').implementation()
     message = ''
     allminutes = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime)
-    alldates = [minute.datetime.timetuple()[:3] for minute in allminutes]
-    allminutes = []
+    alldates = ['New']+[minute.datetime.timetuple()[:3] for minute in allminutes]
+    allminutes = ['New']
     minutes = ''
     date = ''
+    form = ''
+    if 'form.new' in request.params:
+        form = 'New'
     
     if 'date.selected' in request.params:
+        operation = request.params['date.selected']
         datestring = request.params['selected_date']
-        date = datetime.datetime.strptime(datestring,'(%Y, %m, %d)')
-        allminutesdatabase = DBSession.query(MeetingMinutes.header,MeetingMinutes.subheader).filter_by(datetime = date).all()
-        allminutes = [[minutes.header,minutes.subheader] for minutes in allminutesdatabase]
-
+        if datestring == 'New':
+            form = 'New'
+        else:
+            date = datetime.datetime.strptime(datestring,'(%Y, %m, %d)')
+            allminutesdatabase = DBSession.query(MeetingMinutes.header,MeetingMinutes.subheader).filter_by(datetime = date).all()
+            if operation == 'Load':
+                allminutes = [[minutes.header,minutes.subheader] for minutes in allminutesdatabase]
+            if operation == 'Delete':
+                DBSession.delete(allminutesdatabase)
+            
     if 'report.selected' in request.params:
-        date = request.params['selected_date']
-        minutesdatabase = DBSession.query(MeetingMinutes).filter_by(datetime = datetime.datetime.strptime(date,'(%Y, %m, %d)'),).all()
-        minutes = minutesdatabase
+        operation = request.params['report.selected']
+        if operation == 'New':
+            form = 'New'
+        else:
+            date = request.params['selected_date']
+            minutesdatabase = DBSession.query(MeetingMinutes).filter_by(datetime = datetime.datetime.strptime(date,'(%Y, %m, %d)'),).first()
+            if operation == 'Load':
+                form = 'Load'
+                minutes = minutesdatabase
+            if operation == 'Delete':
+                DBSession.delete(minutesdatabase)
+        
 
     return dict(
             title='Add/Edit Meeting Minutes',
@@ -560,6 +586,7 @@ def editmeetingminutes(request):
             alldates=alldates,
             allminutes = allminutes,
             minutes = minutes,
+            form=form,
             user=request.user
             )
 
@@ -604,14 +631,14 @@ def edit_portable_numbers(request):
 def add_edit_certifications(request):
     main = get_renderer('templates/template.pt').implementation()
     all_users = DBSession.query(Users).order_by(Users.username).all() 
-    all_usernames = [auser.username for auser in allusers]
+    all_usernames = [auser.username for auser in all_users]
     all_certifications = []
     name_of_certs = []
     
     return dict(
             title='Add/Edit Certifications',
             main=main,
-            allusers = all_usernames,
+            all_users = all_usernames,
             
             user=request.user
             )

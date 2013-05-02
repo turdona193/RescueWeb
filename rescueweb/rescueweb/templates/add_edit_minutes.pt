@@ -1,6 +1,8 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
 		<form method="post">
+				<input type="submit" name="form.new" value="New"/><br/><br/>
+		
         	Meeting Dates: <select name="selected_date">
 					  			<div tal:repeat = "date alldates">
   											<option value="${date}" >${date}</option>
@@ -16,14 +18,14 @@
 				<input type="submit" name="report.selected" value="Load"/><br/>
 				<input type="submit" name="report.selected" value="Delete"/><br/>
 				
+				<span tal:condition = " form == 'Load' or form == 'New'">
 					<input input = "text" name="header"/><br/>
 					<input input = "text" name="subheader"/><br/>
 					
-          			<textarea name="body" rows="16" cols="80"></textarea><br/>
-          	  		<input type="hidden" name="editannouncement"/>
+          			<textarea name="body" rows="16" cols="80"></textarea> <br/>
+          	  		<input type="hidden" name="editannouncement" value="hello" />
           			<input type="submit" name="form.submitted" value="Save"/>
-					<input type="file">
-
+				</span>
 
 
 		</form>
