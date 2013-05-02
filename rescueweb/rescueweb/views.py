@@ -8,7 +8,6 @@ from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 
 from sqlalchemy.exc import DBAPIError
-from sqlalchemy import distinct
 
 #from pyramid_mailer import get_mailer
 #from pyramid_mailer.message import Message
@@ -709,7 +708,7 @@ def add_edit_announcements(request):
         announcementchosen = ''
     
     allannouncements = DBSession.query(Announcements).all() 
-    announcements = [announcement.header for announcement in allannouncements]
+    announcements = [announce.header for announce in allannouncements]
     
     return dict(
             title='Add/Edit Announcements',
@@ -799,10 +798,9 @@ def pictures(request):
     main = get_renderer('templates/template.pt').implementation()
     allpictures = []
     pictures = ''
+
     categories = DBSession.query(distinct(Pictures.category)).all()
-    print ("HEEEEELLLLLLLLLLLLLLLLLLLLLLLOOOOOOOOOOOOOO {}" .format(categories))
     pictures = [DBSession.query(Pictures).filter(Pictures.category == cate[0]).first() for cate in categories]   
-    #pictures = [DBSession.query(Pictures).filter(Pictures.category == cate.category).first() for cate in categories] 
     allpictures = [[apicture.picture,apicture.description, apicture.category] for apicture in pictures] 
 
     return dict(title = 'Pictures',
