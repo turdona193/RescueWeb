@@ -157,8 +157,8 @@ class EboardPositions(Base):
     eboardposition = Column(Text, primary_key=True)
     username = Column(Text, ForeignKey('Users.username'))
 
-    def __init__(self, position,username):
-        self.position = position
+    def __init__(self,eboardposition,username):
+        self.eboardposition = eboardposition
         self.username = username
       
 class TrainingLevel(Base):
@@ -271,14 +271,15 @@ class MeetingMinutes(Base):
         self.content = content
 
 class Pictures(Base):
-	__tablename__ = 'Pictures'
-	pictureindex = Column(Integer, primary_key=True)
-	picture = Column(Text)
-	description = Column(Text)
-
-	def __init__(self, picture, description):
-		self.picture = picture
-		self.description = description
+    __tablename__ = 'Pictures'
+    pictureindex = Column(Integer, primary_key=True)
+    picture = Column(Text)
+    description = Column(Text)
+    category = Column(Text)
+    def __init__(self, picture, description, category):
+        self.picture = picture
+        self.description = description
+        self.category = category
         
 class DutyCrews(Base):
     __tablename__ = 'Duty_Crews'
@@ -307,5 +308,7 @@ class DutyCrewSchedule(Base):
         self.coveragerequest = coveragerequest
         
 class LoginIns(Base):
+    __tablename__ = 'Login_Ins'
     username = Column(Text, ForeignKey('Users.username'), primary_key=True)
     TSTAMP = Column(TIMESTAMP)
+

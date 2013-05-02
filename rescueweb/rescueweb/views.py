@@ -8,9 +8,10 @@ from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 
 from sqlalchemy.exc import DBAPIError
+from sqlalchemy import distinct
 
-from pyramid_mailer import get_mailer
-from pyramid_mailer.message import Message
+#from pyramid_mailer import get_mailer
+#from pyramid_mailer.message import Message
 
 
 from pyramid.httpexceptions import (
@@ -730,17 +731,19 @@ def add_edit_events(request):
             main=main,
             user=request.user
             )
+
 @view_config(route_name='email', renderer='templates/email.pt',
              permission='admin')
 def email(request):
-    main = get_renderer('templates/template.pt').implementation()
-    mailer = get_mailer(request)
-    
-    message = Message(subject="testing",
-                      sender="rosejp194@potsdam.edu",
-                      recipients=["jeremy.rose09@gmail.com"],
-                      body="hopefully this thing works")
-    mailer.send(message)
+    #main = get_renderer('templates/template.pt').implementation()
+    #mailer = get_mailer(request)
+    #
+    #message = Message(subject= "testing",
+    #                  sender= "rosejp194@potsdam.edu",
+    #                  recipients= ["jeremy.rose09@gmail.com"],
+    #                  body= "hopefully this thing works")
+    #
+    #mailer.send(message)
     
     return dict(
              title='Email',
@@ -796,9 +799,11 @@ def pictures(request):
     main = get_renderer('templates/template.pt').implementation()
     allpictures = []
     pictures = ''
-
-    pictures = DBSession.query(Pictures).all()
-    allpictures = [[apicture.picture,apicture.description] for apicture in pictures] 
+    categories = DBSession.query(distinct(Pictures.category)).all()
+    print ("HEEEEELLLLLLLLLLLLLLLLLLLLLLLOOOOOOOOOOOOOO {}" .format(categories))
+    pictures = [DBSession.query(Pictures).filter(Pictures.category == cate[0]).first() for cate in categories]   
+    #pictures = [DBSession.query(Pictures).filter(Pictures.category == cate.category).first() for cate in categories] 
+    allpictures = [[apicture.picture,apicture.description, apicture.category] for apicture in pictures] 
 
     return dict(title = 'Pictures',
 				main = main,
