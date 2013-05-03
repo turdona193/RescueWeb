@@ -756,9 +756,18 @@ def pictures(request):
 				user=request.user,
 				pictures = allpictures,
                )
-				
 
-
+@view_config(route_name='category_pictures', renderer='templates/category_pictures.pt')
+def category_pictures(request):
+    main = get_renderer('templates/template.pt').implementation()
+    allpictures = []
+    pictures = ''
+    
+    return dict(title = 'Pictures',
+				main = main,
+				user=request.user,
+				pictures = allpictures,
+               )
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
