@@ -1,6 +1,15 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-        <p>This is the ${title} page!</p>
-        <p>There are no meeting minutes at this time.</p>
+        <div tal:repeat="content announcements">
+  				<p>
+              		<h3>${getattr(content,headers[1])}</h3>
+
+			  		${getattr(content,headers[2])} 
+
+			  		<br>Posted By: ${getattr(content,headers[4])} 
+
+			  		<br>Posted on: ${getattr(content,headers[5])} 
+			  </p><br/>
+			</div>
     </div>
 </div>

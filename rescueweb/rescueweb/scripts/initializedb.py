@@ -26,6 +26,7 @@ from ..models import (
     WebLinks, 
     Base, 
     StandBy,
+    MeetingMinutes,
 	Pictures,
     )
 
@@ -229,8 +230,8 @@ def main(argv = sys.argv):
 
         DBSession.add_all(
                 [
-                    EboardPositions(position='Chief', username='guarintb193'),
-                    EboardPositions(position='Parliamentarian', username='muehlbjp193'),
+                    EboardPositions(eboardposition='Chief', username='guarintb193'),
+                    EboardPositions(eboardposition='Parliamentarian', username='muehlbjp193'),
                 ])
         
         DBSession.add_all(
@@ -401,6 +402,69 @@ def main(argv = sys.argv):
                     ),
                 ])
         DBSession.add_all(
+
+                [MeetingMinutes(datetime = datetime.datetime(2013,4,28),
+                                header = 'Officers Report' ,
+                                subheader = 'President' ,
+                                content = 'No Report' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,28),
+                                header = 'Officers Report' ,
+                                subheader = 'Vice-President' ,
+                                content = 'Something' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,28),
+                                header = 'Officers Report' ,
+                                subheader = 'Chief Line Officer' ,
+                                content = 'Nothing at all' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,28),
+                                header = 'Committee Report' ,
+                                subheader = 'Website Committee' ,
+                                content = 'We are doing great things' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,28),
+                                header = 'New Business' ,
+                                subheader = 'New Quarters' ,
+                                content = 'Probably not gonna happen' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,28),
+                                header = 'Announcements' ,
+                                subheader = 'MCI' ,
+                                content = 'Be prepared' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,21),
+                                header = 'Officers Report' ,
+                                subheader = 'President' ,
+                                content = 'week before:No Report' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,21),
+                                header = 'Officers Report' ,
+                                subheader = 'Vice-President' ,
+                                content = 'week before:Something' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,21),
+                                header = 'Officers Report' ,
+                                subheader = 'Chief Line Officer' ,
+                                content = 'week before:Nothing at all' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,21),
+                                header = 'Committee Report' ,
+                                subheader = 'Website Committee' ,
+                                content = 'week before:We are doing great things' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,21),
+                                header = 'New Business' ,
+                                subheader = 'New Quarters' ,
+                                content = 'week before:Probably not gonna happen' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,21),
+                                header = 'Announcements' ,
+                                subheader = 'MCI' ,
+                                content = 'week before:Be prepared' ,
+                                ),
+                        ])
+        DBSession.add_all(
                 [
                     Pictures(picture='/pictures/eqpt1.jpg',description="", category="Equipment"),
                     Pictures(picture='/pictures/eqpt2.jpg',description="", category="Equipment"),
@@ -437,3 +501,4 @@ def main(argv = sys.argv):
                     Pictures(picture='/pictures/wellnessfair2.jpg', description="", category="2006 Wellness Fair"),
                     Pictures(picture='/pictures/wellnessfair4.jpg', description="", category="2006 Wellness Fair"),
                 ])
+
