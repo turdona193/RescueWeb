@@ -8,6 +8,7 @@ from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 
 from sqlalchemy.exc import DBAPIError
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import distinct
 
 #from pyramid_mailer import get_mailer
@@ -48,6 +49,7 @@ from .models import (
     StandBy,
     MeetingMinutes,
 	Pictures,
+    StandByPersonnel,
     )
 
 @view_config(route_name='home', renderer='templates/home.pt')
@@ -219,10 +221,104 @@ def member_info(request):
 @view_config(route_name='standbys', renderer='templates/standbys.pt',
              permission='Member')
 def standbys(request):
+    """A view that diplays a javascript calendar with dates with Standbys
+    hilighted.
+
+    This view is very simple because all the work happens after the page gets
+    loaded with javascript.
+
+    """
     main = get_renderer('templates/template.pt').implementation()
 
     return dict(
             title='Stand-Bys', 
+            main=main,
+            user=request.user
+            )
+
+@view_config(route_name='standby', renderer='templates/standby.pt',
+             permission='Member')
+def standby(request):
+    """Renders information relating to a specific Standby event"""
+    main = get_renderer('templates/template.pt').implementation()
+
+    # Sanity check
+    if 'standbyid' not in request.matchdict:
+        return HTTPNotFound('No standby passed in.')
+
+    # Get the user's information if they are signed up for the standby
+    standby_person = DBSession.query(StandByPersonnel).\
+            filter(StandByPersonnel.standbyid == request.matchdict['standbyid']).\
+            filter(StandByPersonnel.username == request.user.username).first()
+
+    # Check to see if we got here by signing up for the standby
+    if 'signup.submitted' in request.params:
+        if 'position' not in request.POST:
+            return Response('Error: You have to sign up with either Active or '
+            'Probationary status')
+
+        # Only add the user to the Standby table if they weren't already signed
+        # up. If they are already signed up, just bring them back to the page.
+        if standby_person:
+            return HTTPFound(location=request.url)
+        else:
+            standby_person = StandByPersonnel(
+                    standbyid=request.matchdict['standbyid'],
+                    username=request.user.username,
+                    standbyposition=request.POST['position'],
+                    coverrequested=False
+                    )
+            DBSession.add(standby_person)
+    elif 'coverage_request.submitted' in request.params:
+        standby_person.coverrequested = True
+    elif 'cancel_coverage_request.submitted' in request.params:
+        standby_person.coverrequested = False
+
+    # Get the standby event that was chosen and the headers to display it
+    standby = DBSession.query(StandBy.event, StandBy.location, StandBy.notes,
+            StandBy.startdatetime, StandBy.enddatetime).\
+            filter(StandBy.standbyid == request.matchdict['standbyid']).\
+            first()
+
+    standby_headers = [
+            'Event', 
+            'Location', 
+            'Notes', 
+            'Start Date Time', 
+            'End Date Time'
+            ]
+
+    # Get the personnel that are signed up for the standby and the headers that
+    # are used to display the information.
+    standby_personnel = DBSession.query(
+            StandByPersonnel.standbyid,
+            StandByPersonnel.username,
+            StandByPersonnel.standbyposition,
+            StandByPersonnel.coverrequested).\
+                    filter(StandByPersonnel.standbyid ==
+                    request.matchdict['standbyid']).all()
+
+    standby_personnel_headers = [
+            'Standby ID',
+            'User', 
+            'Standby Position', 
+            'Requesting Coverage'
+            ]
+
+    # Flag the user as requesting coverage or not
+    if standby_person:
+        # Don't refactor this test. It really and truly has to be the way it is!
+        requesting_coverage = standby_person.coverrequested
+    else:
+        requesting_coverage = False
+
+    return dict(
+            title=standby.event,
+            standby=zip(standby_headers, standby),
+            standby_personnel=standby_personnel,
+            standby_personnel_headers=standby_personnel_headers,
+            user_already_registered=standby_person,
+            requesting_coverage=requesting_coverage,
             main=main,
             user=request.user
             )
@@ -267,6 +363,7 @@ def standby_information(request):
     # Return all of the Standby dates occurring on this date
     return [
         (
+            standby.standbyid,
             standby.event,
             standby.location,
             standby.notes,
@@ -557,6 +654,7 @@ def editmeetingminutes(request):
     allminutes = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime)
     alldates = ['New']+[minute.datetime.timetuple()[:3] for minute in allminutes]
     allminutes = ['New']
+    datestring = 'New'
     minutes = ''
     date = ''
     form = ''
@@ -572,7 +670,7 @@ def editmeetingminutes(request):
             date = datetime.datetime.strptime(datestring,'(%Y, %m, %d)')
             allminutesdatabase = DBSession.query(MeetingMinutes.header,MeetingMinutes.subheader).filter_by(datetime = date).all()
             if operation == 'Load':
-                allminutes = [[minutes.header,minutes.subheader] for minutes in allminutesdatabase]
+                allminutes = [['New','New']]+[[minutes.header,minutes.subheader] for minutes in allminutesdatabase]
             if operation == 'Delete':
                 DBSession.delete(allminutesdatabase)
             
@@ -581,7 +679,7 @@ def editmeetingminutes(request):
         if operation == 'New':
             form = 'New'
         else:
-            date = request.params['selected_date']
+            date = request.params['usedate']
             minutesdatabase = DBSession.query(MeetingMinutes).filter_by(datetime = datetime.datetime.strptime(date,'(%Y, %m, %d)'),).first()
             if operation == 'Load':
                 form = 'Load'
@@ -589,14 +687,16 @@ def editmeetingminutes(request):
             if operation == 'Delete':
                 DBSession.delete(minutesdatabase)
         
-
+    message = datestring
     return dict(
             title='Add/Edit Meeting Minutes',
             main=main,
             alldates=alldates,
             allminutes = allminutes,
             minutes = minutes,
+            datestring = datestring,
             form=form,
+            message=message,
             user=request.user
             )
 
@@ -696,9 +796,15 @@ def add_edit_certifications(request):
              permission='admin')
 def add_edit_standby(request):
     main = get_renderer('templates/template.pt').implementation()
+    standbychosen = ''
+    form = ''
 
+    all_standBy = DBSession.query(StandBy).order_by(StandBy.standbyid).all()
     return dict(title='Add/Edit Standby',
             main=main,
+            all_standBy=all_standBy,
+	    standbychosen=standbychosen,
+	    form=form,
             user=request.user
             )
 
