@@ -799,10 +799,16 @@ def pictures(request):
     main = get_renderer('templates/template.pt').implementation()
     allpictures = []
     pictures = ''
+    categoryClicked = ''
 
     categories = DBSession.query(distinct(Pictures.category)).all()
     pictures = [DBSession.query(Pictures).filter(Pictures.category == cate[0]).first() for cate in categories]   
     allpictures = [[apicture.picture,apicture.description, apicture.category] for apicture in pictures] 
+
+    if 'category.chosen' in request.params:
+        categoryClicked = request.params['categoryChosen']
+        pictures = [DBSession.query(Pictures).filter(Pictures.category == categoryClicked).all()]
+        print("****************************** INSIDE FORM.SUBMITTED ******************************")
 
     return dict(title = 'Pictures',
 				main = main,
@@ -810,11 +816,13 @@ def pictures(request):
 				pictures = allpictures,
                )
 
-@view_config(route_name='category_pictures', renderer='templates/pictures.pt')
+@view_config(route_name='category_pictures', renderer='templates/category_pictures.pt')
 def category_pictures(request):
+    print("****************************** {}".format(request))
     main = get_renderer('templates/template.pt').implementation()
     allpictures = []
     pictures = ''
+    categoryChosen = ''
     
     return dict(title = 'Pictures',
 				main = main,
