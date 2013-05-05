@@ -1,24 +1,22 @@
 <div metal:use-macro="main.macros['template']">
-    <div metal:fill-slot="content">
+    	<div metal:fill-slot="content">
         <p>
-          ${title} Test
+		${title} Test
 		<form method="post">
-        		Standbys: <select name="selectedstandby">
+			Standbys: <select name="selectedstandby">
 				<div tal:repeat = "stanb all_standBy">
 					<span tal:condition="standbychosen==stanb">
-  						<option value="${stanb}" selected>${stanb.event}</option>
+						<option value="${stanb}" selected>${stanb.event}</option>
   					</span>
 					<span tal:condition="not standbychosen==stanb">
-  						<option value="${stanb}">${stanb}</option>
-  					</span>
-  				</div>
+						<option value="${stanb}">${stanb}</option>
+					</span>	
+				</div>
 			</select> <br/><br/>
 			<input type="submit" name="form.selected" value="New"/><br/>		
 			<input type="submit" name="form.selected" value="Load"/><br/>
 			<input type="submit" name="form.selected" value="Delete"/><br/>
-
 		</form>
-
-        </p>
-    </div>
+	</p>
+	</div>
 </div>
