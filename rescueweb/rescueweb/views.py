@@ -239,18 +239,10 @@ def standby(request):
     if 'standbyid' not in request.matchdict:
         return HTTPNotFound('No standby passed in.')
 
-    # TODO: Query and see if the user is already signed up for the standby.
-    # This will be used to redirect the user to an error page and will also
-    # be used as the boolean to decide whether to display the Sign Up
-    # section or the Request Coverage button.
+    # Get the user's information if they are signed up for the standby
     standby_row = DBSession.query(StandByPersonnel).\
             filter(StandByPersonnel.standbyid == request.matchdict['standbyid']).\
             filter(StandByPersonnel.username == request.user.username).first()
-    # Flag the user as requesting coverage or not
-    if standby_row:
-        requesting_coverage = standby_row.coverrequested
-    else:
-        requesting_coverage = False
 
     # Check to see if we got here by signing up for the standby
     if 'signup.submitted' in request.params:
@@ -259,7 +251,7 @@ def standby(request):
             'Probationary status')
 
         # Only add the user to the Standby table if they weren't already signed
-        # up.
+        # up. If they are already signed up, just bring them back to the page.
         if standby_row:
             return HTTPFound(location=request.url)
         else:
@@ -272,12 +264,12 @@ def standby(request):
                         covered=''
                         )
                     )
-            standby_row = True
     elif 'coverage_request.submitted' in request.params:
         standby_row.coverrequested = True
-        requesting_coverage = True
+    elif 'cancel_coverage_request.submitted' in request.params:
+        standby_row.coverrequested = False
 
-    # Get the standby event that was chosen
+    # Get the standby event that was chosen and the headers to display it
     standby = DBSession.query(StandBy.event, StandBy.location, StandBy.notes,
             StandBy.startdatetime, StandBy.enddatetime).\
             filter(StandBy.standbyid == request.matchdict['standbyid']).\
@@ -291,13 +283,13 @@ def standby(request):
             'End Date Time'
             ]
 
-    # Get the personnel that are signed up for the standby
+    # Get the personnel that are signed up for the standby and the headers that
+    # are used to display the information.
     standby_personnel = DBSession.query(
             StandByPersonnel.standbyid,
             StandByPersonnel.username,
             StandByPersonnel.standbyposition,
-            StandByPersonnel.coverrequested,
-            StandByPersonnel.covered).\
+            StandByPersonnel.coverrequested).\
                     filter(StandByPersonnel.standbyid ==
                     request.matchdict['standbyid']).all()
 
@@ -308,6 +300,12 @@ def standby(request):
             'Requesting Coverage',
             'Covered'
             ]
+
+    # Flag the user as requesting coverage or not
+    if standby_row:
+        requesting_coverage = standby_row.coverrequested
+    else:
+        requesting_coverage = False
 
     return dict(
             title=standby.event,

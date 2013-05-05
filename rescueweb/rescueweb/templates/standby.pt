@@ -36,12 +36,20 @@
       </form>
     </span>
     <span tal:condition="user_already_registered">
-      <p>Request Coverage</p>
-      <form action="${request.url}" method="post">
-        <ul>
-          <li><input type="submit" name="coverage_request.submitted" value="Request Coverage"></li>
-        </ul>
-      </form>
+      <span tal:condition="not requesting_coverage">
+        <form action="${request.url}" method="post">
+          <ul>
+            <li><input type="submit" name="coverage_request.submitted" value="Request Coverage"></li>
+          </ul>
+        </form>
+      </span>
+      <span tal:condition="requesting_coverage">
+        <form action="${request.url}" method="post">
+          <ul>
+            <li><input type="submit" name="cancel_coverage_request.submitted" value="Cancel Coverage Request"></li>
+          </ul>
+        </form>
+      </span>
     </span>
   </div>
 </div>
