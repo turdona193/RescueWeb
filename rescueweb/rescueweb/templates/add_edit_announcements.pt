@@ -7,11 +7,11 @@
 				<div tal:repeat = "announ announcements">
 					<span tal:condition="announcementchosen==announ">
 						<option value="${announ}" selected>${announ}</option>
- 						</span>
+ 					</span>
 					<span tal:condition="not announcementchosen==announ">
- 							<option value="${announ}">${announ}</option>
- 						</span>
- 					</div>
+ 						<option value="${announ}">${announ}</option>
+ 					</span>
+ 				</div>
 			</select> <br/><br/>
 			<input type="submit" name="form.selected" value="New"/><br/>		
 			<input type="submit" name="form.selected" value="Load"/><br/>
