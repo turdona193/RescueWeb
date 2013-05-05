@@ -104,7 +104,7 @@ def main(argv = sys.argv):
                         zipcode='13676', 
                         residence='Townhouse', 
                         roomnumber='A1-104', 
-                        phonenumber = 6462595690, 
+                        phonenumber=6462595690, 
                         email='turdona193@potsdam.edu', 
                         privileges=2, 
                         trainingvalue=3, 
@@ -356,26 +356,28 @@ def main(argv = sys.argv):
                     of 12 pagers, which finally allowed Campus Safety (now
                     University Police) to activate CRS via pager alert. </br>
 
-                    Almost 17 years later, Campus Rescue continues the tradition of quality
-                    emergency medical care 24/7 while school is in session. Because of the
-                    dedication of true professional EMS providers, Campus Rescue continues to thrive
-                    as an important link in prehospital care in SUNY Potsdam. </br>
+                    Almost 17 years later, Campus Rescue continues the tradition
+                    of quality emergency medical care 24/7 while school is in
+                    session. Because of the dedication of true professional EMS
+                    providers, Campus Rescue continues to thrive as an important
+                    link in prehospital care in SUNY Potsdam. </br>
 
-                    The Squad today (as of 2008) has approximately 25 members, 14 of which are NYS
-                    certified EMT's, 6 of which are currently enrolled in the NYS EMT-B curriculum,
-                    and 23 of which are American Heart Association BCLS certified in AED and
-                    CPR.</br>
+                    The Squad today (as of 2008) has approximately 25 members,
+                    14 of which are NYS certified EMT's, 6 of which are
+                    currently enrolled in the NYS EMT-B curriculum, and 23 of
+                    which are American Heart Association BCLS certified in AED
+                    and CPR.</br>
 
-                    The Squad currently has 7 NYS DOH Part 800 compliant BLS jump bags. One bag is
-                    housed in University Police dispatch, one at the Crumb Library, and 2 are housed
-                    in the squad equipment room. CRS is approved through medical direction and NY to
-                    administer albuterol for respiratory emergencies and Epinephrine for
-                    anaphylaxis. The squad also owns an AED, housed in one of University Police's
-                    patrol cars. AEDs are also housed in every building on campus due to the PAD
-                    program.</br>
-
-                    Campus Rescue runs on average approximately 150 calls and standbys each
-                    year."""),
+                    The Squad currently has 7 NYS DOH Part 800 compliant BLS
+                    jump bags. One bag is housed in University Police dispatch,
+                    one at the Crumb Library, and 2 are housed in the squad
+                    equipment room. CRS is approved through medical direction
+                    and NY to administer albuterol for respiratory emergencies
+                    and Epinephrine for anaphylaxis. The squad also owns an AED,
+                    housed in one of University Police's patrol cars. AEDs are
+                    also housed in every building on campus due to the PAD
+                    program.</br> Campus Rescue runs on average approximately
+                    150 calls and standbys each year."""),
         
                     Page(name='Join', data=("""The Campus Rescue Squad at SUNY
                     Potsdam is always open for new members! If you are
