@@ -8,6 +8,7 @@ from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 
 from sqlalchemy.exc import DBAPIError
+from sqlalchemy import distinct
 
 #from pyramid_mailer import get_mailer
 #from pyramid_mailer.message import Message
@@ -809,7 +810,7 @@ def pictures(request):
 				pictures = allpictures,
                )
 
-@view_config(route_name='category_pictures', renderer='templates/category_pictures.pt')
+@view_config(route_name='category_pictures', renderer='templates/pictures.pt')
 def category_pictures(request):
     main = get_renderer('templates/template.pt').implementation()
     allpictures = []
