@@ -8,6 +8,7 @@ from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 
 from sqlalchemy.exc import DBAPIError
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import distinct
 
 #from pyramid_mailer import get_mailer
@@ -48,6 +49,7 @@ from .models import (
     StandBy,
     MeetingMinutes,
 	Pictures,
+    StandByPersonnel,
     )
 
 @view_config(route_name='home', renderer='templates/home.pt')
@@ -227,6 +229,97 @@ def standbys(request):
             user=request.user
             )
 
+@view_config(route_name='standby', renderer='templates/standby.pt',
+             permission='Member')
+def standby(request):
+    """Renders information relating to a specific Standby event"""
+    main = get_renderer('templates/template.pt').implementation()
+
+    # Sanity check
+    if 'standbyid' not in request.matchdict:
+        return HTTPNotFound('No standby passed in.')
+
+    # TODO: Query and see if the user is already signed up for the standby.
+    # This will be used to redirect the user to an error page and will also
+    # be used as the boolean to decide whether to display the Sign Up
+    # section or the Request Coverage button.
+    standby_row = DBSession.query(StandByPersonnel).\
+            filter(StandByPersonnel.standbyid == request.matchdict['standbyid']).\
+            filter(StandByPersonnel.username == request.user.username).first()
+    # Flag the user as requesting coverage or not
+    if standby_row:
+        requesting_coverage = standby_row.coverrequested
+    else:
+        requesting_coverage = False
+
+    # Check to see if we got here by signing up for the standby
+    if 'signup.submitted' in request.params:
+        if 'position' not in request.POST:
+            return Response('Error: You have to sign up with either Active or '
+            'Probationary status')
+
+        # Only add the user to the Standby table if they weren't already signed
+        # up.
+        if standby_row:
+            return HTTPFound(location=request.url)
+        else:
+            DBSession.add(
+                    StandByPersonnel(
+                        standbyid=request.matchdict['standbyid'],
+                        username=request.user.username,
+                        standbyposition=request.POST['position'],
+                        coverrequested=False,
+                        covered=''
+                        )
+                    )
+            standby_row = True
+    elif 'coverage_request.submitted' in request.params:
+        standby_row.coverrequested = True
+        requesting_coverage = True
+
+    # Get the standby event that was chosen
+    standby = DBSession.query(StandBy.event, StandBy.location, StandBy.notes,
+            StandBy.startdatetime, StandBy.enddatetime).\
+            filter(StandBy.standbyid == request.matchdict['standbyid']).\
+            first()
+
+    standby_headers = [
+            'Event', 
+            'Location', 
+            'Notes', 
+            'Start Date Time', 
+            'End Date Time'
+            ]
+
+    # Get the personnel that are signed up for the standby
+    standby_personnel = DBSession.query(
+            StandByPersonnel.standbyid,
+            StandByPersonnel.username,
+            StandByPersonnel.standbyposition,
+            StandByPersonnel.coverrequested,
+            StandByPersonnel.covered).\
+                    filter(StandByPersonnel.standbyid ==
+                    request.matchdict['standbyid']).all()
+
+    standby_personnel_headers = [
+            'Standby ID',
+            'User', 
+            'Standby Position', 
+            'Requesting Coverage',
+            'Covered'
+            ]
+
+    return dict(
+            title=standby.event,
+            standby=zip(standby_headers, standby),
+            standby_personnel=standby_personnel,
+            standby_personnel_headers=standby_personnel_headers,
+            user_already_registered=standby_row,
+            requesting_coverage=requesting_coverage,
+            main=main,
+            user=request.user
+            )
+
 @view_config(name='standby_dates.json', renderer='json')
 def standby_dates(request):
     """Serves up Standby dates via JSON back to the calendar. 
@@ -267,6 +360,7 @@ def standby_information(request):
     # Return all of the Standby dates occurring on this date
     return [
         (
+            standby.standbyid,
             standby.event,
             standby.location,
             standby.notes,
