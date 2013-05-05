@@ -77,6 +77,7 @@ bash "start app" do
   user "ubuntu"
   cwd "/home/ubuntu/myapp"
   code <<-EOF
+git pull
 source bin/activate
 cd teamMurrica/rescueweb
 python setup.py develop
