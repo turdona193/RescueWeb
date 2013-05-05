@@ -6,7 +6,13 @@
          
         	<form method="post">
         		Standbys: <select name="selectedstandby">
-							    	<div tal:repeat = "announ all_standBy">
+							    	<div tal:repeat = "stanB all_standBy">
+										<span tal:condition="standbychosen==stanB">
+  											<option value="${stanB}" selected>${stanB.event}</option>
+  										</span>
+										<span tal:condition="not standbychosen==stanB">
+  											<option value="${stanB}">${stanB}</option>
+  										</span>
 
         </p>
     </div>

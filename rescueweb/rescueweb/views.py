@@ -758,6 +758,8 @@ def add_edit_certifications(request):
 def add_edit_standby(request):
     main = get_renderer('templates/template.pt').implementation()
     all_standBy = DBSession.query(StandBy).order_by(StandBy.standbyid).all()
+    standbychosen = ''
+    form = ''
 
     return dict(title='Add/Edit Standby',
             main=main,
