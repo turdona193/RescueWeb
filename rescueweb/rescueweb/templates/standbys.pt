@@ -30,7 +30,7 @@
                                         // Clear out the standbys display area and
                                         // add all information about the standbys
                                         // happening that day.
-                                        $('#standbys').append('<a href="/standby/' + val[0] + '">' + val[1] + '</a>');
+                                        $('#standbys').append('<a href="/standby/' + val[0] + '">' + val[1] + ' (' + val[4] + ')</a>');
                                         //$('#standbys').append('Standby ID: ' + val[0] + '<br />');
                                         //$('#standbys').append('Event: ' + val[1] + '<br />');
                                         //$('#standbys').append('Location: ' + val[2] + '<br />');
