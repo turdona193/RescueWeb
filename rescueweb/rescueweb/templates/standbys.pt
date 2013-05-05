@@ -25,15 +25,18 @@
                                 data: { date: date }
                                 }).done(function(msg) {
                                     $('#standbys').empty();
+                                    $('#standbys').append('<br />');
                                     $.each(msg, function (key, val) {
                                         // Clear out the standbys display area and
                                         // add all information about the standbys
                                         // happening that day.
-                                        $('#standbys').append('Event: ' + val[0] + '<br />');
-                                        $('#standbys').append('Location: ' + val[1] + '<br />');
-                                        $('#standbys').append('Notes: ' + val[2] + '<br />');
-                                        $('#standbys').append('Start date: ' + val[3] + '<br />');
-                                        $('#standbys').append('End date: ' + val[4] + '<br />');
+                                        $('#standbys').append('<a href="/standby/' + val[0] + '">' + val[1] + '</a>');
+                                        //$('#standbys').append('Standby ID: ' + val[0] + '<br />');
+                                        //$('#standbys').append('Event: ' + val[1] + '<br />');
+                                        //$('#standbys').append('Location: ' + val[2] + '<br />');
+                                        //$('#standbys').append('Notes: ' + val[3] + '<br />');
+                                        //$('#standbys').append('Start date: ' + val[4] + '<br />');
+                                        //$('#standbys').append('End date: ' + val[5] + '<br />');
                                         $('#standbys').append('<br />');
                                     });
                             });

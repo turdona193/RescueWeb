@@ -1,0 +1,47 @@
+<div metal:use-macro="main.macros['template']">
+  <div metal:fill-slot="content">
+    <h1>${title}</h1>
+    <table>
+      <div tal:repeat="s standby">
+        <tr>
+          <td>${s[0]}</td>
+          <td>${s[1]}</td>
+        </tr>
+      </div>
+    </table>
+    <br />
+    <table>
+      <tr>
+			<div tal:repeat="header standby_personnel_headers"> 
+				<th>${header}</th>
+			</div>
+      </tr>
+      <div tal:repeat="standby_person standby_personnel">
+        <tr>
+          <div tal:repeat="cell standby_person">
+            <td>${cell}</td>
+          </div>
+        </tr>
+      </div>
+    </table>
+    <br />
+    <span tal:condition="not user_already_registered">
+      <p>Sign up ASAP!</p>
+      <form action="${request.url}" method="post">
+        <ul>
+          <li><label for="active">Active</label><input type="radio" name="position" value="active"></li>
+          <li><label for="probationary">Probationary</label><input type="radio" name="position" value="probationary"></li>
+          <li><input type="submit" name="signup.submitted" value="Sign Up!"></li>
+        </ul>
+      </form>
+    </span>
+    <span tal:condition="user_already_registered">
+      <p>Request Coverage</p>
+      <form action="${request.url}" method="post">
+        <ul>
+          <li><input type="submit" name="coverage_request.submitted" value="Request Coverage"></li>
+        </ul>
+      </form>
+    </span>
+  </div>
+</div>

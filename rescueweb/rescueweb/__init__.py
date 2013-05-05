@@ -54,7 +54,11 @@ def main(global_config, **settings):
     config.add_route('minutes' , '/minutes')
     config.add_route('member_info' , '/member_info')
     
+    # Routes for standbys. These are events Campus Rescue Squad members can sign
+    # up for.
     config.add_route('standbys' , '/standbys')
+    config.add_route('standby' , '/standby/{standbyid}')
+
     config.add_route('duty_crew_calendar', '/duty_crew_calendar')
     config.add_route('coverage' , '/coverage')
     
