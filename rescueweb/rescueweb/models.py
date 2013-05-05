@@ -238,7 +238,7 @@ class Events(Base):
     enddatetime = Column(DateTime)
     name = Column(Text)
     notes = Column(Text)
-    location = location(Text)
+    location = Column(Text)
     privileges = Column(Integer, ForeignKey('Privileges.privilegevalue'))
 
     def __init__(self, startdatetime, enddatetime, name, notes, location, privileges):
