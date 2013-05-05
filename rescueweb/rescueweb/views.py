@@ -557,6 +557,7 @@ def editmeetingminutes(request):
     allminutes = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime)
     alldates = ['New']+[minute.datetime.timetuple()[:3] for minute in allminutes]
     allminutes = ['New']
+    datestring = 'New'
     minutes = ''
     date = ''
     form = ''
@@ -572,7 +573,7 @@ def editmeetingminutes(request):
             date = datetime.datetime.strptime(datestring,'(%Y, %m, %d)')
             allminutesdatabase = DBSession.query(MeetingMinutes.header,MeetingMinutes.subheader).filter_by(datetime = date).all()
             if operation == 'Load':
-                allminutes = [[minutes.header,minutes.subheader] for minutes in allminutesdatabase]
+                allminutes = [['New','New']]+[[minutes.header,minutes.subheader] for minutes in allminutesdatabase]
             if operation == 'Delete':
                 DBSession.delete(allminutesdatabase)
             
@@ -581,7 +582,7 @@ def editmeetingminutes(request):
         if operation == 'New':
             form = 'New'
         else:
-            date = request.params['selected_date']
+            date = request.params['usedate']
             minutesdatabase = DBSession.query(MeetingMinutes).filter_by(datetime = datetime.datetime.strptime(date,'(%Y, %m, %d)'),).first()
             if operation == 'Load':
                 form = 'Load'
@@ -589,14 +590,16 @@ def editmeetingminutes(request):
             if operation == 'Delete':
                 DBSession.delete(minutesdatabase)
         
-
+    message = datestring
     return dict(
             title='Add/Edit Meeting Minutes',
             main=main,
             alldates=alldates,
             allminutes = allminutes,
             minutes = minutes,
+            datestring = datestring,
             form=form,
+            message=message,
             user=request.user
             )
 
