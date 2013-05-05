@@ -105,15 +105,15 @@ def announcements(request):
             user=request.user)
     
 @view_config(route_name='events', renderer='templates/events.pt')
-def eventsV(request):
+def event_table(request):
     main = get_renderer('templates/template.pt').implementation()
-    ev = DBSession.query(Events).all()
+    event_list = DBSession.query(Events).all()
 
     return dict(
             title='Events', 
             main=main,
             user=request.user,
-            ev=ev
+            event_list=event_list
             )
 
 @view_config(route_name='pictures', renderer='templates/pictures.pt')
@@ -200,11 +200,20 @@ def minutes(request):
              permission='Member')
 def member_info(request):
     main = get_renderer('templates/template.pt').implementation()
-
+    user = request.user
+    message = ''
+    certs = ''
+    hascert = DBSession.query(Certifications).filter(Certifications.username == user.username).count()
+    if hascert:
+        all_certs = DBSession.query(Certifications).filter(Certifications.username == user.username).all()
+        certs = [[cert.certification,cert.certnumber,cert.expiration] for cert in all_certs]
     return dict(
             title='Member Information',
             main=main,
-            user=request.user
+            user=user,
+            message=message,
+            hascert=hascert,
+            certs=certs
             )
     
 @view_config(route_name='standbys', renderer='templates/standbys.pt',
