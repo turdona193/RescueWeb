@@ -77,11 +77,12 @@ bash "start app" do
   user "ubuntu"
   cwd "/home/ubuntu/myapp"
   code <<-EOF
+git pull
 source bin/activate
-cd teamMurrica/computers
+cd teamMurrica/rescueweb
 python setup.py develop
 killall -9 pserve
-../../bin/initialize_computers_db development.ini
+../../bin/initialize_rescueweb_db development.ini
 ../../bin/pserve development.ini  
 EOF
 end

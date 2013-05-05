@@ -1,0 +1,183 @@
+@startuml
+hide circles
+package personnel{
+Users "1..1"->"0..n" Certifications
+Users "1..1"-->"1..1" OperationalStatus
+Users "1..1"-->"1..1" AdministrativeStatus
+Users "0..1"<--"1..1" EboardPosition
+Users "1..1"-->"1..1" TrainingLevel
+Users "1..1"-->"1..1" Privileges
+
+}
+package StandBys{
+	StandBy "1..1" --> "0..n" StandByPersonnel
+}
+
+package DutyCrews_Package{
+	DutyCrewCalendar --> DutyCrewSchedule
+	DutyCrews -- DutyCrewSchedule
+	class CrewChiefSchedule
+}
+
+package Events_Package{
+	Events "1..1"--"0..n" Attendees
+}
+package Minutes{
+	class MeetingMinutes
+}
+Users "1..1"->"0..n" StandByPersonnel
+
+class Page{
+	<b>name</b>
+	data
+}
+class AdministrativeStatus{
+	<b><i>administrativeValue</i></b>
+	status
+	'(Inactive,Probationary,Observational,Active,EBoard,
+	'HonorRoll,Advisor,MedicalDirector)
+}
+class Announcements{
+	<b>key</b>
+	header
+	text
+	<i>priority</i>
+	<i>username {posted by}</i>
+	posted {TSTAMP}
+}
+class Attendees{
+	<b><i>eventID</b></i>
+	<b><i>username</b></i>
+}
+class Certifications{
+	<b><i>userName</i></b>
+	<b>certification</b>
+	expiration
+	certNumber
+}
+class CrewChiefSchedule{
+	<b>Date</b>
+	<i>ccusername</i>
+	<i>pccusername</i>
+}
+class DutyCrews{
+	<b>crew_Number</b>
+	<i><b>username</i></b>
+}
+class DutyCrewCalendar{
+	<i><b>Date {Day,Month,Year}</i></b>
+	crewNumber
+}
+class DutyCrewSchedule{
+	<b><i>Date{Day,Month,Year}</b></i>
+	<b><i>username</i></b>
+	coverRequest {boolean}
+}
+class Documents{
+	name
+	<b>fileName</b>
+}
+class EboardPosition{
+	'(Eboard Position)
+	<b>eboardPosition</b>
+	<i>username</i>
+}
+class Events{
+	<b>eventID<b>
+	start_date_time
+	end_date_time
+	name
+	notes
+	<i>privileges</i>
+}
+class LoginIns{
+	<b>username</b>
+	<b>TSTAMP</b>
+}
+class MeetingMinutes{
+	<b>meeting_index</b>
+	date_time
+	header
+	subHeader
+	content
+}
+class OperationalStatus{
+	<b><i>operationalValue</i></b>
+	status
+	'(Inactive,Probationary,Observational,Active,Active-EMT,
+	'ProbationaryCrewChief,CrewChief,MedicalDirector)
+}
+class Pictures{
+	<b>picture_index</b>
+	picture
+	description
+}
+class Privileges{
+	<b><i>privilegeValue</i></b>
+	privilege
+	pyramidsecuritygroup
+		'(Admin,Eboard,Member,Guest) 
+}
+class Users{
+	--login--
+	<b>userName</b>
+	password
+	--Name--
+	firstName
+	middleName
+	lastName
+	fullname{property}
+	birthday
+	--address--
+	street
+	city
+	state
+	zipCode
+	--campus Housing--
+	residence
+	roomNumber
+	--ContactInformation--
+	phoneNumber
+	email
+	--SquadInformation--
+	<i>privilegeValue</i>
+	<i>trainingLevel</i>
+	<i>administrativeValue</i>
+	<i>operationalValue</i>
+	portableNumber
+}
+class StandBy{
+	<b>standByID</b>
+	event
+	location
+	notes
+	start_date_time
+	end_date_time
+}
+class StandByPersonnel{
+	<b><i>standByID</i></b>
+	<b><i>userName</i></b>
+	standByPosition
+	'(ccpic,Active,probationary)
+	'Limit by level of training
+	coverRequestion{Boolean}
+}
+class TrainingLevel{
+	'(none,CPR,EMT-Student,Emt-b,
+	' aemt-cc,aemt-p)
+	<b><i>trainingValue</b></i>
+	trainingLevel
+}
+class WebLinks{
+	<b>name</b>
+	<b>address</b>
+}
+
+class outOfService{
+	<b>Date</b>
+	time
+	<b>Date</b>
+	time
+}
+
+@enduml

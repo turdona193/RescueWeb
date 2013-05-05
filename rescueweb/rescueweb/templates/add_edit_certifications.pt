@@ -4,7 +4,7 @@
           ${title}
           <form>
 				<select name="selectlink">
-					<div tal:repeat = "username allusers">
+					<div tal:repeat = "username all_users">
 		 	 				<option value="${username}">${username}</option>
 					</div>
 				</select><br/>

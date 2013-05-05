@@ -14,7 +14,17 @@ def get_user(request):
     if userid:
         # This should return None if the user doesn't exist in the database
         return DBSession.query(
-                    Users.username, 
+                    Users.username,
+                    Users.fullname,
+                    Users.birthday,
+                    Users.street,
+                    Users.city,
+                    Users.state,
+                    Users.zipcode,
+                    Users.residence,
+                    Users.roomnumber,
+                    Users.phonenumber,
+                    Users.email,
                     Privileges.privilege,
                     Privileges.pyramidsecuritygroup).\
                     join(Privileges).\

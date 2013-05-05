@@ -9,6 +9,7 @@ from pyramid.renderers import get_renderer
 
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import distinct
 
 #from pyramid_mailer import get_mailer
 #from pyramid_mailer.message import Message
@@ -46,6 +47,7 @@ from .models import (
     TrainingLevel,
     WebLinks,
     StandBy,
+    MeetingMinutes,
 	Pictures,
     StandByPersonnel,
     )
@@ -94,25 +96,26 @@ def personnel(request):
 @view_config(route_name='announcements', renderer='templates/announcements.pt')
 def announcements(request):
     main = get_renderer('templates/template.pt').implementation()
-    page = DBSession.query(Announcements).order_by(Announcements.posted.desc()).all()
-    headers = [column.name for column in page[0].__table__.columns]
+    announcements = DBSession.query(Announcements).order_by(Announcements.posted.desc()).all()
+    headers = [column.name for column in announcements[0].__table__.columns]
 
     return dict(
             title='Announcements', 
             main=main,
-            announcements=page, headers=headers,
+            announcements=announcements,
+            headers=headers,
             user=request.user)
     
 @view_config(route_name='events', renderer='templates/events.pt')
-def eventsV(request):
+def event_table(request):
     main = get_renderer('templates/template.pt').implementation()
-    ev = DBSession.query(Events).all()
+    event_list = DBSession.query(Events).all()
 
     return dict(
             title='Events', 
             main=main,
             user=request.user,
-            ev=ev
+            event_list=event_list
             )
 
 @view_config(route_name='pictures', renderer='templates/pictures.pt')
@@ -182,10 +185,16 @@ def documents(request):
              permission='Member')
 def minutes(request):
     main = get_renderer('templates/template.pt').implementation()
+    meeting_minutes = DBSession.query(MeetingMinutes).order_by(MeetingMinutes.datetime.desc()).all()
+    headers = [column.name for column in meeting_minutes[0].__table__.columns]
+    all_dates = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime.desc())
 
     return dict(
             title='Meeting Minutes',
             main=main,
+            meeting_minutes=meeting_minutes,
+            headers=headers,
+            all_dates=all_dates,
             user=request.user
             )
 
@@ -193,11 +202,20 @@ def minutes(request):
              permission='Member')
 def member_info(request):
     main = get_renderer('templates/template.pt').implementation()
-
+    user = request.user
+    message = ''
+    certs = ''
+    hascert = DBSession.query(Certifications).filter(Certifications.username == user.username).count()
+    if hascert:
+        all_certs = DBSession.query(Certifications).filter(Certifications.username == user.username).all()
+        certs = [[cert.certification,cert.certnumber,cert.expiration] for cert in all_certs]
     return dict(
             title='Member Information',
             main=main,
-            user=request.user
+            user=user,
+            message=message,
+            hascert=hascert,
+            certs=certs
             )
     
 @view_config(route_name='standbys', renderer='templates/standbys.pt',
@@ -629,10 +647,50 @@ def add_edit_documents(request):
              permission='admin')
 def editmeetingminutes(request):
     main = get_renderer('templates/template.pt').implementation()
+    message = ''
+    allminutes = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime)
+    alldates = ['New']+[minute.datetime.timetuple()[:3] for minute in allminutes]
+    allminutes = ['New']
+    minutes = ''
+    date = ''
+    form = ''
+    if 'form.new' in request.params:
+        form = 'New'
+    
+    if 'date.selected' in request.params:
+        operation = request.params['date.selected']
+        datestring = request.params['selected_date']
+        if datestring == 'New':
+            form = 'New'
+        else:
+            date = datetime.datetime.strptime(datestring,'(%Y, %m, %d)')
+            allminutesdatabase = DBSession.query(MeetingMinutes.header,MeetingMinutes.subheader).filter_by(datetime = date).all()
+            if operation == 'Load':
+                allminutes = [[minutes.header,minutes.subheader] for minutes in allminutesdatabase]
+            if operation == 'Delete':
+                DBSession.delete(allminutesdatabase)
+            
+    if 'report.selected' in request.params:
+        operation = request.params['report.selected']
+        if operation == 'New':
+            form = 'New'
+        else:
+            date = request.params['selected_date']
+            minutesdatabase = DBSession.query(MeetingMinutes).filter_by(datetime = datetime.datetime.strptime(date,'(%Y, %m, %d)'),).first()
+            if operation == 'Load':
+                form = 'Load'
+                minutes = minutesdatabase
+            if operation == 'Delete':
+                DBSession.delete(minutesdatabase)
+        
 
     return dict(
             title='Add/Edit Meeting Minutes',
             main=main,
+            alldates=alldates,
+            allminutes = allminutes,
+            minutes = minutes,
+            form=form,
             user=request.user
             )
 
@@ -676,12 +734,16 @@ def edit_portable_numbers(request):
              permission='admin')
 def add_edit_certifications(request):
     main = get_renderer('templates/template.pt').implementation()
-    allusers = DBSession.query(Users).order_by(Users.username).all() 
-    allusernames = [auser.username for auser in allusers]
+    all_users = DBSession.query(Users).order_by(Users.username).all() 
+    all_usernames = [auser.username for auser in all_users]
+    all_certifications = []
+    name_of_certs = []
+    
     return dict(
             title='Add/Edit Certifications',
             main=main,
-            allusers = allusernames,
+            all_users = all_usernames,
+            
             user=request.user
             )
     
@@ -750,7 +812,7 @@ def add_edit_announcements(request):
         announcementchosen = ''
     
     allannouncements = DBSession.query(Announcements).all() 
-    announcements = [announcement.header for announcement in allannouncements]
+    announcements = [announce.header for announce in allannouncements]
     
     return dict(
             title='Add/Edit Announcements',
@@ -840,18 +902,36 @@ def pictures(request):
     main = get_renderer('templates/template.pt').implementation()
     allpictures = []
     pictures = ''
+    categoryClicked = ''
 
-    pictures = DBSession.query(Pictures).all()
-    allpictures = [[apicture.picture,apicture.description] for apicture in pictures] 
+    categories = DBSession.query(distinct(Pictures.category)).all()
+    pictures = [DBSession.query(Pictures).filter(Pictures.category == cate[0]).first() for cate in categories]   
+    allpictures = [[apicture.picture,apicture.description, apicture.category] for apicture in pictures] 
+
+    if 'category.chosen' in request.params:
+        categoryClicked = request.params['categoryChosen']
+        pictures = [DBSession.query(Pictures).filter(Pictures.category == categoryClicked).all()]
+        print("****************************** INSIDE FORM.SUBMITTED ******************************")
 
     return dict(title = 'Pictures',
 				main = main,
 				user=request.user,
 				pictures = allpictures,
                )
-				
 
-
+@view_config(route_name='category_pictures', renderer='templates/category_pictures.pt')
+def category_pictures(request):
+    print("****************************** {}".format(request))
+    main = get_renderer('templates/template.pt').implementation()
+    allpictures = []
+    pictures = ''
+    categoryChosen = ''
+    
+    return dict(title = 'Pictures',
+				main = main,
+				user=request.user,
+				pictures = allpictures,
+               )
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem

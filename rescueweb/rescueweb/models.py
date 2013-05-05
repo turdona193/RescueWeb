@@ -8,7 +8,6 @@ from sqlalchemy import (
     DateTime,
     Boolean,
     TIMESTAMP,
-
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -155,11 +154,11 @@ class AdministrativeStatus(Base):
         
 class EboardPositions(Base):
     __tablename__ = 'EboardPosition'
-    position = Column(Text, primary_key=True)
+    eboardposition = Column(Text, primary_key=True)
     username = Column(Text, ForeignKey('Users.username'))
 
-    def __init__(self, position,username):
-        self.position = position
+    def __init__(self,eboardposition,username):
+        self.eboardposition = eboardposition
         self.username = username
       
 class TrainingLevel(Base):
@@ -214,14 +213,12 @@ class StandByPersonnel(Base):
     username = Column(Text, ForeignKey('Users.username'), primary_key=True)
     standbyposition = Column(Text)
     coverrequested = Column(Boolean)
-    covered = Column(Text, ForeignKey('Users.username'))
 
-    def __init__(self, standbyid, username, standbyposition, coverrequested, covered):
+    def __init__(self, standbyid, username, standbyposition, coverrequested):
         self.standbyid = standbyid
         self.username = username
         self.standbyposition = standbyposition
         self.coverrequested = coverrequested
-        self.covered = covered
 
 class CrewChiefSchedule(Base):
     __tablename__ = 'CrewChiefSchedule'
@@ -263,30 +260,55 @@ class MeetingMinutes(Base):
     __tablename__ = 'MeetingMinutes'
     meetingindex = Column(Integer, primary_key=True)
     datetime = Column(DateTime)
-
-    def __init__(self, eventid, username):
-        self.meetingindex = meetingindex
-        self.datetime = datetime
-
-class MinutesContent(Base):
-    __tablename__ = 'MinutesContent'
-    meetingindex = Column(Integer, ForeignKey('MinutesContent.meetingindex'), primary_key=True)
-    header = Column(Text, primary_key=True)
-    subheader = Column(Text, primary_key=True)
+    header = Column(Text)
+    subheader = Column(Text)
     content = Column(Text)
 
-    def __init__(Base, meetingindex, header, subheader, content):
-        self.meetingindex = meetingindex
+    def __init__(self, datetime, header, subheader, content):
+        self.datetime = datetime
         self.header = header
         self.subheader = subheader
         self.content = content
 
 class Pictures(Base):
-	__tablename__ = 'Pictures'
-	pictureindex = Column(Integer, primary_key=True)
-	picture = Column(Text)
-	description = Column(Text)
+    __tablename__ = 'Pictures'
+    pictureindex = Column(Integer, primary_key=True)
+    picture = Column(Text)
+    description = Column(Text)
+    category = Column(Text)
+    def __init__(self, picture, description, category):
+        self.picture = picture
+        self.description = description
+        self.category = category
+        
+class DutyCrews(Base):
+    __tablename__ = 'Duty_Crews'
+    crewnumber = Column(Integer, primary_key=True)
+    username = Column(Text, ForeignKey('Users.username'), primary_key=True)
+    def __init__(self, crewnumber, username):
+        self.crewnumber = crewnumber
+        self.username = username
+        
+class DutyCrewCalendar(Base):
+    __tablename__ = 'Duty_Crew_Calendar'
+    day = Column(Date, primary_key = True)
+    crewnumber = Column(Integer,ForeignKey('Duty_Crews.crewnumber'))
+    def __init__(self,day,crewnumber):
+        self.day = day
+        self.crewnumber = crewnumber
+        
+class DutyCrewSchedule(Base):
+    __tablename__ = 'Duty_Crew_Schedule'
+    day = Column(Date, primary_key = True)
+    username = Column(Text, ForeignKey('Users.username'), primary_key=True)
+    coveragerequest = Column(Boolean)
+    def __init__(self,day,username,coveragerequest):
+        self.day = day
+        self.username = username
+        self.coveragerequest = coveragerequest
+        
+class LoginIns(Base):
+    __tablename__ = 'Login_Ins'
+    username = Column(Text, ForeignKey('Users.username'), primary_key=True)
+    TSTAMP = Column(TIMESTAMP)
 
-	def __init__(self, picture, description):
-		self.picture = picture
-		self.description = description
