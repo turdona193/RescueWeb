@@ -221,6 +221,13 @@ def member_info(request):
 @view_config(route_name='standbys', renderer='templates/standbys.pt',
              permission='Member')
 def standbys(request):
+    """A view that diplays a javascript calendar with dates with Standbys
+    hilighted.
+
+    This view is very simple because all the work happens after the page gets
+    loaded with javascript.
+
+    """
     main = get_renderer('templates/template.pt').implementation()
 
     return dict(
@@ -240,7 +247,7 @@ def standby(request):
         return HTTPNotFound('No standby passed in.')
 
     # Get the user's information if they are signed up for the standby
-    standby_row = DBSession.query(StandByPersonnel).\
+    standby_person = DBSession.query(StandByPersonnel).\
             filter(StandByPersonnel.standbyid == request.matchdict['standbyid']).\
             filter(StandByPersonnel.username == request.user.username).first()
 
@@ -252,22 +259,20 @@ def standby(request):
 
         # Only add the user to the Standby table if they weren't already signed
         # up. If they are already signed up, just bring them back to the page.
-        if standby_row:
+        if standby_person:
             return HTTPFound(location=request.url)
         else:
-            DBSession.add(
-                    StandByPersonnel(
-                        standbyid=request.matchdict['standbyid'],
-                        username=request.user.username,
-                        standbyposition=request.POST['position'],
-                        coverrequested=False,
-                        covered=''
-                        )
+            standby_person = StandByPersonnel(
+                    standbyid=request.matchdict['standbyid'],
+                    username=request.user.username,
+                    standbyposition=request.POST['position'],
+                    coverrequested=False
                     )
+            DBSession.add(standby_person)
     elif 'coverage_request.submitted' in request.params:
-        standby_row.coverrequested = True
+        standby_person.coverrequested = True
     elif 'cancel_coverage_request.submitted' in request.params:
-        standby_row.coverrequested = False
+        standby_person.coverrequested = False
 
     # Get the standby event that was chosen and the headers to display it
     standby = DBSession.query(StandBy.event, StandBy.location, StandBy.notes,
@@ -297,13 +302,13 @@ def standby(request):
             'Standby ID',
             'User', 
             'Standby Position', 
-            'Requesting Coverage',
-            'Covered'
+            'Requesting Coverage'
             ]
 
     # Flag the user as requesting coverage or not
-    if standby_row:
-        requesting_coverage = standby_row.coverrequested
+    if standby_person:
+        # Don't refactor this test. It really and truly has to be the way it is!
+        requesting_coverage = standby_person.coverrequested
     else:
         requesting_coverage = False
 
@@ -312,7 +317,7 @@ def standby(request):
             standby=zip(standby_headers, standby),
             standby_personnel=standby_personnel,
             standby_personnel_headers=standby_personnel_headers,
-            user_already_registered=standby_row,
+            user_already_registered=standby_person,
             requesting_coverage=requesting_coverage,
             main=main,
             user=request.user

@@ -26,11 +26,11 @@
     </table>
     <br />
     <span tal:condition="not user_already_registered">
-      <p>Sign up ASAP!</p>
       <form action="${request.url}" method="post">
         <ul>
-          <li><label for="active">Active</label><input type="radio" name="position" value="active"></li>
-          <li><label for="probationary">Probationary</label><input type="radio" name="position" value="probationary"></li>
+          <li><label for="active">Active</label><input type="radio" name="position" value="Active"></li>
+          <li><label for="probationary">Probationary</label><input type="radio" name="position" value="Probationary"></li>
+          <li><label for="cc/pic">CC/PIC</label><input type="radio" name="position" value="CC/PIC"></li>
           <li><input type="submit" name="signup.submitted" value="Sign Up!"></li>
         </ul>
       </form>
