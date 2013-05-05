@@ -185,14 +185,14 @@ def minutes(request):
     main = get_renderer('templates/template.pt').implementation()
     meeting_minutes = DBSession.query(MeetingMinutes).order_by(MeetingMinutes.datetime.desc()).all()
     headers = [column.name for column in meeting_minutes[0].__table__.columns]
-    alldates = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime.desc())
+    all_dates = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime.desc())
 
     return dict(
             title='Meeting Minutes',
             main=main,
             meeting_minutes=meeting_minutes,
             headers=headers,
-            alldates=alldates,
+            all_dates=all_dates,
             user=request.user
             )
 
