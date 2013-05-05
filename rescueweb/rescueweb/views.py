@@ -752,13 +752,15 @@ def add_edit_certifications(request):
              permission='admin')
 def add_edit_standby(request):
     main = get_renderer('templates/template.pt').implementation()
-    all_standBy = DBSession.query(StandBy).order_by(StandBy.standbyid).all()
     standbychosen = ''
     form = ''
 
+    all_standBy = DBSession.query(StandBy).order_by(StandBy.standbyid).all()
     return dict(title='Add/Edit Standby',
             main=main,
-            all_standBy = all_standBy,
+            all_standBy=all_standBy,
+	    standbychosen=standbychosen,
+	    form=form,
             user=request.user
             )
 

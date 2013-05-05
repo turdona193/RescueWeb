@@ -2,17 +2,22 @@
     <div metal:fill-slot="content">
         <p>
           ${title} Test
-          
-         
-        	<form method="post">
+		<form method="post">
         		Standbys: <select name="selectedstandby">
-							    	<div tal:repeat = "stanB all_standBy">
-										<span tal:condition="standbychosen==stanB">
-  											<option value="${stanB}" selected>${stanB.event}</option>
-  										</span>
-										<span tal:condition="not standbychosen==stanB">
-  											<option value="${stanB}">${stanB}</option>
-  										</span>
+				<div tal:repeat = "stanb all_standBy">
+					<span tal:condition="standbychosen==stanb">
+  						<option value="${stanb}" selected>${stanb.event}</option>
+  					</span>
+					<span tal:condition="not standbychosen==stanb">
+  						<option value="${stanb}">${stanb}</option>
+  					</span>
+  				</div>
+			</select> <br/><br/>
+			<input type="submit" name="form.selected" value="New"/><br/>		
+			<input type="submit" name="form.selected" value="Load"/><br/>
+			<input type="submit" name="form.selected" value="Delete"/><br/>
+
+		</form>
 
         </p>
     </div>
