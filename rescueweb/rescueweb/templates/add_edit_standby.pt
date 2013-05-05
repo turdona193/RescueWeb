@@ -1,7 +1,13 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
         <p>
-          ${title}
+          ${title} Test
+          
+         
+        	<form method="post">
+        		Standbys: <select name="selectedstandby">
+							    	<div tal:repeat = "announ all_standBy">
+
         </p>
     </div>
 </div>
