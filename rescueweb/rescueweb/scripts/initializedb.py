@@ -272,6 +272,7 @@ def main(argv = sys.argv):
                         enddatetime=datetime.datetime(2000, 1, 3),
                         name='Party',
                         notes='nothing',
+                        location = 'Union MPR',
                         privileges=0
                         ),
 
@@ -280,6 +281,7 @@ def main(argv = sys.argv):
                         enddatetime=datetime.datetime(2001, 10, 15),
                         name='Dance',
                         notes='not going',
+                        location = 'Union MPR',
                         privileges=0
                         ),
 
@@ -288,6 +290,7 @@ def main(argv = sys.argv):
                         enddatetime=datetime.datetime(2002, 5, 8),
                         name='Grad',
                         notes='we leave!',
+                        location = 'Accademic Quad',
                         privileges=0
                         )
                 ])
