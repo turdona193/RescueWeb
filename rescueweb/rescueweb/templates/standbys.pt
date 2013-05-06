@@ -6,8 +6,13 @@
         // List that gets populated with the Standby dates
         var dates = [];
         $(function() {
-            function get_updates () {
-                $.getJSON('/standby_dates.json', function(data) {
+            function get_updates() {
+                var request = $.ajax({
+                    url: '/dates.json',
+                    type: 'GET',
+                    data: {type : 'standby'}
+                });
+                request.done(function(data) {
                     // Add random numbers to the unordered list
                     $.each(data, function (key, val) {
                         // Add the start date and end date onto the dates array
@@ -20,9 +25,9 @@
                     $('#datepicker').datepicker( {
                         onSelect: function(date) {
                             $.ajax({
-                                type: "POST",
-                                url: '/standby_info.json',
-                                data: { date: date }
+                                type: 'GET',
+                                url: '/detailed_info.json',
+                                data: { date: date, type: 'standby' }
                                 }).done(function(msg) {
                                     $('#standbys').empty();
                                     $('#standbys').append('<br />');
@@ -41,6 +46,7 @@
                                     });
                             });
                         },
+                        // Hilight the days which Standbys occur on
                         beforeShowDay: highlightDays
                     });
 
@@ -54,12 +60,12 @@
                         return [true, ''];
                     }
                 });
-            }
 
-            // Test Calendar stuff by clicking the title
-            $('h1').click(function () {
-                get_updates();
-            });
+                // Test Calendar stuff by clicking the title
+                $('h1').click(function () {
+                    get_updates();
+                });
+            }
 
             // Get the Standby days from the server and highlight them on the
             // calendar.

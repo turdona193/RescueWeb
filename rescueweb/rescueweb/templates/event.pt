@@ -1,0 +1,43 @@
+<div metal:use-macro="main.macros['template']">
+  <div metal:fill-slot="content">
+    <h1>${title}</h1>
+    <table>
+      <div tal:repeat="e event">
+        <tr>
+          <td>${e[0]}</td>
+          <td>${e[1]}</td>
+        </tr>
+      </div>
+    </table>
+    <br />
+    <table>
+      <tr>
+        <div tal:repeat="header attendees_headers"> 
+            <th>${header}</th>
+        </div>
+      </tr>
+      <div tal:repeat="attendee attendees">
+        <tr>
+          <div tal:repeat="cell attendee">
+            <td>${cell}</td>
+          </div>
+        </tr>
+      </div>
+    </table>
+    <br />
+    <span tal:condition="not user_already_registered">
+      <form action="${request.url}" method="post">
+        <ul>
+          <li><input type="submit" name="signup.submitted" value="Attending?"></li>
+        </ul>
+      </form>
+    </span>
+    <span tal:condition="user_already_registered">
+      <form action="${request.url}" method="post">
+        <ul>
+          <li><input type="submit" name="retract_attendance.submitted" value="Retract Attendance"></li>
+        </ul>
+      </form>
+    </span>
+  </div>
+</div>
