@@ -797,12 +797,56 @@ def add_edit_certifications(request):
 def add_edit_standby(request):
     main = get_renderer('templates/template.pt').implementation()
     standbychosen = ''
+    standby = ''
     form = ''
+
+    if 'form.submitted' in request.params:
+        if request.params['option'] == 'New':
+            standby = StandBy('','','','','','')
+            standby.standbyid = 0
+            standby.event = request.params['event']
+            standby.location = request.params['location']
+            standby.notes = request.params['notes']
+            standby.startdatetime = request.params['startdatetime']
+            standby.enddatetime = request.params['enddatetime']
+            DBSession.add(standby)
+
+        if request.params['option'] == 'Load':
+            editstandby = request.params['editstandby']
+            standby = DBSession.query(StandBy).filter_by(event = editstandby).first()
+            standby.event = request.params['event']
+            standby.location = ['location']
+            standby.notes = ['notes']
+            standby.startdatetime = ['startdatetime']
+            standby.enddatetime = ['enddatetime']
+            DBSession.add(standby)
+        return HTTPFound(location = request.route_url('standbys'))
+
+    if 'form.selected' in request.params:
+        if request.params['form.selected'] == 'New':
+            standbychosen = ''
+            standby = StandBy('','','','','')
+            form = 'New'
+        if request.params['form.selected'] == 'Load':
+            standbychosen = request.params['selectedstandby']
+            standby = DBSession.query(StandBy).filter_by(event=standbychosen).first()
+            form = 'Load'
+        if request.params['form.selected'] == 'Delete':
+            standbychosen = request.params['selectedstandby']
+            standby = DBSession.query(StandBy).filter_by(event=standbychosen).first()
+            DBSession.delete(standby)
+            return HTTPFound(location = request.route_url('standbys'))
+
+    else:
+        stanby = StandBy('','','','','')
+        standbychosen = ''
+
 
     all_standBy = DBSession.query(StandBy).order_by(StandBy.standbyid).all()
     return dict(title='Add/Edit Standby',
             main=main,
             all_standBy=all_standBy,
+	    standby = standby,
 	    standbychosen=standbychosen,
 	    form=form,
             user=request.user
