@@ -818,14 +818,53 @@ def add_edit_certifications(request):
     main = get_renderer('templates/template.pt').implementation()
     all_users = DBSession.query(Users).order_by(Users.username).all() 
     all_usernames = [auser.username for auser in all_users]
-    all_certifications = []
+    selected_user = ''
+    selected_cert = ''
     name_of_certs = []
-    
+    certifications = DBSession.query(Certifications).all()
+    form = ''
+
+    if 'form.selected' in request.params:
+        selected_user = request.params['selectlink']
+        certifications = DBSession.query(Certifications).filter_by(username = selected_user).all()
+        name_of_certs = [certs.certification for certs in certifications]
+        form = 'userLoad'
+
+    if 'form.certselected' in request.params:
+        selected_user = request.params['suser']
+        selected_cert = request.params['selectcert']
+        if selected_cert == 'New':
+            certifications = Certifications('','','','')
+        else:
+            certifications = DBSession.query(Certifications).filter_by(username = selected_user)\
+                         .filter_by(certification = selected_cert).first()
+        form = 'Edit Cert'
+
+    if 'form.updated' in request.params:
+        if request.params['scert'] == 'New':
+            cert = Certifications('','','','')
+            cert.username = request.params['suser']
+            cert.certification = request.params['certname']
+            cert.certnumber = request.params['certnum']
+            cert.expiration = request.params['exp']
+            DBSession.add(cert)
+        else:
+            user = request.params['suser']
+            certname = request.params['scert']
+            cert = DBSession.query(Certifications).filter_by(username = user)\
+                   .filter_by(certification = certname).first()
+            cert.certnumber = request.params['certnum']
+            cert.expiration = request.params['exp']
+                         
     return dict(
             title='Add/Edit Certifications',
             main=main,
             all_users = all_usernames,
-            
+            form=form,
+            certlist=name_of_certs,
+            certifications=certifications,
+            selected_user=selected_user,
+            selected_cert=selected_cert,
             user=request.user
             )
     

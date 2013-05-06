@@ -2,16 +2,43 @@
     <div metal:fill-slot="content">
         <p>
           ${title}
-          <form>
-				<select name="selectlink">
-					<div tal:repeat = "username all_users">
-		 	 				<option value="${username}">${username}</option>
-					</div>
-				</select><br/>
+	  <span tal:condition=" form=='' ">
+          	<form>
+			<select name="selectlink">
+				<div tal:repeat = "username all_users">
+			 	 	<option value="${username}">${username}</option>
+				</div>
+			</select><br/>
 			<input type="submit" name="form.selected" value="Load"/><br/>
-			</form>
-          
-          
+	  	</form>
+	  </span>
+	  <span tal:condition=" not form=='' ">
+		<br>${selected_user}
+	  </span>
+	  <br/><br/>
+	  <span tal:condition=" form=='userLoad' ">
+		<form method="post">
+			<select name="selectcert">
+				<option value="New">New</option>
+				<div tal:repeat="cert certlist">
+					<option value="${cert}">${cert}</option>
+				</div>
+			</select>
+			<input type="hidden" name="suser" value="${selected_user}"/>
+			<input type="submit" name="form.certselected" value="Edit Cert"/>
+		</form>
+	  </span>
+
+	  <span tal:condition=" form=='Edit Cert' ">
+		<form method="post">
+			Certification: <input input = "text" name="certname" value="${certifications.certification}"/>
+			<br>Certification Number: <input input = "text" name="certnum" value="${certifications.certnumber}"/>
+			<br>Expiration Date: <input input = "text" name = "exp" value="${certifications.expiration}"/>
+			<input type="hidden" name="scert" value="${selected_cert}"/>
+			<input type="hidden" name="suser" value="${selected_user}"/>
+			<input type="submit" name="form.updated" value="Edited"/>
+		</form>
+	  </span>
         </p>
     </div>
 </div>
