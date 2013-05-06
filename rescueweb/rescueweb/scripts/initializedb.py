@@ -268,17 +268,17 @@ def main(argv = sys.argv):
         DBSession.add_all(
                 [
                     Events(
-                        startdatetime=datetime.datetime(2000, 1, 1),
-                        enddatetime=datetime.datetime(2000, 1, 3),
-                        name='Party',
-                        notes='nothing',
-                        location = 'Union MPR',
+                        startdatetime=datetime.datetime(2013, 5, 15),
+                        enddatetime=datetime.datetime(2013, 5, 15),
+                        name='Birthday Party',
+                        notes='Someone is having a birthday today!',
+                        location = 'Townhouse J4',
                         privileges=0
                         ),
 
                     Events(
-                        startdatetime=datetime.datetime(2001, 2, 3),
-                        enddatetime=datetime.datetime(2001, 10, 15),
+                        startdatetime=datetime.datetime(2013, 5, 5),
+                        enddatetime=datetime.datetime(2013, 5, 5),
                         name='Dance',
                         notes='not going',
                         location = 'Union MPR',
@@ -286,8 +286,8 @@ def main(argv = sys.argv):
                         ),
 
                     Events(
-                        startdatetime=datetime.datetime(2002, 5, 5),
-                        enddatetime=datetime.datetime(2002, 5, 8),
+                        startdatetime=datetime.datetime(2013, 5, 30),
+                        enddatetime=datetime.datetime(2013, 5, 30),
                         name='Grad',
                         notes='we leave!',
                         location = 'Accademic Quad',
