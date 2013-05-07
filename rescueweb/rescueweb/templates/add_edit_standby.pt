@@ -1,7 +1,7 @@
 <div metal:use-macro="main.macros['template']">
     	<div metal:fill-slot="content">
         <p>
-		${title} Test
+		${title}
 		<form method="post">
 			Standbys: <select name="selectedstandby">
 				<div tal:repeat = "stanb all_standBy">
@@ -20,9 +20,12 @@
 		<br/><br/>
 		<span tal:condition=" form=='Load' or form=='New' ">
 			<form method="post">
-				Event Name: <input input = "text" name="title" value="${standby.event}" /><br/>
-				Description: <textarea name="body" tal:content="standby.notes" rows="16" cols="80"/><br/>
-				<input type="hidden" name="editannouncement" value="${standbychosen}" />
+				Event Name: <input input = "text" name="event" value="${standby.event}" /><br/>
+				Event Location: <input input = "text" name="location" value="${standby.location}" /><br/>
+				Notes: <textarea name="notes" tal:content="standby.notes" rows="16" cols="80"/><br/>
+				Start Date: <input input = "text" name="startdatetime" value="${standby.startdatetime}" /><br/>
+				End Date: <input input = "text" name="enddatetime" value="${standby.enddatetime}" /><br/>
+				<input type="hidden" name="editstandby" value="${standbychosen}" />
 				<input type="hidden" name="option" value="${form}" />
 				<input type="submit" name="form.submitted" value="Save"/>
 			</form>

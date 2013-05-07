@@ -80,7 +80,7 @@ bash "start app" do
 source bin/activate
 cd teamMurrica/rescueweb
 python setup.py develop
-killall -9 pserve
+sudo killall -9 pserve
 ../../bin/initialize_rescueweb_db development.ini
 ../../bin/pserve development.ini  
 EOF
