@@ -2,10 +2,13 @@
     <div metal:fill-slot="content">
         <p>
           	<form method="post">
-        		Edit Portable Numbers:<br/> 
+        		Edit Duty Crews:<br/> 
 						<div tal:repeat = "user allusernames">
-  							${user[0]}<input type="text" name = ${user[1]} value=${user[2]}>
-  						</div><br/><br/>
+						${user[0]}
+							<span tal:repeat ="val range(12)">
+  								${val}<input type="checkbox" name=${user[1]} value=${val}>
+  							</span>
+  						</div>				
 				<input type="submit" name="form.submitted" value="Update"/><br/>
 			</form>       
 		 </p>
