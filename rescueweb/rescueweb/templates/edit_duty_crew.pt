@@ -1,7 +1,13 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
         <p>
-          ${title}
-        </p>
+          	<form method="post">
+        		Edit Duty Crews:<br/> 
+						<div tal:repeat = "user allusernames">
+  							${user[0]}<input type="text" name = ${user[0]} value=${user[1]}>
+  						</div><br/><br/>
+				<input type="submit" name="form.submitted" value="Update"/><br/>
+			</form>       
+		 </p>
     </div>
 </div>

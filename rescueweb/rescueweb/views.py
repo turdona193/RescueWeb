@@ -52,6 +52,9 @@ from .models import (
 	Pictures,
     StandByPersonnel,
     Attendees,
+    DutyCrews,
+    DutyCrewCalendar,
+    DutyCrewSchedule,
     )
 
 # Used for responding to AJAX requests
@@ -174,16 +177,6 @@ def event(request):
             main=main,
             user=request.user
             )
-
-@view_config(route_name='pictures', renderer='templates/pictures.pt')
-def pictures(request):
-    main = get_renderer('templates/template.pt').implementation()
-
-    return dict(title='Pictures',
-            main=main,
-            user=request.user
-            )
-
 
 @view_config(route_name='join', renderer='templates/join.pt')
 def join(request):
@@ -793,17 +786,14 @@ def edit_portable_numbers(request):
     main = get_renderer('templates/template.pt').implementation()
     
     if 'form.submitted' in request.params:
-        allusers = DBSession.query(Users).order_by(Users.username).all() 
+        allusers = DBSession.query(Users).order_by(Users.portablenumber).all() 
         for changeuser in allusers:
             i = int(request.params[changeuser.username])
             if i:
                 changeuser.portablenumber = i
-                DBSession.add(changeuser)
-                print("should have Changed")
-            print(i)
-        
-    allusers = DBSession.query(Users).order_by(Users.username).all() 
-    allusernames = [[auser.username , auser.portablenumber] for auser in allusers]
+                DBSession.add(changeuser)        
+    allusers = DBSession.query(Users).order_by(Users.portablenumber).all() 
+    allusernames = [[auser.fullname ,auser.username, auser.portablenumber] for auser in allusers]
     
     return dict(
             title='Edit Portable Numbers', 
@@ -936,6 +926,43 @@ def edit_duty_crew(request):
     return dict(
             title='Edit Duty Crew', 
             main=main,
+            user=request.user
+            )
+    
+@view_config(route_name='set_duty_crew', renderer='templates/set_duty_crew.pt',
+             permission='admin')
+def set_duty_crew(request):
+    main = get_renderer('templates/template.pt').implementation()
+    allusers = DBSession.query(Users).all() 
+
+    if 'form.submitted' in request.params:
+        DBSession.query(DutyCrews).delete() #Delete all Duty Crews
+        print("{}".format(request.params))
+        allusernames = [auser.username for auser in allusers]
+        for key,val in request.params.items():
+            print("{}:{}".format(key,val))
+            if key in allusernames:
+                print("{}:{}".format(key,val))
+                DBSession.add(
+                              DutyCrews(
+                                        crewnumber = int(val),
+                                        username = key,
+                                        )
+                              )        
+                      
+    allusersrecords = DBSession.query(Users.fullname, Users.username, DutyCrews.crewnumber).\
+                outerjoin(DutyCrews).order_by(Users.lastname).all()
+    allusernames = [[auser.fullname ,auser.username, auser.crewnumber] for auser in allusersrecords ]
+    
+    print("!!!!!!!!!!!")
+    for user in allusernames:
+        print(user)
+    print("!!!!!!!!!!!")
+    
+    return dict(
+            title='Edit Portable Numbers', 
+            main=main,
+            allusernames=allusernames,
             user=request.user
             )
 

@@ -64,6 +64,7 @@ def main(global_config, **settings):
     config.add_route('add_edit_minutes' , '/add_edit_minutes')
     config.add_route('add_edit_pictures' , '/add_edit_pictures')
     config.add_route('edit_portable_numbers' , '/edit_portable_numbers')
+    config.add_route('set_duty_crew' , '/set_duty_crew')
     config.add_route('add_edit_certifications' , '/add_edit_certifications')
     config.add_route('add_edit_standby' , '/add_edit_standby')
     config.add_route('edit_duty_crew' , '/edit_duty_crew')

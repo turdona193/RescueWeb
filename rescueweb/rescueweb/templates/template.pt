@@ -145,6 +145,7 @@
         				<li class="submenu"><span>User</span>
         					<ul>
         						<li class="noborder"><a href="/edit_portable_numbers">Edit Portable Numbers</a></li>
+		        				<li><a href="/set_duty_crew">Set Duty Crew</a></li>
 		        				<li><a href="/add_edit_certifications">Add/Edit Certifications</a></li>
         				
         					</ul>
