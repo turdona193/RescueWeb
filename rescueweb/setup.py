@@ -16,6 +16,7 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'WebTest',
+    'PasteBin',
     ]
 
 setup(name='rescueweb',
