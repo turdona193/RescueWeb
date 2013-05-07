@@ -134,13 +134,13 @@ def event(request):
     # Get the user's information if they are signed up for an event
     attendee = DBSession.query(Attendees).\
             filter(Attendees.eventid == request.matchdict['eventid']).\
-            filter(Attendees.username == request.user.username).first()
+            filter(Attendees.username == get_username(request)).first()
 
     # Check to see if we got here by signing up for the standby
     if 'signup.submitted' in request.params and not attendee:
         attendee = Attendees(
                 eventid=request.matchdict['eventid'],
-                username=request.user.username
+                username=get_username(request)
                 )
         DBSession.add(attendee)
     elif 'retract_attendance.submitted' in request.params and attendee:
@@ -306,7 +306,7 @@ def standby(request):
     # Get the user's information if they are signed up for the standby
     standby_person = DBSession.query(StandByPersonnel).\
             filter(StandByPersonnel.standbyid == request.matchdict['standbyid']).\
-            filter(StandByPersonnel.username == request.user.username).first()
+            filter(StandByPersonnel.username == get_username(request)).first()
 
     # Check to see if we got here by signing up for the standby
     if 'signup.submitted' in request.params:
@@ -319,7 +319,7 @@ def standby(request):
         if not standby_person:
             standby_person = StandByPersonnel(
                     standbyid=request.matchdict['standbyid'],
-                    username=request.user.username,
+                    username=get_username(request),
                     standbyposition=request.POST['position'],
                     coverrequested=False
                     )
@@ -390,21 +390,21 @@ def dates(request):
     if 'type' not in request.GET:
         return None
 
-    standby_query = DBSession.query(TABLE_DICT[request.GET['type']]).all()
+    episode_query = DBSession.query(TABLE_DICT[request.GET['type']]).all()
 
     return [ 
         (
             '{}/{}/{}'.format(
-                standby.startdatetime.month, 
-                standby.startdatetime.day,
-                standby.startdatetime.year
+                episode.startdatetime.month, 
+                episode.startdatetime.day,
+                episode.startdatetime.year
                              ),
             '{}/{}/{}'.format(
-                standby.enddatetime.month,
-                standby.enddatetime.day, 
-                standby.enddatetime.year
+                episode.enddatetime.month,
+                episode.enddatetime.day, 
+                episode.enddatetime.year
                              )
-        ) for standby in standby_query 
+        ) for episode in episode_query 
            ]
 
 @view_config(name='detailed_info.json', renderer='json')
@@ -1098,8 +1098,8 @@ def category_pictures(request):
     pictures = ''
     categoryChosen = ''
     
-    return dict(title = 'Pictures',
-				main = main,
+    return dict(title='Pictures',
+				main=main,
 				user=request.user,
 				pictures = allpictures,
                )
@@ -1119,3 +1119,15 @@ might be caused by one of the following things:
 After you fix the problem, please restart the Pyramid application to
 try it again.
 """
+
+def get_username(request):
+    """Returns the logged in user or None if no user is logged in.
+
+    This avoid the problem of dereferecing `None' if no user is logged in.
+
+    """
+    if request.user:
+        return request.user.username
+    else:
+        return ''
+

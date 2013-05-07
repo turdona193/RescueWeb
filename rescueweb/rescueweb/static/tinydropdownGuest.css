@@ -42,3 +42,9 @@ height:20px;
 position:relative;
 bottom:0;
 }
+
+td.highlight {
+    /* For hilighting days on the calendar */
+    background-color: red;
+    border: 1px blue solid;
+}
