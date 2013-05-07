@@ -1,6 +1,9 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
         <p>
+	  <span tal:condition=" not result=='' ">
+		${result}<br>
+	  </span>
           ${title}
 	  <span tal:condition=" form=='' ">
           	<form>
@@ -36,7 +39,10 @@
 			<br>Expiration Date: <input input = "text" name = "exp" value="${certifications.expiration}"/>
 			<input type="hidden" name="scert" value="${selected_cert}"/>
 			<input type="hidden" name="suser" value="${selected_user}"/>
-			<input type="submit" name="form.updated" value="Edited"/>
+			<input type="submit" name="form.updated" value="Edit"/>
+			<div tal:condition=" not selected_cert == 'New' ">
+				<input type="submit" name="form.updated" value="Delete"/>
+	  		</div>
 		</form>
 	  </span>
         </p>
