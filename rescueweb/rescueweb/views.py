@@ -1025,7 +1025,7 @@ def email(request):
                       recipients= ["drbcladd@gmail.com"],
                       body= "hopefully this thing works")
     
-    mailer.send(message)
+    mailer.send_immediately(message)
     
     return dict(
              title='Email',
