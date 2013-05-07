@@ -11,8 +11,8 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import distinct
 
-#from pyramid_mailer import get_mailer
-#from pyramid_mailer.message import Message
+from pyramid_mailer import get_mailer
+from pyramid_mailer.message import Message
 
 
 from pyramid.httpexceptions import (
@@ -986,22 +986,21 @@ def add_edit_events(request):
             user=request.user
             )
 
-@view_config(route_name='email', renderer='templates/email.pt',
-             permission='admin')
+@view_config(route_name='email', renderer='templates/email.pt')
 def email(request):
-    #main = get_renderer('templates/template.pt').implementation()
-    #mailer = get_mailer(request)
-    #
-    #message = Message(subject= "testing",
-    #                  sender= "rosejp194@potsdam.edu",
-    #                  recipients= ["jeremy.rose09@gmail.com"],
-    #                  body= "hopefully this thing works")
-    #
-    #mailer.send(message)
+    mainR = get_renderer('templates/template.pt').implementation()
+    mailer = get_mailer(request)
+    
+    message = Message(subject= "testing",
+                      sender= "rosejp194@potsdam.edu",
+                      recipients= ["drbcladd@gmail.com"],
+                      body= "hopefully this thing works")
+    
+    mailer.send(message)
     
     return dict(
              title='Email',
-             main=main,
+             main=mainR,
              user=request.user
              )
 
