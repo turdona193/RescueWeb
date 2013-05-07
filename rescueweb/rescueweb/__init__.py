@@ -25,10 +25,12 @@ def main(global_config, **settings):
     authn_policy = AuthTktAuthenticationPolicy('sosecret', callback=groupfinder)
     authz_policy = ACLAuthorizationPolicy()
 
-    include('pyramid_mailer')
     
     config = Configurator(settings=settings,
                           root_factory='rescueweb.models.RootFactory')
+
+    config.include('pyramid_mailer')
+
     config.set_authentication_policy(authn_policy)
     config.set_authorization_policy(authz_policy)
 
