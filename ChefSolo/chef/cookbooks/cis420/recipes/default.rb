@@ -32,8 +32,11 @@ file '/etc/hosts' do
   content "127.0.0.1 localhost #{hostname}\n"
 end
 
-
 python_pip "pyramid" do
+  action :install
+end
+
+python_pip "pyramid_mailer" do
   action :install
 end
 
