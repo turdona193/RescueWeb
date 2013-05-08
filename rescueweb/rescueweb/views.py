@@ -1280,7 +1280,11 @@ def add_edit_events(request):
         if request.params['option'] == 'Load':
             editevent = request.params['editevent']
             event = DBSession.query(Events).filter_by(name = editevent).first()
-            event.notes = request['body']
+            event.notes = request.params['body']
+            event.startdatetime = datetime.datetime(int(request.params['startyear']), monthdict[request.params['startmonth']],
+                int(request.params['startday']), int(request.params['starthour']), int(request.params['startminute']), 0)
+            event.enddatetime = datetime.datetime(int(request.params['endyear']), monthdict[request.params['startmonth']],
+                int(request.params['endday']) , int(request.params['endhour']), int(request.params['endminute']), 0)
             DBSession.add(event)
         return HTTPFound(location = request.route_url('events'))
     
