@@ -1039,7 +1039,7 @@ def email(request):
     mailer = get_mailer(request)
     
     message = Message(subject= "testing",
-                      sender= "rosejp194@potsdam.edu",
+                      sender= "laddbc@potsdam.edu",
                       recipients= ["drbcladd@gmail.com"],
                       body= "hopefully this thing works")
     
