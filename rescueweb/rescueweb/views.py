@@ -1058,8 +1058,8 @@ def add_edit_standby(request):
             standby.event = request.params['event']
             standby.location = request.params['location']
             standby.notes = request.params['notes']
-            standby.startdatetime = request.params['startdatetime']
-            standby.enddatetime = request.params['enddatetime']
+            standby.startdatetime = datetime.datetime.strptime(request.params['startdatetime'],'%Y, %m, %d')
+            standby.enddatetime = datetime.datetime.strptime(request.params['enddatetime'],'%Y, %m, %d')
             DBSession.add(standby)
 
         if request.params['option'] == 'Load':
