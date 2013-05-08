@@ -11,6 +11,7 @@ from pyramid.renderers import get_renderer
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import distinct
+#from sqlalchemy import func
 
 #from pyramid_mailer import get_mailer
 #from pyramid_mailer.message import Message
@@ -458,9 +459,25 @@ def detailed_info(request):
              renderer='templates/duty_crew_calendar.pt', permission='Member')
 def duty_crew_calendar(request):
     main = get_renderer('templates/template.pt').implementation()
-    currentDate = datetime.date.today()
-    year = currentDate.year
-    month = currentDate.month
+    year = 0
+    month = 0
+    if 'form.changedate' in request.params:
+        if request.params['form.changedate'] == '<--':
+            year = int(request.params['yearNum'])
+            month = int(request.params['monthNum']) - 1
+            if month < 1:
+                month = 12
+                year = year - 1
+        if request.params['form.changedate'] == '-->':
+            year = int(request.params['yearNum'])
+            month = int(request.params['monthNum']) + 1
+            if month > 12:
+                month = 1
+                year = year + 1
+    else:
+        currentDate = datetime.date.today()
+        year = currentDate.year
+        month = currentDate.month
     monthName = calendar.month_name[month]
     startDay, days = calendar.monthrange(year, month)
     startDay = (startDay +1)%7
@@ -469,6 +486,8 @@ def duty_crew_calendar(request):
             title='Duty Crew Calendar',
             monthName=monthName,
             startDay=startDay,
+            yearNum=year,
+            monthNum=month,
             days=days,
             main=main,
             user=request.user
@@ -1112,9 +1131,29 @@ def add_edit_standby(request):
              permission='admin')
 def edit_duty_crew(request):
     main = get_renderer('templates/template.pt').implementation()
-    currentDate = datetime.date.today()
-    year = currentDate.year
-    month = currentDate.month
+
+    numOfCrews = 4
+    #numOfCrews = DBSession.query(func.max(DutyCrews.crewnumber)).scalar()
+    
+    year = 0
+    month = 0
+    if 'form.changedate' in request.params:
+        if request.params['form.changedate'] == '<--':
+            year = int(request.params['yearNum'])
+            month = int(request.params['monthNum']) - 1
+            if month < 1:
+                month = 12
+                year = year - 1
+        if request.params['form.changedate'] == '-->':
+            year = int(request.params['yearNum'])
+            month = int(request.params['monthNum']) + 1
+            if month > 12:
+                month = 1
+                year = year + 1
+    else:
+        currentDate = datetime.date.today()
+        year = currentDate.year
+        month = currentDate.month
     monthName = calendar.month_name[month]
     startDay, days = calendar.monthrange(year, month)
     startDay = (startDay +1)%7
@@ -1123,11 +1162,15 @@ def edit_duty_crew(request):
             title='Duty Crew Calendar',
             monthName=monthName,
             startDay=startDay,
+            yearNum=year,
+            monthNum=month,
             days=days,
+            numOfCrews=numOfCrews,
             main=main,
             user=request.user
             )
-    
+
+
 @view_config(route_name='set_duty_crew', renderer='templates/set_duty_crew.pt',
              permission='admin')
 def set_duty_crew(request):
@@ -1227,19 +1270,23 @@ def add_edit_events(request):
     main = get_renderer('templates/template.pt').implementation()
     announcementchosen = ''
     form = ''
+    monthdict = {'January': 1, 'February': 2, 'March': 3, 'April':4, 'May': 5, 'June': 6, 
+        'July': 7, 'August': 8, 'September': 9, 'October': 10, 'November': 11, 'December': 12}
 
     if 'form.submitted' in request.params:
-        if request.params['option'] == 'new':
+        if request.params['option'] == 'New':
             event = Events('','','','','','')
             event.name = request.params['title']
             event.notes = request.params['body']
-            event.startdatetime = 0
-            event.enddatetime = 0
-            event.location = "potsdam"
-            event.privileges = "edit"
+            event.startdatetime = datetime.datetime(int(request.params['startyear']), monthdict[request.params['startmonth']],
+                int(request.params['startday']), int(request.params['starthour']), int(request.params['startminute']), 0)
+            event.enddatetime = datetime.datetime(int(request.params['endyear']), monthdict[request.params['startmonth']],
+                int(request.params['endday']) , int(request.params['endhour']), int(request.params['endminute']), 0)
+            event.location = request.params['location']
+            event.privileges = request.params['privileges']
             DBSession.add(event)
 
-        if request.params['option'] == 'load':
+        if request.params['option'] == 'Load':
             editevent = request.params['editevent']
             event = DBSession.query(Events).filter_by(name = editevent).first()
             event.notes = request['body']
@@ -1267,10 +1314,31 @@ def add_edit_events(request):
     
     allevents = DBSession.query(Events).all() 
     events = [eve.name for eve in allevents]
+    yearlist = [year for year in range(datetime.datetime.now().year,datetime.datetime.now().year+30)]
+    monthlist = list(monthdict.keys())
+    daylist = [day for day in range(1,32)]
+    hour = [hour for hour in range(0,24)]
+    minute = [min for min in range(0,60)]
+    minutelist = []
+    hourlist = []
 
+    for min in minute:
+        if len(str(min))==1:
+            min = '0'+str(min)
+        minutelist.append(min)
+
+    for min in hour:
+        if len(str(min))==1:
+            min = '0'+str(min)
+        hourlist.append(min)
 
     return dict(
             title='Add/Edit Events', 
+            yearlist=yearlist,
+            monthlist=monthlist,
+            daylist=daylist,
+            hourlist=hourlist,
+            minutelist=minutelist,
             main=main,
             user=request.user,
             events = events,
