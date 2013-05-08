@@ -956,20 +956,25 @@ def edit_portable_numbers(request):
              permission='admin')
 def add_edit_certifications(request):
     main = get_renderer('templates/template.pt').implementation()
-    all_users = DBSession.query(Users).order_by(Users.username).all() 
+        # used to list the names so a user can be selected
+    all_users = DBSession.query(Users).order_by(Users.username).all()
     all_usernames = [auser.username for auser in all_users]
+
+    result = '' # stores message to be displayed after a change is made to a certification
     selected_user = ''
     selected_cert = ''
     name_of_certs = []
     certifications = DBSession.query(Certifications).all()
     form = ''
 
+        # if a user has been selected
     if 'form.selected' in request.params:
         selected_user = request.params['selectlink']
         certifications = DBSession.query(Certifications).filter_by(username = selected_user).all()
         name_of_certs = [certs.certification for certs in certifications]
         form = 'userLoad'
 
+        # if a certification has been selected
     if 'form.certselected' in request.params:
         selected_user = request.params['suser']
         selected_cert = request.params['selectcert']
@@ -980,6 +985,7 @@ def add_edit_certifications(request):
                          .filter_by(certification = selected_cert).first()
         form = 'Edit Cert'
 
+        # after a certification has been added/edited/deleted
     if 'form.updated' in request.params:
         if request.params['scert'] == 'New':
             cert = Certifications('','','','')
@@ -988,6 +994,14 @@ def add_edit_certifications(request):
             cert.certnumber = request.params['certnum']
             cert.expiration = request.params['exp']
             DBSession.add(cert)
+            result = 'Certification added.'
+        elif request.params['form.updated'] == 'Delete':
+            user = request.params['suser']
+            certname = request.params['scert']
+            cert = DBSession.query(Certifications).filter_by(username = user)\
+                   .filter_by(certification = certname).first()
+            DBSession.delete(cert)
+            result = 'Certification deleted.'
         else:
             user = request.params['suser']
             certname = request.params['scert']
@@ -995,7 +1009,9 @@ def add_edit_certifications(request):
                    .filter_by(certification = certname).first()
             cert.certnumber = request.params['certnum']
             cert.expiration = request.params['exp']
-        
+            result = 'Certification edited.'
+        certifications = DBSession.query(Certifications).filter_by(username = selected_user).all()
+        name_of_certs = [certs.certification for certs in certifications]
                          
     return dict(
             title='Add/Edit Certifications',
@@ -1006,6 +1022,7 @@ def add_edit_certifications(request):
             certifications=certifications,
             selected_user=selected_user,
             selected_cert=selected_cert,
+            result=result,
             user=request.user
             )
     
@@ -1073,9 +1090,18 @@ def add_edit_standby(request):
              permission='admin')
 def edit_duty_crew(request):
     main = get_renderer('templates/template.pt').implementation()
-     
+    currentDate = datetime.date.today()
+    year = currentDate.year
+    month = currentDate.month
+    monthName = calendar.month_name[month]
+    startDay, days = calendar.monthrange(year, month)
+    startDay = (startDay +1)%7
+
     return dict(
-            title='Edit Duty Crew', 
+            title='Duty Crew Calendar',
+            monthName=monthName,
+            startDay=startDay,
+            days=days,
             main=main,
             user=request.user
             )
@@ -1177,11 +1203,58 @@ def add_edit_announcements(request):
              permission='admin')
 def add_edit_events(request):
     main = get_renderer('templates/template.pt').implementation()
+    announcementchosen = ''
+    form = ''
+
+    if 'form.submitted' in request.params:
+        if request.params['option'] == 'new':
+            event = Events('','','','','','')
+            event.name = request.params['title']
+            event.notes = request.params['body']
+            event.startdatetime = 0
+            event.enddatetime = 0
+            event.location = "potsdam"
+            event.privileges = "edit"
+            DBSession.add(event)
+
+        if request.params['option'] == 'load':
+            editevent = request.params['editevent']
+            event = DBSession.query(Events).filter_by(name = editevent).first()
+            event.notes = request['body']
+            DBSession.add(event)
+        return HTTPFound(location = request.route_url('events'))
+    
+    if 'form.selected' in request.params:
+        if request.params['form.selected'] == 'New':
+            eventchosen = ''
+            event = Events('','','','','','')
+            form = 'New'
+        if request.params['form.selected'] == 'Load':
+            eventchosen = request.params['selectedevent']
+            event = DBSession.query(Events).filter_by(name=eventchosen).first()
+            form = 'Load'
+        if request.params['form.selected'] == 'Delete':
+            eventchosen = request.params['selectedevent']
+            announcement = DBSession.query(Events).filter_by(name=eventchosen).first()
+            DBSession.delete(event)
+            return HTTPFound(location = request.route_url('events'))
+
+    else:
+        event = Events('','','','','','')
+        eventchosen = ''
+    
+    allevents = DBSession.query(Events).all() 
+    events = [eve.name for eve in allevents]
+
 
     return dict(
             title='Add/Edit Events', 
             main=main,
-            user=request.user
+            user=request.user,
+            events = events,
+            event = event,
+            form=form,
+            eventchosen=eventchosen
             )
 
 @view_config(route_name='email', renderer='templates/email.pt')
@@ -1190,11 +1263,11 @@ def email(request):
     mailer = get_mailer(request)
     
     message = Message(subject= "testing",
-                      sender= "rosejp194@potsdam.edu",
+                      sender= "laddbc@potsdam.edu",
                       recipients= ["drbcladd@gmail.com"],
                       body= "hopefully this thing works")
     
-    mailer.send(message)
+    mailer.send_immediately(message)
     
     return dict(
              title='Email',

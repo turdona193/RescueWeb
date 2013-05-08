@@ -1,6 +1,7 @@
 # --- Install packages we need ---
 package 'python3'
 package 'git'
+package 'postfix'
 
 # --- Add the data partition ---
 #directory '/mnt/data_joliss'
@@ -13,27 +14,14 @@ package 'git'
 # end
 
 # --- Set host name ---
-# Note how this is plain Ruby code, so we can define variables to
-# DRY up our code:
-hostname = 'cis420'
-
-file '/etc/hostname' do
-  content "#{hostname}\n"
-end
-
 include_recipe "python::virtualenv"
 include_recipe "python::pip"
 
-service 'hostname' do
-  action :restart
-end
-
-file '/etc/hosts' do
-  content "127.0.0.1 localhost #{hostname}\n"
-end
-
-
 python_pip "pyramid" do
+  action :install
+end
+
+python_pip "pyramid_mailer" do
   action :install
 end
 
@@ -73,15 +61,44 @@ git "/home/ubuntu/myapp/teamMurrica" do
   action :checkout
 end
 
-bash "start app" do
+bash "setup app" do
   user "ubuntu"
   cwd "/home/ubuntu/myapp"
   code <<-EOF
 source bin/activate
 cd teamMurrica/rescueweb
 python setup.py develop
-sudo killall -9 pserve
+EOF
+end
+
+bash "populate" do
+  user "ubuntu"
+  cwd "/home/ubuntu/myapp"
+  code <<-EOF
+source bin/activate
+cd teamMurrica/rescueweb
 ../../bin/initialize_rescueweb_db development.ini
+EOF
+  not_if "test -e /home/ubuntu/myapp/teamMurrica/rescueweb/rescueweb.sqlite"
+end
+
+bash "halt app" do
+  user "ubuntu"
+  cwd "/home/ubuntu/myapp"
+  code <<-EOF
+source bin/activate
+cd teamMurrica/rescueweb
+sudo killall -9 pserve
+EOF
+  only_if "pgrep pserve"
+end
+
+bash "start app" do
+  user "ubuntu"
+  cwd "/home/ubuntu/myapp"
+  code <<-EOF
+source bin/activate
+cd teamMurrica/rescueweb
 ../../bin/pserve development.ini  
 EOF
 end

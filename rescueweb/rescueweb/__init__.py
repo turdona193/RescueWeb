@@ -21,14 +21,19 @@ def main(global_config, **settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
-    
+
     authn_policy = AuthTktAuthenticationPolicy('sosecret', callback=groupfinder)
     authz_policy = ACLAuthorizationPolicy()
+
+    
     config = Configurator(settings=settings,
                           root_factory='rescueweb.models.RootFactory')
+
+    config.include('pyramid_mailer')
+
     config.set_authentication_policy(authn_policy)
     config.set_authorization_policy(authz_policy)
-    
+
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_static_view('documents', 'documents', cache_max_age=3600)
     config.add_route('home', '/')
@@ -47,7 +52,7 @@ def main(global_config, **settings):
     config.add_route('documents' , '/documents')
     config.add_route('minutes' , '/minutes')
     config.add_route('member_info' , '/member_info')
-    
+
     # Routes for standbys. These are events Campus Rescue Squad members can sign
     # up for.
     config.add_route('standbys' , '/standbys')
@@ -77,10 +82,10 @@ def main(global_config, **settings):
     # everywhere. This user object only has `username' and `privileges'
     # attributes currently.
     config.add_request_method(get_user, 'user', reify=True)
-    
+
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
 
-    
+
     config.scan()
     return config.make_wsgi_app()

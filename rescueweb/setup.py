@@ -8,6 +8,7 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 requires = [
     'pyramid',
+    'pyramid_mailer',
     'SQLAlchemy',
     'transaction',
     'pyramid_tm',
@@ -15,6 +16,7 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'WebTest',
+    'PasteDeploy',
     ]
 
 setup(name='rescueweb',
