@@ -6,7 +6,7 @@
 			Standbys: <select name="selectedstandby">
 				<div tal:repeat = "stanb all_standBy">
 					<span tal:condition="standbychosen==stanb">
-						<option value="${stanb}" selected>${stanb.event}</option>
+						<option value="${stanb}" selected>${stanb}</option>
   					</span>
 					<span tal:condition="not standbychosen==stanb">
 						<option value="${stanb}">${stanb}</option>
