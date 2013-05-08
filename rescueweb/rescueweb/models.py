@@ -65,11 +65,11 @@ class Announcements(Base):
 class Documents(Base):
     __tablename__ = 'Documents'
     name = Column(Text)
-    fileName = Column(Text, primary_key = True)
+    filename = Column(Text, primary_key = True)
     
-    def __init__(self, name, fileName):
+    def __init__(self, name, filename):
         self.name = name
-        self.fileName = fileName
+        self.filename = filename
         
         
 class Users(Base):

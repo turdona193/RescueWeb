@@ -49,10 +49,10 @@ def main(argv = sys.argv):
     with transaction.manager:
         DBSession.add_all(
                 [
-                    Documents(name='Constitution', fileName='Constitution.pdf'),
-                    Documents(name='Advancement Form', fileName='Advancement_Form.pdf'),
-                    Documents(name='By-Laws', fileName='By-Laws.pdf'),
-                    Documents(name='Standard Operating Guidelines', fileName='SOG.pdf'),
+                    Documents(name='Constitution', filename='Constitution.pdf'),
+                    Documents(name='Advancement Form', filename='Advancement_Form.pdf'),
+                    Documents(name='By-Laws', filename='By-Laws.pdf'),
+                    Documents(name='Standard Operating Guidelines', filename='SOG.pdf'),
                 ])
 
         DBSession.add_all(

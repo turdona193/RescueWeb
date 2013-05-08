@@ -1,7 +1,35 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
         <p>
-          ${title}
+          	${title}
+       	<form>
+        	Announcements: <select name="picture_selected">
+								<div tal:repeat = "pic all_pictures_list">
+										<option value="${pic}" selected>${pic}</option>
+								</div>
+							</select>	<br/>
+          	<input type="submit" name="form.operation" value="Add_New" />
+         	<input type="submit" name="form.operation" value="Delete" />
+          	</form>
+         	<div tal:condition = "form == 'New'">
+				<form method="post" enctype="multipart/form-data">
+					<label for="pic_cate"> Picture Category </label>
+					<input id="pic_cate" name = "pic_cate" value="" />
+
+					
+	    			<label for="pic">Picture</label>
+	    			<input id="pic" name="pic" type="file" value="" /><br/>
+	    			
+	    			Picture Description<br/>
+	    			<textarea name="body" rows="8" cols="80">
+	    				
+	    			</textarea><br/>
+	    			
+	    			
+	    			<input type="submit" name="form.submitted" value="submit" />
+				</form>
+		  	</div>
         </p>
     </div>
 </div>
+          	

@@ -54,6 +54,8 @@ def main(global_config, **settings):
     config.add_route('standby' , '/standby/{standbyid}')
     config.add_route('duty_crew_calendar', '/duty_crew_calendar')
     config.add_route('coverage' , '/coverage')
+    
+    # Routes for admin tools
     config.add_route('add_user' , '/add_user')
     config.add_route('edit_user' , '/edit_user')
     config.add_route('delete_user' , '/delete_user')
