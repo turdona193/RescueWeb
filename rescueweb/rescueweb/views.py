@@ -2,7 +2,7 @@ import calendar
 import datetime
 import random
 import os
-
+import re
 
 from pyramid.response import Response
 from pyramid.view import view_config
@@ -12,8 +12,8 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import distinct
 
-from pyramid_mailer import get_mailer
-from pyramid_mailer.message import Message
+#from pyramid_mailer import get_mailer
+#from pyramid_mailer.message import Message
 
 
 from pyramid.httpexceptions import (
@@ -55,9 +55,9 @@ from .models import (
     DutyCrews,
     DutyCrewCalendar,
     DutyCrewSchedule,
-
     )
-import re
+
+TABLE_DICT = {'standby' : StandBy, 'event' : Events}
 
 @view_config(route_name='home', renderer='templates/home.pt')
 def home(request):
@@ -384,12 +384,12 @@ def standby(request):
             user=request.user
             )
 
-@view_config(name='standby_dates.json', renderer='json')
-def standby_dates(request):
-    """Serves up Standby dates via JSON back to the calendar. 
+@view_config(name='dates.json', renderer='json')
+def dates(request):
+    """Serves up Event and StandBy dates via JSON back to the calendar. 
     
     This function is called when the calendar is first loaded. The calendar uses
-    this information to highlight days Standbys are scheduled.
+    this information to highlight days Events or Standbys are going on.
 
     """
     # Ensure the requester specified whether they want StandBy or Events dates
@@ -397,7 +397,7 @@ def standby_dates(request):
         return None
 
     episode_query = DBSession.query(TABLE_DICT[request.GET['type']]).all()
-
+ 
     return [ 
         (
             '{}/{}/{}'.format(
@@ -413,29 +413,46 @@ def standby_dates(request):
         ) for episode in episode_query 
            ]
 
-@view_config(name='standby_info.json', renderer='json')
-def standby_information(request):
+@view_config(name='detailed_info.json', renderer='json')
+def detailed_info(request):
     """Serves up information about Standbys on a particular date via JSON"""
-    if 'date' not in request.POST:
-        # No date was sent
-        return 'No Date'
+    if 'date' not in request.GET or 'type' not in request.GET:
+        # No date was sent or the type of information was not specified
+        return None
 
-    # Grab the date from the AJAX request
-    month, day, year = request.POST['date'].split('/')
-    standby_date = datetime.datetime(int(year), int(month), int(day))
-    standby_query = DBSession.query(StandBy).filter(StandBy.startdatetime == standby_date)
+    # Grab the date and type of information desired from the AJAX request
+    month, day, year = request.GET['date'].split('/')
+    episode_date = datetime.datetime(int(year), int(month), int(day))
+    Table = TABLE_DICT[request.GET['type']]
+    episode_query = DBSession.query(Table)\
+            .filter(Table.startdatetime == episode_date)
 
-    # Return all of the Standby dates occurring on this date
-    return [
-        (
-            standby.standbyid,
-            standby.event,
-            standby.location,
-            standby.notes,
-            str(standby.startdatetime),
-            str(standby.enddatetime),
-        ) for standby in standby_query 
-           ]
+    # Return all of the StandBy dates occurring on this date
+    if request.GET['type'] == 'standby':
+        return [
+            (
+                episode.standbyid,
+                episode.event,
+                episode.location,
+                episode.notes,
+                str(episode.startdatetime),
+                str(episode.enddatetime),
+            ) for episode in episode_query 
+               ]
+    # Return all of the StandBy dates occurring on this date
+    else:
+        assert request.GET['type'] == 'event'
+        return [
+            (
+                episode.eventid,
+                episode.name,
+                episode.location,
+                episode.notes,
+                episode.privileges,
+                str(episode.startdatetime),
+                str(episode.enddatetime),
+            ) for episode in episode_query 
+               ]
 
 @view_config(route_name='duty_crew_calendar',
              renderer='templates/duty_crew_calendar.pt', permission='Member')
@@ -1253,23 +1270,23 @@ def add_edit_events(request):
             eventchosen=eventchosen
             )
 
-@view_config(route_name='email', renderer='templates/email.pt')
-def email(request):
-    mainR = get_renderer('templates/template.pt').implementation()
-    mailer = get_mailer(request)
-    
-    message = Message(subject= "testing",
-                      sender= "laddbc@potsdam.edu",
-                      recipients= ["drbcladd@gmail.com"],
-                      body= "hopefully this thing works")
-    
-    mailer.send_immediately(message)
-    
-    return dict(
-             title='Email',
-             main=mainR,
-             user=request.user
-             )
+#@view_config(route_name='email', renderer='templates/email.pt')
+#def email(request):
+#    mainR = get_renderer('templates/template.pt').implementation()
+#    mailer = get_mailer(request)
+#    
+#    message = Message(subject= "testing",
+#                      sender= "laddbc@potsdam.edu",
+#                      recipients= ["drbcladd@gmail.com"],
+#                      body= "hopefully this thing works")
+#    
+#    mailer.send_immediately(message)
+#    
+#    return dict(
+#             title='Email',
+#             main=mainR,
+#             user=request.user
+#             )
 
 
 @view_config(route_name='login', renderer='templates/login.pt')
