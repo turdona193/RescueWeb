@@ -1,6 +1,7 @@
 # --- Install packages we need ---
 package 'python3'
 package 'git'
+package 'postfix'
 
 # --- Add the data partition ---
 #directory '/mnt/data_joliss'
@@ -13,24 +14,8 @@ package 'git'
 # end
 
 # --- Set host name ---
-# Note how this is plain Ruby code, so we can define variables to
-# DRY up our code:
-hostname = 'cis420'
-
-file '/etc/hostname' do
-  content "#{hostname}\n"
-end
-
 include_recipe "python::virtualenv"
 include_recipe "python::pip"
-
-service 'hostname' do
-  action :restart
-end
-
-file '/etc/hosts' do
-  content "127.0.0.1 localhost #{hostname}\n"
-end
 
 python_pip "pyramid" do
   action :install
