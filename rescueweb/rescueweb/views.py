@@ -922,9 +922,18 @@ def add_edit_standby(request):
              permission='admin')
 def edit_duty_crew(request):
     main = get_renderer('templates/template.pt').implementation()
-     
+    currentDate = datetime.date.today()
+    year = currentDate.year
+    month = currentDate.month
+    monthName = calendar.month_name[month]
+    startDay, days = calendar.monthrange(year, month)
+    startDay = (startDay +1)%7
+
     return dict(
-            title='Edit Duty Crew', 
+            title='Duty Crew Calendar',
+            monthName=monthName,
+            startDay=startDay,
+            days=days,
             main=main,
             user=request.user
             )
@@ -1026,11 +1035,58 @@ def add_edit_announcements(request):
              permission='admin')
 def add_edit_events(request):
     main = get_renderer('templates/template.pt').implementation()
+    announcementchosen = ''
+    form = ''
+
+    if 'form.submitted' in request.params:
+        if request.params['option'] == 'new':
+            event = Events('','','','','','')
+            event.name = request.params['title']
+            event.notes = request.params['body']
+            event.startdatetime = 0
+            event.enddatetime = 0
+            event.location = "potsdam"
+            event.privileges = "edit"
+            DBSession.add(event)
+
+        if request.params['option'] == 'load':
+            editevent = request.params['editevent']
+            event = DBSession.query(Events).filter_by(name = editevent).first()
+            event.notes = request['body']
+            DBSession.add(event)
+        return HTTPFound(location = request.route_url('events'))
+    
+    if 'form.selected' in request.params:
+        if request.params['form.selected'] == 'New':
+            eventchosen = ''
+            event = Events('','','','','','')
+            form = 'New'
+        if request.params['form.selected'] == 'Load':
+            eventchosen = request.params['selectedevent']
+            event = DBSession.query(Events).filter_by(name=eventchosen).first()
+            form = 'Load'
+        if request.params['form.selected'] == 'Delete':
+            eventchosen = request.params['selectedevent']
+            announcement = DBSession.query(Events).filter_by(name=eventchosen).first()
+            DBSession.delete(event)
+            return HTTPFound(location = request.route_url('events'))
+
+    else:
+        event = Events('','','','','','')
+        eventchosen = ''
+    
+    allevents = DBSession.query(Events).all() 
+    events = [eve.name for eve in allevents]
+
 
     return dict(
             title='Add/Edit Events', 
             main=main,
-            user=request.user
+            user=request.user,
+            events = events,
+            event = event,
+            form=form,
+            eventchosen=eventchosen
             )
 
 @view_config(route_name='email', renderer='templates/email.pt')
