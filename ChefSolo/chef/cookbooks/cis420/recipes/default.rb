@@ -83,6 +83,15 @@ bash "setup app" do
 source bin/activate
 cd teamMurrica/rescueweb
 python setup.py develop
+EOF
+end
+
+bash "populate" do
+  user "ubuntu"
+  cwd "/home/ubuntu/myapp"
+  code <<-EOF
+source bin/activate
+cd teamMurrica/rescueweb
 ../../bin/initialize_rescueweb_db development.ini
 EOF
   not_if "test -e /home/ubuntu/myapp/teamMurrica/rescueweb/rescueweb.sqlite"
