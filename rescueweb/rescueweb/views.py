@@ -1035,30 +1035,6 @@ def add_edit_events(request):
 
 @view_config(route_name='email', renderer='templates/email.pt')
 def email(request):
-"""
-	main = get_renderer('templates/template.pt').implementation()
-	mailer = get_mailer(request)
-    
-	form = ''
-	message = ''
-	if 'form.submitted' in request.params:
-		if request.params['option'] == 'New':
-			allusers = DBSession.query(Users).order_by(Users.username).all() 
-			alluseremails = [auser.email for auser in allusers]
-			message = Message(subject= request.params['subject'],
-	                       sender= "rosejp194@potsdam.edu",
-                           recipients= ["jeremy.rose09@gmail.com"],
-                           body= request.params['body'] )
-			mailer.send(message)
-	if 'form.selected' in request.params:
-		if request.params['form.selected'] == 'New':
-			form = 'New'
-			
-	#if 'form.selected' in request.params:
-		#if request.params['form.selected'] == 'Send':
-		#	mailer.send(message)
-    #mailer.send(message)
-"""
     mainR = get_renderer('templates/template.pt').implementation()
     mailer = get_mailer(request)
     
@@ -1069,9 +1045,8 @@ def email(request):
     
     mailer.send_immediately(message)
     
-	return dict(
+    return dict(
              title='Email',
-             main=main,
              form=form,
              message=message,
              main=mainR,
