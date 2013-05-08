@@ -710,7 +710,6 @@ def add_edit_documents(request):
     main = get_renderer('templates/template.pt').implementation()
     form = ''
     if 'form.operation' in request.params:
-        print("!!!!!!!!!form")
         operation = request.params['form.operation']
         if operation == 'Add_New':
             form='New'
@@ -725,9 +724,6 @@ def add_edit_documents(request):
         filename = request.POST['doc'].filename
         input_file = request.POST['doc'].file
         file_path = os.path.join('rescueweb/documents', '{}'.format(filename))
-        #print(file_path)
-        #some_path = request.static_url('rescueweb:documents/')
-        #print(some_path)
         temp_file_path = file_path + '~'
         output_file = open(temp_file_path, 'wb')
         input_file.seek(0)
@@ -891,9 +887,9 @@ def add_edit_pictures(request):
         
     if 'form.submitted' in request.params:
         form=''
-        filename = '/pictures/{}'.format(request.POST['pic'].filename)
+        filename = request.POST['pic'].filename
         input_file = request.POST['pic'].file
-        file_path = os.path.join('rescueweb/static', '{}'.format(filename))
+        file_path = os.path.join('rescueweb/static/pictures/', '{}'.format(filename))
         #print(file_path)
         #some_path = request.static_url('rescueweb:documents/')
         #print(some_path)

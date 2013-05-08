@@ -36,6 +36,8 @@ def main(global_config, **settings):
 
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_static_view('documents', 'documents', cache_max_age=3600)
+    config.add_static_view('pictures', 'static/pictures', cache_max_age=3600)
+
     config.add_route('home', '/')
     config.add_route('history','/history')
     config.add_route('personnel','/personnel')
