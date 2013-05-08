@@ -1,69 +1,21 @@
 <head>
-	<style type="text/css">
-	.hoverbox{
-		cursor: default;
-		list-style: none;
-	}
 
-	.hoverbox a{
-		cursor: default;
-	}
-
-	.hoverbox a .preview{
-		display: none;
-	}
-
-	.hoverbox a:hover .preview{
-		display: block;
-		position: absolute;
-		top: -33px;
-		left: -45px;
-		z-index: 1;
-	}
-
-	.hoverbox img{
-		background: #fff;
-		border-color: #aaa #ccc #ddd #bbb;
-		border-style: solid;
-		border-width: 1px;
-		color: inherit;
-		padding: 2px;
-		vertical-align: top;
-		width: 100px;
-		height: 75px;
-	}
-
-	.hoverbox li{
-		background: #eee;
-		border-color: #ddd #bbb #aaa #ccc;
-		border-style: solid;
-		border-width: 1px;
-		color: inherit;
-		display: inline;
-		float: left;
-		margin: 3px;
-		padding: 5px;
-		position: relative;
-	}
-
-	.hoverbox .preview{
-		border-color: #000;
-		width: 200px;
-		height: 150px;
-	}	
-
-	</style>
+<link tal:condition="user" rel="stylesheet" href="${request.static_url('rescueweb:static/tinydropdown.css')}" type="text/css" />
 
 </head>
-<!--="${request.static_url('rescueweb:static/tinydropdown.js')}"></-->
 
-<div metal:use-macro="main.macros['template']">
+<div metal:use-macro="main.macros['template']">  
     <div metal:fill-slot="content">
-        <p>This is the ${title} page!</p>
+        <p><h3>Click an image to see the rest of the set</h3></p>
         <ul class="hoverbox">
 			<div tal:repeat="pic pictures">
-			<li><a href ="www.google.com"><img src="${request.static_url('rescueweb:static{}'.format(pic[0]))}" alt="description" /><img src="${request.static_url('rescueweb:static{}'.format(pic[0]))}" alt="description" class="preview" /></a></li>
-			</div>
+            <form method="post">
+                <input type="submit" name="category.chosen" value="${pic[2]}"/>
+			        <li><a href ="/category_pictures#${pic[2]}"><img src="${request.static_url('rescueweb:static{}'.format(pic[0]))}" alt="${pic[2]}" />
+                        <input type="image" src="${request.static_url('rescueweb:static{}'.format(pic[0]))}" name="category.submitted" value="${pic[2]}" alt="Submit"   class="Preview">
+                        </a><br><h4>${pic[2]}</h4></li>
+                </form>			
+            </div>
 		</ul>
     </div>
 </div>

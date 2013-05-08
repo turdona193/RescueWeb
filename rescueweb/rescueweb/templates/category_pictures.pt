@@ -1,0 +1,16 @@
+<head>
+
+<link tal:condition="user" rel="stylesheet" href="${request.static_url('rescueweb:static/tinydropdown.css')}" type="text/css" />
+
+</head>
+
+<div metal:use-macro="main.macros['template']">
+    <div metal:fill-slot="content">
+        <p>This is the ${title} page!</p>
+        <ul class="hoverbox">
+			<div tal:repeat="pic pictures">
+			<li><a href ="${request.static_url('rescueweb:static{}'.format(pic[0]))}"><img src="${request.static_url('rescueweb:static{}'.format(pic[0]))}" alt="description" /><img src="${request.static_url('rescueweb:static{}'.format(pic[0]))}" alt="description" class="preview" /></a></li>
+			</div>
+		</ul>
+    </div>
+</div>

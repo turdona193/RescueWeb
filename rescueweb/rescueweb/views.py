@@ -8,6 +8,8 @@ from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 
 from sqlalchemy.exc import DBAPIError
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy import distinct
 
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
@@ -45,7 +47,14 @@ from .models import (
     TrainingLevel,
     WebLinks,
     StandBy,
+    MeetingMinutes,
 	Pictures,
+    StandByPersonnel,
+    Attendees,
+    DutyCrews,
+    DutyCrewCalendar,
+    DutyCrewSchedule,
+
     )
 
 @view_config(route_name='home', renderer='templates/home.pt')
@@ -92,36 +101,79 @@ def personnel(request):
 @view_config(route_name='announcements', renderer='templates/announcements.pt')
 def announcements(request):
     main = get_renderer('templates/template.pt').implementation()
-    page = DBSession.query(Announcements).order_by(Announcements.posted.desc()).all()
-    headers = [column.name for column in page[0].__table__.columns]
+    announcements = DBSession.query(Announcements).order_by(Announcements.posted.desc()).all()
+    headers = [column.name for column in announcements[0].__table__.columns]
 
     return dict(
             title='Announcements', 
             main=main,
-            announcements=page, headers=headers,
+            announcements=announcements,
+            headers=headers,
             user=request.user)
     
 @view_config(route_name='events', renderer='templates/events.pt')
-def eventsV(request):
+def event_table(request):
     main = get_renderer('templates/template.pt').implementation()
-    ev = DBSession.query(Events).all()
+    event_list = DBSession.query(Events).all()
 
     return dict(
             title='Events', 
             main=main,
-            user=request.user,
-            ev=ev
-            )
-
-@view_config(route_name='pictures', renderer='templates/pictures.pt')
-def pictures(request):
-    main = get_renderer('templates/template.pt').implementation()
-
-    return dict(title='Pictures',
-            main=main,
             user=request.user
             )
 
+@view_config(route_name='event', renderer='templates/event.pt')
+def event(request):
+    """Renders information relating to a specific Event"""
+    main = get_renderer('templates/template.pt').implementation()
+
+    # Sanity check
+    if 'eventid' not in request.matchdict:
+        return HTTPNotFound('No event passed in.')
+
+    # Get the user's information if they are signed up for an event
+    attendee = DBSession.query(Attendees).\
+            filter(Attendees.eventid == request.matchdict['eventid']).\
+            filter(Attendees.username == get_username(request)).first()
+
+    # Check to see if we got here by signing up for the standby
+    if 'signup.submitted' in request.params and not attendee:
+        attendee = Attendees(
+                eventid=request.matchdict['eventid'],
+                username=get_username(request)
+                )
+        DBSession.add(attendee)
+    elif 'retract_attendance.submitted' in request.params and attendee:
+        DBSession.delete(attendee)
+        attendee = None
+
+    # Get the event that was chosen and the headers to display it
+    event = DBSession.query(Events.name, Events.location, Events.notes,
+            Events.privileges, Events.startdatetime, Events.enddatetime).\
+            filter(Events.eventid == request.matchdict['eventid']).\
+            first()
+
+    event_headers = ['Event', 'Location', 'Notes', 'Privileges',
+            'Start Date Time', 'End Date Time']
+
+    # Get the personnel that are signed up for the event and the headers that
+    # are used to display the information.
+    attendees = DBSession.query(
+            Attendees.eventid,
+            Attendees.username).\
+            filter(Attendees.eventid == request.matchdict['eventid']).all()
+
+    attendees_headers = ['Event ID', 'User']
+
+    return dict(
+            title=event.name,
+            event=zip(event_headers, event),
+            attendees=attendees,
+            attendees_headers=attendees_headers,
+            user_already_registered=attendee,
+            main=main,
+            user=request.user
+            )
 
 @view_config(route_name='join', renderer='templates/join.pt')
 def join(request):
@@ -180,10 +232,16 @@ def documents(request):
              permission='Member')
 def minutes(request):
     main = get_renderer('templates/template.pt').implementation()
+    meeting_minutes = DBSession.query(MeetingMinutes).order_by(MeetingMinutes.datetime.desc()).all()
+    headers = [column.name for column in meeting_minutes[0].__table__.columns]
+    all_dates = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime.desc())
 
     return dict(
             title='Meeting Minutes',
             main=main,
+            meeting_minutes=meeting_minutes,
+            headers=headers,
+            all_dates=all_dates,
             user=request.user
             )
 
@@ -191,20 +249,123 @@ def minutes(request):
              permission='Member')
 def member_info(request):
     main = get_renderer('templates/template.pt').implementation()
-
+    user = request.user
+    message = ''
+    certs = ''
+    hascert = DBSession.query(Certifications).filter(Certifications.username == user.username).count()
+    if hascert:
+        all_certs = DBSession.query(Certifications).filter(Certifications.username == user.username).all()
+        certs = [[cert.certification,cert.certnumber,cert.expiration] for cert in all_certs]
     return dict(
             title='Member Information',
             main=main,
-            user=request.user
+            user=user,
+            message=message,
+            hascert=hascert,
+            certs=certs
             )
     
 @view_config(route_name='standbys', renderer='templates/standbys.pt',
              permission='Member')
 def standbys(request):
+    """A view that diplays a javascript calendar with dates with Standbys
+    hilighted.
+
+    This view is very simple because all the work happens after the page gets
+    loaded with javascript.
+
+    """
     main = get_renderer('templates/template.pt').implementation()
 
     return dict(
             title='Stand-Bys', 
+            main=main,
+            user=request.user
+            )
+
+@view_config(route_name='standby', renderer='templates/standby.pt',
+             permission='Member')
+def standby(request):
+    """Renders information relating to a specific Standby event"""
+    main = get_renderer('templates/template.pt').implementation()
+
+    # Sanity check
+    if 'standbyid' not in request.matchdict:
+        return HTTPNotFound('No standby passed in.')
+
+    # Get the user's information if they are signed up for the standby
+    standby_person = DBSession.query(StandByPersonnel).\
+            filter(StandByPersonnel.standbyid == request.matchdict['standbyid']).\
+            filter(StandByPersonnel.username == get_username(request)).first()
+
+    # Check to see if we got here by signing up for the standby
+    if 'signup.submitted' in request.params:
+        if 'position' not in request.POST:
+            return Response('Error: You have to sign up with either Active or '
+            'Probationary status')
+
+        # Only add the user to the Standby table if they weren't already signed
+        # up. If they are already signed up, just bring them back to the page.
+        if standby_person:
+            return HTTPFound(location=request.url)
+        else:
+            standby_person = StandByPersonnel(
+                    standbyid=request.matchdict['standbyid'],
+                    username=get_username(request),
+                    standbyposition=request.POST['position'],
+                    coverrequested=False
+                    )
+            DBSession.add(standby_person)
+    elif 'coverage_request.submitted' in request.params:
+        standby_person.coverrequested = True
+    elif 'cancel_coverage_request.submitted' in request.params:
+        standby_person.coverrequested = False
+
+    # Get the standby event that was chosen and the headers to display it
+    standby = DBSession.query(StandBy.event, StandBy.location, StandBy.notes,
+            StandBy.startdatetime, StandBy.enddatetime).\
+            filter(StandBy.standbyid == request.matchdict['standbyid']).\
+            first()
+
+    standby_headers = [
+            'Event', 
+            'Location', 
+            'Notes', 
+            'Start Date Time', 
+            'End Date Time'
+            ]
+
+    # Get the personnel that are signed up for the standby and the headers that
+    # are used to display the information.
+    standby_personnel = DBSession.query(
+            StandByPersonnel.standbyid,
+            StandByPersonnel.username,
+            StandByPersonnel.standbyposition,
+            StandByPersonnel.coverrequested).\
+                    filter(StandByPersonnel.standbyid ==
+                    request.matchdict['standbyid']).all()
+
+    standby_personnel_headers = [
+            'Standby ID',
+            'User', 
+            'Standby Position', 
+            'Requesting Coverage'
+            ]
+
+    # Flag the user as requesting coverage or not
+    if standby_person:
+        # Don't refactor this test. It really and truly has to be the way it is!
+        requesting_coverage = standby_person.coverrequested
+    else:
+        requesting_coverage = False
+
+    return dict(
+            title=standby.event,
+            standby=zip(standby_headers, standby),
+            standby_personnel=standby_personnel,
+            standby_personnel_headers=standby_personnel_headers,
+            user_already_registered=standby_person,
+            requesting_coverage=requesting_coverage,
             main=main,
             user=request.user
             )
@@ -217,21 +378,25 @@ def standby_dates(request):
     this information to highlight days Standbys are scheduled.
 
     """
-    standby_query = DBSession.query(StandBy).all()
+    # Ensure the requester specified whether they want StandBy or Events dates
+    if 'type' not in request.GET:
+        return None
+
+    episode_query = DBSession.query(TABLE_DICT[request.GET['type']]).all()
 
     return [ 
         (
             '{}/{}/{}'.format(
-                standby.startdatetime.month, 
-                standby.startdatetime.day,
-                standby.startdatetime.year
+                episode.startdatetime.month, 
+                episode.startdatetime.day,
+                episode.startdatetime.year
                              ),
             '{}/{}/{}'.format(
-                standby.enddatetime.month,
-                standby.enddatetime.day, 
-                standby.enddatetime.year
+                episode.enddatetime.month,
+                episode.enddatetime.day, 
+                episode.enddatetime.year
                              )
-        ) for standby in standby_query 
+        ) for episode in episode_query 
            ]
 
 @view_config(name='standby_info.json', renderer='json')
@@ -249,6 +414,7 @@ def standby_information(request):
     # Return all of the Standby dates occurring on this date
     return [
         (
+            standby.standbyid,
             standby.event,
             standby.location,
             standby.notes,
@@ -535,10 +701,53 @@ def add_edit_documents(request):
              permission='admin')
 def editmeetingminutes(request):
     main = get_renderer('templates/template.pt').implementation()
-
+    message = ''
+    allminutes = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime)
+    alldates = ['New']+[minute.datetime.timetuple()[:3] for minute in allminutes]
+    allminutes = ['New']
+    datestring = 'New'
+    minutes = ''
+    date = ''
+    form = ''
+    if 'form.new' in request.params:
+        form = 'New'
+    
+    if 'date.selected' in request.params:
+        operation = request.params['date.selected']
+        datestring = request.params['selected_date']
+        if datestring == 'New':
+            form = 'New'
+        else:
+            date = datetime.datetime.strptime(datestring,'(%Y, %m, %d)')
+            allminutesdatabase = DBSession.query(MeetingMinutes.header,MeetingMinutes.subheader).filter_by(datetime = date).all()
+            if operation == 'Load':
+                allminutes = [['New','New']]+[[minutes.header,minutes.subheader] for minutes in allminutesdatabase]
+            if operation == 'Delete':
+                DBSession.delete(allminutesdatabase)
+            
+    if 'report.selected' in request.params:
+        operation = request.params['report.selected']
+        if operation == 'New':
+            form = 'New'
+        else:
+            date = request.params['usedate']
+            minutesdatabase = DBSession.query(MeetingMinutes).filter_by(datetime = datetime.datetime.strptime(date,'(%Y, %m, %d)'),).first()
+            if operation == 'Load':
+                form = 'Load'
+                minutes = minutesdatabase
+            if operation == 'Delete':
+                DBSession.delete(minutesdatabase)
+        
+    message = datestring
     return dict(
             title='Add/Edit Meeting Minutes',
             main=main,
+            alldates=alldates,
+            allminutes = allminutes,
+            minutes = minutes,
+            datestring = datestring,
+            form=form,
+            message=message,
             user=request.user
             )
 
@@ -559,17 +768,14 @@ def edit_portable_numbers(request):
     main = get_renderer('templates/template.pt').implementation()
     
     if 'form.submitted' in request.params:
-        allusers = DBSession.query(Users).order_by(Users.username).all() 
+        allusers = DBSession.query(Users).order_by(Users.portablenumber).all() 
         for changeuser in allusers:
             i = int(request.params[changeuser.username])
             if i:
                 changeuser.portablenumber = i
-                DBSession.add(changeuser)
-                print("should have Changed")
-            print(i)
-        
-    allusers = DBSession.query(Users).order_by(Users.username).all() 
-    allusernames = [[auser.username , auser.portablenumber] for auser in allusers]
+                DBSession.add(changeuser)        
+    allusers = DBSession.query(Users).order_by(Users.portablenumber).all() 
+    allusernames = [[auser.fullname ,auser.username, auser.portablenumber] for auser in allusers]
     
     return dict(
             title='Edit Portable Numbers', 
@@ -582,12 +788,73 @@ def edit_portable_numbers(request):
              permission='admin')
 def add_edit_certifications(request):
     main = get_renderer('templates/template.pt').implementation()
-    allusers = DBSession.query(Users).order_by(Users.username).all() 
-    allusernames = [auser.username for auser in allusers]
+        # used to list the names so a user can be selected
+    all_users = DBSession.query(Users).order_by(Users.username).all()
+    all_usernames = [auser.username for auser in all_users]
+
+    result = '' # stores message to be displayed after a change is made to a certification
+    selected_user = ''
+    selected_cert = ''
+    name_of_certs = []
+    certifications = DBSession.query(Certifications).all()
+    form = ''
+
+        # if a user has been selected
+    if 'form.selected' in request.params:
+        selected_user = request.params['selectlink']
+        certifications = DBSession.query(Certifications).filter_by(username = selected_user).all()
+        name_of_certs = [certs.certification for certs in certifications]
+        form = 'userLoad'
+
+        # if a certification has been selected
+    if 'form.certselected' in request.params:
+        selected_user = request.params['suser']
+        selected_cert = request.params['selectcert']
+        if selected_cert == 'New':
+            certifications = Certifications('','','','')
+        else:
+            certifications = DBSession.query(Certifications).filter_by(username = selected_user)\
+                         .filter_by(certification = selected_cert).first()
+        form = 'Edit Cert'
+
+        # after a certification has been added/edited/deleted
+    if 'form.updated' in request.params:
+        if request.params['scert'] == 'New':
+            cert = Certifications('','','','')
+            cert.username = request.params['suser']
+            cert.certification = request.params['certname']
+            cert.certnumber = request.params['certnum']
+            cert.expiration = request.params['exp']
+            DBSession.add(cert)
+            result = 'Certification added.'
+        elif request.params['form.updated'] == 'Delete':
+            user = request.params['suser']
+            certname = request.params['scert']
+            cert = DBSession.query(Certifications).filter_by(username = user)\
+                   .filter_by(certification = certname).first()
+            DBSession.delete(cert)
+            result = 'Certification deleted.'
+        else:
+            user = request.params['suser']
+            certname = request.params['scert']
+            cert = DBSession.query(Certifications).filter_by(username = user)\
+                   .filter_by(certification = certname).first()
+            cert.certnumber = request.params['certnum']
+            cert.expiration = request.params['exp']
+            result = 'Certification edited.'
+        certifications = DBSession.query(Certifications).filter_by(username = selected_user).all()
+        name_of_certs = [certs.certification for certs in certifications]
+                         
     return dict(
             title='Add/Edit Certifications',
             main=main,
-            allusers = allusernames,
+            all_users = all_usernames,
+            form=form,
+            certlist=name_of_certs,
+            certifications=certifications,
+            selected_user=selected_user,
+            selected_cert=selected_cert,
+            result=result,
             user=request.user
             )
     
@@ -595,9 +862,59 @@ def add_edit_certifications(request):
              permission='admin')
 def add_edit_standby(request):
     main = get_renderer('templates/template.pt').implementation()
+    standbychosen = ''
+    standby = ''
+    form = ''
 
+    if 'form.submitted' in request.params:
+        if request.params['option'] == 'New':
+            standby = StandBy('','','','','')
+            standby.standbyid = 0
+            standby.event = request.params['event']
+            standby.location = request.params['location']
+            standby.notes = request.params['notes']
+            standby.startdatetime = request.params['startdatetime']
+            standby.enddatetime = request.params['enddatetime']
+            DBSession.add(standby)
+
+        if request.params['option'] == 'Load':
+            editstandby = request.params['editstandby']
+            standby = DBSession.query(StandBy).filter_by(event = editstandby).first()
+            standby.event = request.params['event']
+            standby.location = ['location']
+            standby.notes = ['notes']
+            standby.startdatetime = ['startdatetime']
+            standby.enddatetime = ['enddatetime']
+            DBSession.add(standby)
+        return HTTPFound(location = request.route_url('standbys'))
+
+    if 'form.selected' in request.params:
+        if request.params['form.selected'] == 'New':
+            standbychosen = ''
+            standby = StandBy('','','','','')
+            form = 'New'
+        if request.params['form.selected'] == 'Load':
+            standbychosen = request.params['selectedstandby']
+            standby = DBSession.query(StandBy).filter_by(event=standbychosen).first()
+            form = 'Load'
+        if request.params['form.selected'] == 'Delete':
+            standbychosen = request.params['selectedstandby']
+            standby = DBSession.query(StandBy).filter_by(event=standbychosen).first()
+            DBSession.delete(standby)
+            return HTTPFound(location = request.route_url('standbys'))
+
+    else:
+        stanby = StandBy('','','','','')
+        standbychosen = ''
+
+
+    all_standBy = DBSession.query(StandBy).order_by(StandBy.standbyid).all()
     return dict(title='Add/Edit Standby',
             main=main,
+            all_standBy=all_standBy,
+	    standby = standby,
+	    standbychosen=standbychosen,
+	    form=form,
             user=request.user
             )
 
@@ -609,6 +926,43 @@ def edit_duty_crew(request):
     return dict(
             title='Edit Duty Crew', 
             main=main,
+            user=request.user
+            )
+    
+@view_config(route_name='set_duty_crew', renderer='templates/set_duty_crew.pt',
+             permission='admin')
+def set_duty_crew(request):
+    main = get_renderer('templates/template.pt').implementation()
+    allusers = DBSession.query(Users).all() 
+
+    if 'form.submitted' in request.params:
+        DBSession.query(DutyCrews).delete() #Delete all Duty Crews
+        print("{}".format(request.params))
+        allusernames = [auser.username for auser in allusers]
+        for key,val in request.params.items():
+            print("{}:{}".format(key,val))
+            if key in allusernames:
+                print("{}:{}".format(key,val))
+                DBSession.add(
+                              DutyCrews(
+                                        crewnumber = int(val),
+                                        username = key,
+                                        )
+                              )        
+                      
+    allusersrecords = DBSession.query(Users.fullname, Users.username, DutyCrews.crewnumber).\
+                outerjoin(DutyCrews).order_by(Users.lastname).all()
+    allusernames = [[auser.fullname ,auser.username, auser.crewnumber] for auser in allusersrecords ]
+    
+    print("!!!!!!!!!!!")
+    for user in allusernames:
+        print(user)
+    print("!!!!!!!!!!!")
+    
+    return dict(
+            title='Edit Portable Numbers', 
+            main=main,
+            allusernames=allusernames,
             user=request.user
             )
 
@@ -656,7 +1010,7 @@ def add_edit_announcements(request):
         announcementchosen = ''
     
     allannouncements = DBSession.query(Announcements).all() 
-    announcements = [announcement.header for announcement in allannouncements]
+    announcements = [announce.header for announce in allannouncements]
     
     return dict(
             title='Add/Edit Announcements',
@@ -678,9 +1032,10 @@ def add_edit_events(request):
             main=main,
             user=request.user
             )
-@view_config(route_name='email', renderer='templates/email.pt',
-             permission='admin')
+
+@view_config(route_name='email', renderer='templates/email.pt')
 def email(request):
+"""
 	main = get_renderer('templates/template.pt').implementation()
 	mailer = get_mailer(request)
     
@@ -703,12 +1058,23 @@ def email(request):
 		#if request.params['form.selected'] == 'Send':
 		#	mailer.send(message)
     #mailer.send(message)
+"""
+    mainR = get_renderer('templates/template.pt').implementation()
+    mailer = get_mailer(request)
+    
+    message = Message(subject= "testing",
+                      sender= "laddbc@potsdam.edu",
+                      recipients= ["drbcladd@gmail.com"],
+                      body= "hopefully this thing works")
+    
+    mailer.send_immediately(message)
     
 	return dict(
              title='Email',
              main=main,
              form=form,
              message=message,
+             main=mainR,
              user=request.user
              )
 
@@ -760,18 +1126,36 @@ def pictures(request):
     main = get_renderer('templates/template.pt').implementation()
     allpictures = []
     pictures = ''
+    categoryClicked = ''
 
-    pictures = DBSession.query(Pictures).all()
-    allpictures = [[apicture.picture,apicture.description] for apicture in pictures] 
+    categories = DBSession.query(distinct(Pictures.category)).all()
+    pictures = [DBSession.query(Pictures).filter(Pictures.category == cate[0]).first() for cate in categories]   
+    allpictures = [[apicture.picture,apicture.description, apicture.category] for apicture in pictures] 
+
+    if 'category.chosen' in request.params:
+        categoryClicked = request.params['categoryChosen']
+        pictures = [DBSession.query(Pictures).filter(Pictures.category == categoryClicked).all()]
+        print("****************************** INSIDE FORM.SUBMITTED ******************************")
 
     return dict(title = 'Pictures',
 				main = main,
 				user=request.user,
 				pictures = allpictures,
                )
-				
 
-
+@view_config(route_name='category_pictures', renderer='templates/category_pictures.pt')
+def category_pictures(request):
+    print("****************************** {}".format(request))
+    main = get_renderer('templates/template.pt').implementation()
+    allpictures = []
+    pictures = ''
+    categoryChosen = ''
+    
+    return dict(title='Pictures',
+				main=main,
+				user=request.user,
+				pictures = allpictures,
+               )
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
@@ -788,3 +1172,15 @@ might be caused by one of the following things:
 After you fix the problem, please restart the Pyramid application to
 try it again.
 """
+
+def get_username(request):
+    """Returns the logged in user or None if no user is logged in.
+
+    This avoid the problem of dereferecing `None' if no user is logged in.
+
+    """
+    if request.user:
+        return request.user.username
+    else:
+        return ''
+

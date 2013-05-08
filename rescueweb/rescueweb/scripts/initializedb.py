@@ -26,6 +26,7 @@ from ..models import (
     WebLinks, 
     Base, 
     StandBy,
+    MeetingMinutes,
 	Pictures,
     )
 
@@ -104,7 +105,7 @@ def main(argv = sys.argv):
                         zipcode='13676', 
                         residence='Townhouse', 
                         roomnumber='A1-104', 
-                        phonenumber = 6462595690, 
+                        phonenumber=6462595690, 
                         email='turdona193@potsdam.edu', 
                         privileges=2, 
                         trainingvalue=3, 
@@ -229,8 +230,8 @@ def main(argv = sys.argv):
 
         DBSession.add_all(
                 [
-                    EboardPositions(position='Chief', username='guarintb193'),
-                    EboardPositions(position='Parliamentarian', username='muehlbjp193'),
+                    EboardPositions(eboardposition='Chief', username='guarintb193'),
+                    EboardPositions(eboardposition='Parliamentarian', username='muehlbjp193'),
                 ])
         
         DBSession.add_all(
@@ -267,26 +268,29 @@ def main(argv = sys.argv):
         DBSession.add_all(
                 [
                     Events(
-                        startdatetime=datetime.datetime(2000, 1, 1),
-                        enddatetime=datetime.datetime(2000, 1, 3),
-                        name='Party',
-                        notes='nothing',
+                        startdatetime=datetime.datetime(2013, 5, 15),
+                        enddatetime=datetime.datetime(2013, 5, 15),
+                        name='Birthday Party',
+                        notes='Someone is having a birthday today!',
+                        location = 'Townhouse J4',
                         privileges=0
                         ),
 
                     Events(
-                        startdatetime=datetime.datetime(2001, 2, 3),
-                        enddatetime=datetime.datetime(2001, 10, 15),
+                        startdatetime=datetime.datetime(2013, 5, 5),
+                        enddatetime=datetime.datetime(2013, 5, 5),
                         name='Dance',
                         notes='not going',
+                        location = 'Union MPR',
                         privileges=0
                         ),
 
                     Events(
-                        startdatetime=datetime.datetime(2002, 5, 5),
-                        enddatetime=datetime.datetime(2002, 5, 8),
+                        startdatetime=datetime.datetime(2013, 5, 30),
+                        enddatetime=datetime.datetime(2013, 5, 30),
                         name='Grad',
                         notes='we leave!',
+                        location = 'Accademic Quad',
                         privileges=0
                         )
                 ])
@@ -356,26 +360,28 @@ def main(argv = sys.argv):
                     of 12 pagers, which finally allowed Campus Safety (now
                     University Police) to activate CRS via pager alert. </br>
 
-                    Almost 17 years later, Campus Rescue continues the tradition of quality
-                    emergency medical care 24/7 while school is in session. Because of the
-                    dedication of true professional EMS providers, Campus Rescue continues to thrive
-                    as an important link in prehospital care in SUNY Potsdam. </br>
+                    Almost 17 years later, Campus Rescue continues the tradition
+                    of quality emergency medical care 24/7 while school is in
+                    session. Because of the dedication of true professional EMS
+                    providers, Campus Rescue continues to thrive as an important
+                    link in prehospital care in SUNY Potsdam. </br>
 
-                    The Squad today (as of 2008) has approximately 25 members, 14 of which are NYS
-                    certified EMT's, 6 of which are currently enrolled in the NYS EMT-B curriculum,
-                    and 23 of which are American Heart Association BCLS certified in AED and
-                    CPR.</br>
+                    The Squad today (as of 2008) has approximately 25 members,
+                    14 of which are NYS certified EMT's, 6 of which are
+                    currently enrolled in the NYS EMT-B curriculum, and 23 of
+                    which are American Heart Association BCLS certified in AED
+                    and CPR.</br>
 
-                    The Squad currently has 7 NYS DOH Part 800 compliant BLS jump bags. One bag is
-                    housed in University Police dispatch, one at the Crumb Library, and 2 are housed
-                    in the squad equipment room. CRS is approved through medical direction and NY to
-                    administer albuterol for respiratory emergencies and Epinephrine for
-                    anaphylaxis. The squad also owns an AED, housed in one of University Police's
-                    patrol cars. AEDs are also housed in every building on campus due to the PAD
-                    program.</br>
-
-                    Campus Rescue runs on average approximately 150 calls and standbys each
-                    year."""),
+                    The Squad currently has 7 NYS DOH Part 800 compliant BLS
+                    jump bags. One bag is housed in University Police dispatch,
+                    one at the Crumb Library, and 2 are housed in the squad
+                    equipment room. CRS is approved through medical direction
+                    and NY to administer albuterol for respiratory emergencies
+                    and Epinephrine for anaphylaxis. The squad also owns an AED,
+                    housed in one of University Police's patrol cars. AEDs are
+                    also housed in every building on campus due to the PAD
+                    program.</br> Campus Rescue runs on average approximately
+                    150 calls and standbys each year."""),
         
                     Page(name='Join', data=("""The Campus Rescue Squad at SUNY
                     Potsdam is always open for new members! If you are
@@ -401,7 +407,103 @@ def main(argv = sys.argv):
                     ),
                 ])
         DBSession.add_all(
+
+                [MeetingMinutes(datetime = datetime.datetime(2013,4,28),
+                                header = 'Officers Report' ,
+                                subheader = 'President' ,
+                                content = 'No Report' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,28),
+                                header = 'Officers Report' ,
+                                subheader = 'Vice-President' ,
+                                content = 'Something' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,28),
+                                header = 'Officers Report' ,
+                                subheader = 'Chief Line Officer' ,
+                                content = 'Nothing at all' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,28),
+                                header = 'Committee Report' ,
+                                subheader = 'Website Committee' ,
+                                content = 'We are doing great things' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,28),
+                                header = 'New Business' ,
+                                subheader = 'New Quarters' ,
+                                content = 'Probably not gonna happen' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,28),
+                                header = 'Announcements' ,
+                                subheader = 'MCI' ,
+                                content = 'Be prepared' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,21),
+                                header = 'Officers Report' ,
+                                subheader = 'President' ,
+                                content = 'week before:No Report' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,21),
+                                header = 'Officers Report' ,
+                                subheader = 'Vice-President' ,
+                                content = 'week before:Something' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,21),
+                                header = 'Officers Report' ,
+                                subheader = 'Chief Line Officer' ,
+                                content = 'week before:Nothing at all' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,21),
+                                header = 'Committee Report' ,
+                                subheader = 'Website Committee' ,
+                                content = 'week before:We are doing great things' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,21),
+                                header = 'New Business' ,
+                                subheader = 'New Quarters' ,
+                                content = 'week before:Probably not gonna happen' ,
+                                ),
+                 MeetingMinutes(datetime = datetime.datetime(2013,4,21),
+                                header = 'Announcements' ,
+                                subheader = 'MCI' ,
+                                content = 'week before:Be prepared' ,
+                                ),
+                        ])
+        DBSession.add_all(
                 [
-                    Pictures(picture='/pictures/eqptip.jpg',description="This is a picture of our equipment."),
-                    Pictures(picture='/pictures/mock1.jpg',description="Pictures from our 2004 Mock DWI event."),
+                    Pictures(picture='/pictures/eqpt1.jpg',description="", category="Equipment"),
+                    Pictures(picture='/pictures/eqpt2.jpg',description="", category="Equipment"),
+                    Pictures(picture='/pictures/eqpt3.jpg',description="", category="Equipment"),
+                    Pictures(picture='/pictures/eqpt4.jpg',description="", category="Equipment"),
+                    Pictures(picture='/pictures/eqpt5.jpg',description="", category="Equipment"),
+                    Pictures(picture='/pictures/mock1.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/mock2.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/mock3.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/mock4.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/mock5.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/mock6.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/mock7.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/mock8.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/mock9.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/mock10.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/mock11.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/mock12.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/mock13.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/mock14.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/mock15.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/mock16.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='/pictures/2005mockdwi1.jpg',description="", category="2005 Mock DWI"),
+                    Pictures(picture='/pictures/2005mockdwi2.jpg',description="", category="2005 Mock DWI"),
+                    Pictures(picture='/pictures/2005mockdwi3.jpg',description="", category="2005 Mock DWI"),
+                    Pictures(picture='/pictures/2005mockdwi4.jpg',description="", category="2005 Mock DWI"),
+                    Pictures(picture='/pictures/2005mockdwi5.jpg',description="", category="2005 Mock DWI"),
+                    Pictures(picture='/pictures/carsmash1.jpg', description="", category="Car Smash Fundraiser"),
+                    Pictures(picture='/pictures/carsmash2.jpg', description="", category="Car Smash Fundraiser"),
+                    Pictures(picture='/pictures/carsmash3.jpg', description="", category="Car Smash Fundraiser"),
+                    Pictures(picture='/pictures/carsmash4.jpg', description="", category="Car Smash Fundraiser"),
+                    Pictures(picture='/pictures/carsmash5.jpg', description="", category="Car Smash Fundraiser"),
+                    Pictures(picture='/pictures/wellnessfair1.jpg', description="", category="2006 Wellness Fair"),
+                    Pictures(picture='/pictures/wellnessfair2.jpg', description="", category="2006 Wellness Fair"),
+                    Pictures(picture='/pictures/wellnessfair4.jpg', description="", category="2006 Wellness Fair"),
                 ])
+

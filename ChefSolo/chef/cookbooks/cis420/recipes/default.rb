@@ -32,8 +32,11 @@ file '/etc/hosts' do
   content "127.0.0.1 localhost #{hostname}\n"
 end
 
-
 python_pip "pyramid" do
+  action :install
+end
+
+python_pip "pyramid_mailer" do
   action :install
 end
 
@@ -73,15 +76,34 @@ git "/home/ubuntu/myapp/teamMurrica" do
   action :checkout
 end
 
+bash "setup app" do
+  user "ubuntu"
+  cwd "/home/ubuntu/myapp"
+  code <<-EOF
+source bin/activate
+cd teamMurrica/rescueweb
+python setup.py develop
+EOF
+end
+
+bash "populate" do
+  user "ubuntu"
+  cwd "/home/ubuntu/myapp"
+  code <<-EOF
+source bin/activate
+cd teamMurrica/rescueweb
+../../bin/initialize_rescueweb_db development.ini
+EOF
+  not_if "test -e /home/ubuntu/myapp/teamMurrica/rescueweb/rescueweb.sqlite"
+end
+
 bash "start app" do
   user "ubuntu"
   cwd "/home/ubuntu/myapp"
   code <<-EOF
 source bin/activate
-cd teamMurrica/computers
-python setup.py develop
-killall -9 pserve
-../../bin/initialize_computers_db development.ini
+cd teamMurrica/rescueweb
+sudo killall -9 pserve
 ../../bin/pserve development.ini  
 EOF
 end

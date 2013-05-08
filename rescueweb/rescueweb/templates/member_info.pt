@@ -1,7 +1,88 @@
+<head>
+<style type="text/css">
+table.rowstable {
+	font-family: verdana,arial,sans-serif;
+	font-size:12px;
+	color:#333333;
+	border-width: 1px;
+	border-color: #a9c6c9;
+	border-collapse: collapse
+}
+table.rowstable th {
+	border-width: 0px;
+	padding: 8px;
+	border-style: solid;
+	border-collapse: collapse
+	border-color: #a9c6c9;
+	text-align: right;
+}
+table.rowstable td {
+	border-width: 1px;
+	padding: 8px;
+	border-collapse: collapse
+	border-style: solid;
+	border-color: #a9c6c9;
+}
+table.altrowstable {
+	font-family: verdana,arial,sans-serif;
+	font-size:12px;
+	color:#333333;
+	border-width: 1px;
+	border-color: #a9c6c9;
+	border-collapse: collapse
+}
+table.altrowstable th {
+	border-width: 0px;
+	padding: 8px;
+	border-style: solid;
+	border-collapse: collapse
+	border-color: #a9c6c9;
+	text-align: right;
+}
+table.altrowstable td {
+	border-width: 1px;
+	padding: 8px;
+	border-collapse: collapse
+	border-style: solid;
+	border-color: #a9c6c9;
+}
+.oddrowcolor{
+	background-color:#d4e3e5;
+}
+.evenrowcolor{
+	background-color:#c3dde0;
+}
+</style>
+</head>
+
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
         <p>
-          ${title}
+        	${message}
+        	<h2>User Information</h2>
+    		<table class="rowstable" id="ernatecolor">
+				<tr><th>Login:</th><td>${user.username}</td></tr>
+			
+				<tr><th>Full Name:</th><td> ${user.fullname} </td></tr>
+				<tr><th>Birthday:</th><td> ${user.birthday} </td></tr>
+						
+				<tr><th>Address:</th><td>${user.street}, ${user.city}, ${user.state} ${user.zipcode}</td></tr>
+				<tr><th>On Campus Residence:</th><td>${"{} : {}".format(user.residence,user.roomnumber)}</td></tr>
+			
+				<tr><th>Phone Number:</th><td> ${user.phonenumber} </td></tr>
+				<tr><th>Email:</th><td> ${user.email} </td></tr>
+			</table>
+			<span tal:condition="hascert">
+			<h2>Certifications</h2>
+    		<table class="altrowstable" id="alternatecolor">
+    			<tr>
+    			<th>Certification</th><th>Certification Number</th><th>Expiration</th>
+    			</tr
+    			<div tal:repeat="cert certs">
+				<tr><td>${cert[0]}</td> <td>${cert[1]}</td> <td>${cert[2]}</td></tr>
+				</div>
+			</table>    
+			</span>
         </p>
     </div>
 </div>

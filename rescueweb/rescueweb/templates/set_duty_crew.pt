@@ -1,0 +1,16 @@
+<div metal:use-macro="main.macros['template']">
+    <div metal:fill-slot="content">
+        <p>
+          	<form method="post">
+        		Edit Duty Crews:<br/> 
+						<div tal:repeat = "user allusernames">
+						${user[0]}
+							<span tal:repeat ="val range(12)">
+  								${val}<input type="checkbox" name=${user[1]} value=${val}>
+  							</span>
+  						</div>				
+				<input type="submit" name="form.submitted" value="Update"/><br/>
+			</form>       
+		 </p>
+    </div>
+</div>
