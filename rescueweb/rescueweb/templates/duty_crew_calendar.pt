@@ -7,8 +7,13 @@
 	<div tal:define= "no_of_days days" >
 	<div tal:define= "start_day startDay">
 	
-		
-	<h2 tal:content="month"></h2>
+	<form method="post">	
+		<h2>
+			<input type="submit" name="form.prev" value="<--"/>
+			${month}
+			<input type="submit" name="form.next" value="-->"/>
+		</h2>
+	</form>
 	<table>
 	<tr>
 	    <td>Sunday</td>
@@ -24,7 +29,7 @@
 	       <td> </td>
 	   </div>
 	   <div tal:repeat= " day range(1, 8 - start_day)" >
-	       <td tal:content= "repeat.day.number"> </td>
+	       <td tal:content= "day"> </td>
 	   </div>
 	 </tr>
 	<tr tal:repeat= "week range(1, int((no_of_days - 6 + start_day)/4) +1 )">
