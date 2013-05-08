@@ -29,7 +29,7 @@ def main(global_config, **settings):
     config = Configurator(settings=settings,
                           root_factory='rescueweb.models.RootFactory')
 
-    config.include('pyramid_mailer')
+    #config.include('pyramid_mailer')
 
     config.set_authentication_policy(authn_policy)
     config.set_authorization_policy(authz_policy)
