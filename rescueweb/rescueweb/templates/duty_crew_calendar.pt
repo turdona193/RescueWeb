@@ -1,17 +1,16 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-        <p>Welcome to the duty crew calendar page!</p>
-        <p>Calendars are awful</p>
-	
 	<div tal:define= "month monthName "> 
 	<div tal:define= "no_of_days days" >
 	<div tal:define= "start_day startDay">
 	
-	<form method="post">	
+	<form method="post">
 		<h2>
-			<input type="submit" name="form.prev" value="<--"/>
-			${month}
-			<input type="submit" name="form.next" value="-->"/>
+			<input type="hidden" name="monthNum" value="${monthNum}">
+			<input type="hidden" name="yearNum" value="${yearNum}">
+			<input type="submit" name="form.changedate" value="<--"/>
+			${month} ${yearNum}
+			<input type="submit" name="form.changedate" value="-->"/>
 		</h2>
 	</form>
 	<table>
@@ -24,19 +23,21 @@
 	    <td>Friday</td>
 	    <td>Saturday</td>
 	</tr>
-	<tr>
-	   <div tal:repeat = " i range(start_day)" >
-	       <td> </td>
-	   </div>
-	   <div tal:repeat= " day range(1, 8 - start_day)" >
-	       <td tal:content= "day"> </td>
-	   </div>
-	 </tr>
-	<tr tal:repeat= "week range(1, int((no_of_days - 6 + start_day)/4) +1 )">
-	     <div tal:repeat="day range(week*7 - start_day, min((week+1) *7-start_day, no_of_days))">
-	         <td tal:content="day+1"> </td>
-	     </div>
-	</tr>
+
+		<tr>
+		   <div tal:repeat = " i range(start_day)" >
+		       <td> </td>
+		   </div>
+		   <div tal:repeat= " day range(1, 8 - start_day)" >
+		       <td tal:content= "day"> </td>
+		   </div>
+		 </tr>
+		<tr tal:repeat= "week range(1, int((no_of_days - 6 + start_day)/4) +1 )">
+		     <div tal:repeat="day range(week*7 - start_day, min((week+1) *7-start_day, no_of_days))">
+			<td>${day+1}</td>
+		     </div>
+		</tr>
+	
          </table>
 	
 	</div>

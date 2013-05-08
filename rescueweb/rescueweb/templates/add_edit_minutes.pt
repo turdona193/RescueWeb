@@ -3,20 +3,27 @@
     	${message}
 		<form method="post">
 				<input type="submit" name="form.new" value="New"/><br/><br/>
-		
+			<div tal:condition = "not date_selected">
         	Meeting Dates: <select name="selected_date">
 					  			<div tal:repeat = "date alldates">
-								  	<span tal:condition="date==datestring">
+								  	<span tal:condition="date==selected_date">
 					 	 				<option value="${date}" selected>${date}</option>
 					  				</span>
-					  				<span tal:condition="not date==datestring">
+					  				<span tal:condition="not date==selected_date">
 					 	 				<option value="${date}">${date}</option>
 					  				</span>
   								</div>
 							</select> <br/><br/>
 				<input type="submit" name="date.selected" value="Load"/><br/>
 				<input type="submit" name="date.selected" value="Delete"/><br/>
-				
+			</div>
+			
+			<div tal:condition = "date_selected">
+				Date: ${selected_date}
+				<input type="hidden" name="use_date" value="${selected_date}" />
+			</div>
+			
+			<div tal:condition = "date_selected and not minute_selected">
 			Meeting Reports: <select name="selected_report">
 					  			<div tal:repeat = "minute allminutes">
   											<option value="${minute}" >${minute}</option>
@@ -24,17 +31,23 @@
 							</select> <br/><br/>
 				<input type="submit" name="report.selected" value="Load"/><br/>
 				<input type="submit" name="report.selected" value="Delete"/><br/>
-				<input type="hidden" name="usedate" value="${datestring}" />
+			</div>
+			
+			<div tal:condition = "minute_selected">
+				Report: ${"[{}, {}]".format(selected_minute.header,selected_minute.subheader)}
+				<input type="hidden" name="use_minute" value="${[selected_minute.header,selected_minute.subheader]}" />
+			</div>
+			
 				
-				
-			<span tal:condition = " form == 'Load' or form == 'New'">
-					<input input = "text" name="header"/><br/>
-					<input input = "text" name="subheader"/><br/>
+			<span tal:condition =  "date_selected and minute_selected">
+					<input input = "text" name="date_time" value = ${selected_minute.datetime}  /><br/>
+					<input input = "text" name="header"    value = ${selected_minute.header}    /><br/>
+					<input input = "text" name="subheader" value = ${selected_minute.subheader} /><br/>
 					
-          			<textarea name="body" rows="16" cols="80"></textarea> <br/>
-          	  		<input type="hidden" name="editannouncement" value="hello" />
+          			<textarea name="body" rows="16" cols="80">${selected_minute.content}</textarea> <br/>
+          			<input type="hidden" name="form" value = "${form}" />
           			<input type="submit" name="form.submitted" value="Save"/>
-				</span>
+			</span>
 
 
 		</form>

@@ -1,7 +1,29 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
         <p>
-          ${title}
+        	${title}
+        	<form>
+        	<div tal:condition = "not form == 'New'">
+        	Announcements: <select name="document_selected">
+								<div tal:repeat = "doc all_documents_list">
+										<option value="${doc}" selected>${doc}</option>
+								</div>
+							</select>	<br/>
+          	<input type="submit" name="form.operation" value="Add_New" />
+         	<input type="submit" name="form.operation" value="Delete" />
+          	</div>
+          	</form>
+         	<div tal:condition = "form == 'New'">
+				<form method="post" enctype="multipart/form-data">
+					<label for="doc_name"> Document Name </label>
+					<input id="doc_name" name = "doc_name" value="" />
+
+					
+	    			<label for="doc">Document</label>
+	    			<input id="doc" name="doc" type="file" value="" />
+	    			<input type="submit" name="form.submitted" value="Submit" />
+				</form>
+		  	</div>
         </p>
     </div>
 </div>

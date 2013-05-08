@@ -29,13 +29,15 @@ def main(global_config, **settings):
     config = Configurator(settings=settings,
                           root_factory='rescueweb.models.RootFactory')
 
-    config.include('pyramid_mailer')
+    #config.include('pyramid_mailer')
 
     config.set_authentication_policy(authn_policy)
     config.set_authorization_policy(authz_policy)
 
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_static_view('documents', 'documents', cache_max_age=3600)
+    config.add_static_view('pictures', 'static/pictures', cache_max_age=3600)
+
     config.add_route('home', '/')
     config.add_route('history','/history')
     config.add_route('personnel','/personnel')
@@ -59,6 +61,8 @@ def main(global_config, **settings):
     config.add_route('standby' , '/standby/{standbyid}')
     config.add_route('duty_crew_calendar', '/duty_crew_calendar')
     config.add_route('coverage' , '/coverage')
+    
+    # Routes for admin tools
     config.add_route('add_user' , '/add_user')
     config.add_route('edit_user' , '/edit_user')
     config.add_route('delete_user' , '/delete_user')

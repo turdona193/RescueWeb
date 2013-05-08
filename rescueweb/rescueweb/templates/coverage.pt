@@ -1,6 +1,21 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
         <p>This is the ${title} page!</p>
-        <p>Cover everything, all of them.</p>
+        
+        <p>Stand-By Coverage</p>
+        <div tal:condition = "standby_requests">
+	        <div tal:repeat = "request standby_requests">
+	        	${request}
+	        </div>
+        </div>
+
+        <p>Duty Crew Coverage</p>
+        <div tal:condition = "duty_crew_requests">
+	        <div tal:repeat = "request duty_crew_requests">
+	        	${request}
+	        </div>
+        </div>
+        
+        
     </div>
 </div>

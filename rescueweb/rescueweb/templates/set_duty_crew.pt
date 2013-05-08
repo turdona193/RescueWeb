@@ -3,12 +3,19 @@
         <p>
           	<form method="post">
         		Edit Duty Crews:<br/> 
-						<div tal:repeat = "user allusernames">
-						${user[0]}
+      			<table>
+						<div tal:repeat = "userA all_user_records">
+						${userA[0]}
 							<span tal:repeat ="val range(12)">
-  								${val}<input type="checkbox" name=${user[1]} value=${val}>
+								<span tal:condition = "val in userA[2]">
+  									${val}<input type="checkbox" name=${userA[1]} value=${val} checked>
+  								</span> 
+  								<span tal:condition = "not val in userA[2]">
+  									${val}<input type="checkbox" name=${userA[1]} value=${val} >
+  								</span> 
   							</span>
-  						</div>				
+  						</div>	
+  				</table>			
 				<input type="submit" name="form.submitted" value="Update"/><br/>
 			</form>       
 		 </p>
