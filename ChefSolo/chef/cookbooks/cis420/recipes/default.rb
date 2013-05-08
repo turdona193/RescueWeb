@@ -97,13 +97,23 @@ EOF
   not_if "test -e /home/ubuntu/myapp/teamMurrica/rescueweb/rescueweb.sqlite"
 end
 
-bash "start app" do
+bash "halt app" do
   user "ubuntu"
   cwd "/home/ubuntu/myapp"
   code <<-EOF
 source bin/activate
 cd teamMurrica/rescueweb
 sudo killall -9 pserve
+EOF
+  only_if "pgrep pserve"
+end
+
+bash "start app" do
+  user "ubuntu"
+  cwd "/home/ubuntu/myapp"
+  code <<-EOF
+source bin/activate
+cd teamMurrica/rescueweb
 ../../bin/pserve development.ini  
 EOF
 end
