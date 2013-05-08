@@ -922,9 +922,18 @@ def add_edit_standby(request):
              permission='admin')
 def edit_duty_crew(request):
     main = get_renderer('templates/template.pt').implementation()
-     
+    currentDate = datetime.date.today()
+    year = currentDate.year
+    month = currentDate.month
+    monthName = calendar.month_name[month]
+    startDay, days = calendar.monthrange(year, month)
+    startDay = (startDay +1)%7
+
     return dict(
-            title='Edit Duty Crew', 
+            title='Duty Crew Calendar',
+            monthName=monthName,
+            startDay=startDay,
+            days=days,
             main=main,
             user=request.user
             )
