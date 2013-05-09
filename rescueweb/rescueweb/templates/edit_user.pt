@@ -26,7 +26,28 @@
 				First Name: <input type="text" name="firstname" value="${edited_user.firstname}"/><br/>
 				Middle Name: <input type="text" name="middlename" value="${edited_user.middlename}"/><br/>
 				Last Name: <input type="text" name="lastname" value="${edited_user.lastname}"/><br/>
-				Birtday: <br/>
+				Birthday:
+				<select name="month">
+						<div tal:repeat = "month monthlist">
+							 <option value=${month[1]}>${month[0]}</option>
+		  				</div>
+						</select>
+
+						<select name="day">
+						<div tal:repeat = "day range(30)">
+							<span tal:condition ="(day+1) == edited_user.birthday.day"><option value=${day+1} selected>${day+1}</option> </span>
+							<span tal:condition ="not (day+1) == edited_user.birthday.day"><option value=${day+1}>${day+1}</option> </span>
+						</div>
+						</select>
+
+						<select name="year">
+						<div tal:repeat = "year range(120)">
+							<span tal:condition ="(year+1900) == edited_user.birthday.year"><option value=${year+1900} selected>${year+1900}</option> </span>
+							<span tal:condition ="not (year+1900) == edited_user.birthday.year"><option value=${year+1900} >${year+1900}</option> </span>
+		  				</div>
+						</select> <br/>
+				
+				
 				Day: <input type="text" name="day" value="${edited_user.birthday.day}"/><br/>
 				Month: <input type="text" name="month" value="${edited_user.birthday.month}"/><br/>
 				Year: <input type="text" name="year" value="${edited_user.birthday.year}"/><br/>

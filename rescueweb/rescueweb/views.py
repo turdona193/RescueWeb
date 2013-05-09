@@ -518,6 +518,9 @@ def coverage(request):
              permission='admin')
 def add_user(request):
     main = get_renderer('templates/template.pt').implementation()
+    
+    monthlist = [['January', 1],[ 'February', 2],[ 'March', 3],[ 'April',4],[ 'May', 5],[ 'June', 6],
+                 ['July', 7],[ 'August', 8],[ 'September', 9],[ 'October', 10],[ 'November', 11],[ 'December', 12]]
 
     if 'form.submitted' in request.params:
         newuser = Users('','','','','','','','','','','','','','','','','','','')
@@ -526,7 +529,7 @@ def add_user(request):
         newuser.firstname = request.params['firstname']
         newuser.middlename = request.params['middlename']
         newuser.lastname = request.params['lastname']
-        newuser.birthday = datetime.date(int(request.params['year']),int(request.params['month']),int(request.params['day']))
+        newuser.birthday = datetime.date(int(request.params['year']),request.params['month'],int(request.params['day']))
         newuser.street = request.params['street']
         newuser.city = request.params['city']
         newuser.state = request.params['state']
@@ -559,6 +562,7 @@ def add_user(request):
     return dict(
             title='Add User',
             main=main,
+            monthlist = monthlist,
             privilegesOptions=privilegesOptions,
             trainingOptions=trainingOptions,
             administrativeOptions=administrativeOptions,
@@ -570,6 +574,10 @@ def add_user(request):
              permission='admin')
 def edit_user(request):
     main = get_renderer('templates/template.pt').implementation()
+    
+    monthlist = [['January', 1],[ 'February', 2],[ 'March', 3],[ 'April',4],[ 'May', 5],[ 'June', 6],
+                 ['July', 7],[ 'August', 8],[ 'September', 9],[ 'October', 10],[ 'November', 11],[ 'December', 12]]
+    
     if 'userselected' in request.params:
         userselected = request.params['userselected']
     else:
@@ -583,7 +591,7 @@ def edit_user(request):
         edited_user.firstname = request.params['firstname']
         edited_user.middlename = request.params['middlename']
         edited_user.lastname = request.params['lastname']
-        edited_user.birthday = datetime.date(int(request.params['year']), int(request.params['month']), int(request.params['day']))
+        edited_user.birthday = datetime.date(int(request.params['year']), monthdict[request.params['month']], int(request.params['day']))
         edited_user.street = request.params['street']
         edited_user.city = request.params['city']
         edited_user.state = request.params['state']
@@ -627,6 +635,7 @@ def edit_user(request):
             userselected=userselected,
             edited_user=edited_user,
             users=allusernames,
+            monthlist=monthlist,
             privilegesOptions=privilegesOptions,
             trainingOptions=trainingOptions,
             administrativeOptions=administrativeOptions,

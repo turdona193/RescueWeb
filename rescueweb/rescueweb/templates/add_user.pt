@@ -3,24 +3,38 @@
     
         <form method="post">
 
-			Login: <input type="text" name="username" value=""/><br/>
-			Password: <input type="text" name="password" value=""/><br/>
-			First Name: <input type="text" name="firstname" value=""/><br/>
+			Login: <input type="text" name="username" value="" required/><br/>
+			Password: <input type="text" name="password" value="" required/><br/>
+			First Name: <input type="text" name="firstname" value="" required/><br/>
 			Middle Name: <input type="text" name="middlename" value=""/><br/>
-			Last Name: <input type="text" name="lastname" value=""/><br/>
-			Birtday: <br/>
-			Day: <input type="text" name="day" value=""/><br/>
-			Month: <input type="text" name="month" value=""/><br/>
-			Year: <input type="text" name="year" value=""/><br/>
-			
+			Last Name: <input type="text" name="lastname" value=""required/><br/>
+			Birthday:
+			<select name="month">
+						<div tal:repeat = "month monthlist">
+							 <option value=${month[1]}>${month[0]}</option>
+		  				</div>
+						</select>
+
+						<select name="day">
+						<div tal:repeat = "day range(30)">
+							 <option value=${day+1}>${day+1}</option>
+		  				</div>
+						</select>
+
+						<select name="year">
+						<div tal:repeat = "year range(120)">
+							 <option value=${year+1900}>${year+1900}</option>
+		  				</div>
+						</select> <br/>
+						
 			Street: <input type="text" name="street" value=""/><br/>
 			City: <input type="text" name="city" value=""/><br/>
 			State: <input type="text" name="state" value=""/><br/>
 			Zipcode: <input type="text" name="zipcode" value=""/><br/>
 			Residence: <input type="text" name="residence" value=""/><br/>
 			Room Number: <input type="text" name="roomnumber" value=""/><br/>
-			Phone Number: <input type="text" name="phonenumber" value=""/><br/>
-			Email: <input type="text" name="email" value=""/><br/>
+			Phone Number: <input type="text" name="phonenumber" value="" /><br/>
+			Email: <input type="text" name="email" value="" required/><br/>
 
 			Privileges: <select name="privileges">
 						  	<div tal:repeat = "priv privilegesOptions">
