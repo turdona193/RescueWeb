@@ -1286,6 +1286,8 @@ def add_edit_events(request):
             event.enddatetime = datetime.datetime(int(request.params['endyear']), monthdict[request.params['startmonth']],
                 int(request.params['endday']) , int(request.params['endhour']), int(request.params['endminute']), 0)
             DBSession.add(event)
+            event.location = request.params['location']
+            event.privileges = request.params['privileges']
         return HTTPFound(location = request.route_url('events'))
     
     if 'form.selected' in request.params:
@@ -1310,7 +1312,8 @@ def add_edit_events(request):
     allevents = DBSession.query(Events).all() 
     events = [eve.name for eve in allevents]
     yearlist = [year for year in range(datetime.datetime.now().year,datetime.datetime.now().year+30)]
-    monthlist = list(monthdict.keys())
+    monthlist = ['January', 'February', 'March', 'April', 'May', 'June', 
+        'July', 'August', 'September', 'October', 'November', 'December']
     daylist = [day for day in range(1,32)]
     hour = [hour for hour in range(0,24)]
     minute = [min for min in range(0,60)]
