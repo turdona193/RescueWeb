@@ -4,9 +4,15 @@
         
         <p>Stand-By Coverage</p>
         <div tal:condition = "standby_requests">
+	        <table>
+	   		<tr>
+	   			<th>Standby</th><th>Date</th><th>Personnel</th><th>Position</th>
 	        <div tal:repeat = "request standby_requests">
+	        
 	        	${request}
 	        </div>
+	        
+	        </table>
         </div>
 
         <p>Duty Crew Coverage</p>

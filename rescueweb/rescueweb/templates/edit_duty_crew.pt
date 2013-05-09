@@ -31,7 +31,7 @@
 		   </div>
 		   <div tal:repeat= " day range(1, 8 - start_day)" >
 		       <td>
-				${day+1}
+				${day}
 				<select name="day">
 					<option value="OOS">OOS</option>
 					<div tal:repeat="i range(numOfCrews)">

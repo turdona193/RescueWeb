@@ -497,13 +497,20 @@ def duty_crew_calendar(request):
              permission='Member')
 def coverage(request):
     main = get_renderer('templates/template.pt').implementation()
-    standby_requests = DBSession.query(StandByPersonnel).filter_by(coverrequested = True).all()
+    standby_requests = DBSession.query(StandByPersonnel.username,
+                                       StandByPersonnel.standbyid,
+                                       StandByPersonnel.standbyposition,
+                                       StandBy.event,
+                                       StandBy.startdatetime,
+                                       ).join(StandBy).filter(StandByPersonnel.coverrequested == True).all()
+    all_standby_requests = [[standby.standbyid, standby.event, standby.startdatetime, standby.username, standby.standbyposition] for standby in standby_requests]
     duty_crew_requests = DBSession.query(DutyCrewSchedule).filter_by(coveragerequest = True).all()
+    all_duty_crew_requests = [[crew.day, crew.username] for crew in duty_crew_requests]
     return dict(
             title='Coverage Requests',
             main=main,
-            standby_requests=standby_requests,
-            duty_crew_requests=duty_crew_requests,
+            standby_requests=all_standby_requests,
+            duty_crew_requests=all_duty_crew_requests,
             user=request.user
             )
     
