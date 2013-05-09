@@ -1065,17 +1065,21 @@ def add_edit_standby(request):
     standbychosen = ''
     standby = ''
     form = ''
+    dateError = ''
 
     if 'form.submitted' in request.params:
         if request.params['option'] == 'New':
             standby = StandBy('','','','','')
-            standby.standbyid = 0
+            standby.standbyid = 1 + DBSession.query(StandBy).count()
             standby.event = request.params['event']
             standby.location = request.params['location']
             standby.notes = request.params['notes']
-            standby.startdatetime = datetime.datetime.strptime(request.params['startdatetime'],'%Y, %m, %d')
-            standby.enddatetime = datetime.datetime.strptime(request.params['enddatetime'],'%Y, %m, %d')
-            DBSession.add(standby)
+            try:
+                standby.startdatetime = datetime.datetime.strptime(request.params['startdatetime'],'%Y, %m, %d')
+                standby.enddatetime = datetime.datetime.strptime(request.params['enddatetime'],'%Y, %m, %d')
+                DBSession.add(standby)
+            except:
+                dateError += 'improper date entry, please use the following format: YYYY, MM, DD'
 
         if request.params['option'] == 'Load':
             editstandby = request.params['editstandby']
@@ -1083,8 +1087,12 @@ def add_edit_standby(request):
             standby.event = request.params['event']
             standby.location = ['location']
             standby.notes = ['notes']
-            standby.startdatetime = ['startdatetime']
-            standby.enddatetime = ['enddatetime']
+            try:
+                standby.startdatetime = datetime.datetime.strptime(request.params['startdatetime'],'%Y, %m, %d')
+                standby.enddatetime = datetime.datetime.strptime(request.params['enddatetime'],'%Y, %m, %d')
+                DBSession.add(standby)
+            except:
+                dateError += 'improper date entry, please use the following format: YYYY, MM, DD'
             DBSession.add(standby)
         return HTTPFound(location = request.route_url('standbys'))
 
@@ -1115,6 +1123,7 @@ def add_edit_standby(request):
 	    standby = standby,
 	    standbychosen=standbychosen,
 	    form=form,
+            dateError = dateError,
             user=request.user
             )
 
