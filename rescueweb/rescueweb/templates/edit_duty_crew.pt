@@ -35,7 +35,12 @@
 				<select name="day">
 					<option value="OOS">OOS</option>
 					<div tal:repeat="i range(numOfCrews)">
-						<option value="${i+1}">${i+1}</option>
+						<div tal:condition="crewNums[day] == i+1">
+							<option value="${i+1}" selected>${i+1}</option>
+						</div>
+						<div>
+							<option value="${i+1}">${i+1}</option>
+						</div>
 					</div>
 				</select>
 			</td>
@@ -48,7 +53,12 @@
 				<select name="day+1">
 					<option value="OOS">OOS</option>
 					<div tal:repeat="i range(numOfCrews)">
-						<option value="${i+1}">${i+1}</option>
+						<div tal:condition="crewNums[day] == i+1">
+							<option value="${i+1}" selected>${i+1}</option>
+						</div>
+						<div>
+							<option value="${i+1}">${i+1}</option>
+						</div>
 					</div>
 				</select>
 			</td>

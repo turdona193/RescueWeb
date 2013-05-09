@@ -27,7 +27,8 @@ from ..models import (
     Base, 
     StandBy,
     MeetingMinutes,
-	Pictures,
+    Pictures,
+    DutyCrews,
     )
 
 def usage(argv):
@@ -505,5 +506,12 @@ def main(argv = sys.argv):
                     Pictures(picture='wellnessfair1.jpg', description="", category="2006 Wellness Fair"),
                     Pictures(picture='wellnessfair2.jpg', description="", category="2006 Wellness Fair"),
                     Pictures(picture='wellnessfair4.jpg', description="", category="2006 Wellness Fair"),
+                ])
+
+        DBSession.add_all(
+                [
+                    DutyCrews(crewnumber=0, username='turdona193'),
+                    DutyCrews(crewnumber=1, username='muehlbjp193'),
+                    DutyCrews(crewnumber=2, username='guarintb193')
                 ])
 
