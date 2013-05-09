@@ -1176,9 +1176,10 @@ def edit_duty_crew(request):
             #for i in range(number of days in the month)
         for i in range(days):
             crewNum = request.params['{}'.format(i+1)]
-            if crewNum == 'OOS':
-                crewNum = 0
-            duty = DBSession.query(DutyCrewCalendar).filter(DutyCrewCalendar.day == datetime.date(year, month, i+1)).one()
+            duty = DBSession.query(DutyCrewCalendar).\
+            filter(DutyCrewCalendar.day == datetime.date(year, month, i+1)).\
+            one()
+
             duty.crewnumber = crewNum
             crewNums.append(crewNum)
     else:
@@ -1195,9 +1196,19 @@ def edit_duty_crew(request):
     #crewNums is a list containing which crew is on for each day in the month
     crewNums = []
     for i in range(days):
-        duty = DBSession.query(DutyCrewCalendar).filter(DutyCrewCalendar.day == datetime.date(year, month, i+1)).one()
-        crewNums.append(duty.crewnumber)
-
+        duty = DBSession.query(DutyCrewCalendar).filter(DutyCrewCalendar.day == datetime.date(year, month, i+1)).first()
+        if duty:
+            crewNums.append(duty.crewnumber)
+        else:
+            DBSession.add(
+                          DutyCrewCalendar(
+                                           day= datetime.date(year, month, i+1),
+                                           crewnumber=0
+                                           )
+                          )
+            crewNums.append('OOS')
+            
+            
     return dict(
             title='Duty Crew Calendar',
             monthName=monthName,

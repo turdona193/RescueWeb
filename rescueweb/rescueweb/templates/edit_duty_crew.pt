@@ -14,7 +14,7 @@
 		</h2>
 	</form>
 	<form method="post">
-	<table>
+	<table border =2>
 	<tr>
 	    <td>Sunday</td>
 	    <td>Monday</td>
@@ -33,7 +33,7 @@
 		       <td>
 				${day}
 				<select name="${day}">
-					<option value="OOS">OOS</option>
+					<option value="0">OOS</option>
 					<div tal:repeat="i range(numOfCrews)">
 						<div tal:condition="crewNums[day] == i+1">
 							<option value="${i+1}" selected>${i+1}</option>
@@ -51,7 +51,7 @@
 			<td>
 				${day+1}
 				<select name="${day+1}">
-					<option value="OOS">OOS</option>
+					<option value="0">OOS</option>
 					<div tal:repeat="i range(numOfCrews)">
 						<div tal:condition="crewNums[day] == i+1">
 							<option value="${i+1}" selected>${i+1}</option>
