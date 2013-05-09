@@ -1,6 +1,7 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-    
+    <b>${message}</b>
+		<span tal:condition="not userselected">
            	<form method="post">
         		Select User: <select name="selecteduser">
 							    	<div tal:repeat = "user users">
@@ -16,73 +17,77 @@
 				<input type="submit" name="form.selected" value="Load"/><br/>
 				
 		    </form>
-    
-    
+		</span>
     	<span tal:condition="userselected">
-    
+    		Username Selected: ${userselected} <br/><br/>
 	        <form method="post">
-				Login: <input type="text" name="username" value="${edited_user.username}"/><br/>
-				Password: <input type="password" name="password" value="${edited_user.password}"/><br/>
-				First Name: <input type="text" name="firstname" value="${edited_user.firstname}"/><br/>
-				Middle Name: <input type="text" name="middlename" value="${edited_user.middlename}"/><br/>
-				Last Name: <input type="text" name="lastname" value="${edited_user.lastname}"/><br/>
-				Birthday:
-				<select name="month">
-						<div tal:repeat = "month monthlist">
-							 <option value=${month[1]}>${month[0]}</option>
-		  				</div>
-						</select>
+				<label for="login">Login: </label><input id="login" type="text" name="username" value="${edited_user.username}" required/><br/>
+				<label for="password">Password:</label><input id="password" type="password" name="password" value="${edited_user.password}" required /><br/>
+				<label for="firstname">First Name: </label><input id="firstname" type="text" name="firstname" value="${edited_user.firstname}" required /><br/>
+				<label for="middlename">Middle Name: </label> <input id="middlename" type="text" name="middlename" value="${edited_user.middlename}"/><br/>
+				<label for="lastname">Last Name: </label><input id="lastname" type="text" name="lastname" value="${edited_user.lastname}" required /><br/>
+				<label for="birth">Birthday:</label>
+				<select id ="birth" name="month">
+					<div tal:repeat = "month monthlist">
+						<span tal:condition = "month[1]== edited_user.birthday.month"><option value=${month[1]} selected>${month[0]}</option></span>
+						<span tal:condition = "not month[1]== edited_user.birthday.month"><option value=${month[1]}>${month[0]}</option></span>
+		  			</div>
+				</select>
 
-						<select name="day">
-						<div tal:repeat = "day range(30)">
-							<span tal:condition ="(day+1) == edited_user.birthday.day"><option value=${day+1} selected>${day+1}</option> </span>
-							<span tal:condition ="not (day+1) == edited_user.birthday.day"><option value=${day+1}>${day+1}</option> </span>
-						</div>
-						</select>
+				<select name="day">
+					<div tal:repeat = "day range(30)">
+						<span tal:condition ="(day+1) == edited_user.birthday.day"><option value=${day+1} selected>${day+1}</option> </span>
+						<span tal:condition ="not (day+1) == edited_user.birthday.day"><option value=${day+1}>${day+1}</option> </span>
+					</div>
+				</select>
 
-						<select name="year">
-						<div tal:repeat = "year range(120)">
-							<span tal:condition ="(year+1900) == edited_user.birthday.year"><option value=${year+1900} selected>${year+1900}</option> </span>
-							<span tal:condition ="not (year+1900) == edited_user.birthday.year"><option value=${year+1900} >${year+1900}</option> </span>
-		  				</div>
-						</select> <br/>
-				
-				
-				Day: <input type="text" name="day" value="${edited_user.birthday.day}"/><br/>
-				Month: <input type="text" name="month" value="${edited_user.birthday.month}"/><br/>
-				Year: <input type="text" name="year" value="${edited_user.birthday.year}"/><br/>
-				Street: <input type="text" name="street" value="${edited_user.street}"/><br/>
-				City: <input type="text" name="city" value="${edited_user.city}"/><br/>
-				State: <input type="text" name="state" value="${edited_user.state}"/><br/>
-				Zipcode: <input type="text" name="zipcode" value="${edited_user.zipcode}"/><br/>
-				Residence: <input type="text" name="residence" value="${edited_user.residence}"/><br/>
-				Room Number: <input type="text" name="roomnumber" value="${edited_user.roomnumber}"/><br/>
-				Phone Number: <input type="text" name="phonenumber" value="${edited_user.phonenumber}"/><br/>
-				Email: <input type="text" name="email" value="${edited_user.email}"/><br/>
+				<select name="year">
+					<div tal:repeat = "year range(120)">
+						<span tal:condition ="(year+1900) == edited_user.birthday.year"><option value=${year+1900} selected>${year+1900}</option> </span>
+						<span tal:condition ="not (year+1900) == edited_user.birthday.year"><option value=${year+1900} >${year+1900}</option> </span>
+		  			</div>
+				</select> <br/>
+
+				<label for="street">Street: </label><input id="street" type="text" name="street" value="${edited_user.street}"/><br/>
+				<label for="city">City: </label><input id="city" type="text" name="city" value="${edited_user.city}"/><br/>
+				<label for="state">State: </label><input id="state" type="text" name="state" value="${edited_user.state}"/><br/>
+				<label for="zip">Zipcode: </label><input id="zip" type="text" name="zipcode" value="${edited_user.zipcode}"/><br/>
+				<label for="residence">Residence: </label><input id="residence" type="text" name="residence" value="${edited_user.residence}"/><br/>
+				<label for="room">Room Number: </label><input id="room" type="text" name="roomnumber" value="${edited_user.roomnumber}"/><br/>
+				<label for="phone">Phone Number: </label><input id="phone" type="text" name="phonenumber" value="${edited_user.phonenumber}" required/><br/>
+				<label for="email">Email: </label><input id="email" type="email" name="email" value="${edited_user.email}" required/><br/>
 	
-				Privileges: <select name="privileges">
-							  	<div tal:repeat = "priv privilegesOptions">
-	  						   		<option value=${priv}>${priv}</option>
-	  							</div>
-							  </select><br/>
+				<label for="priv">Privileges: </label>
+					<select id="priv" name="privileges">
+					  	<div tal:repeat = "priv privilegesOptions">
+						   		<span tal:condition = "priv[0] == edited_user.privileges"><option value=${priv[0]} selected>${priv[1]}</option></span>
+								<span tal:condition = "not priv[0] == edited_user.privileges"><option value=${priv[0]}>${priv[1]}</option></span>
+						</div>
+					</select><br/>
 							  
-				Training Level <select name="trainingvalue">
-									<div tal:repeat = "train trainingOptions">
-	  						   			<option value=${train}>${train}</option>
-	  								</div>
-							    </select><br/>
+				<label for="train">Training Level </label>
+					<select id="train" name="trainingvalue">
+						<div tal:repeat = "train trainingOptions">
+					   			<span tal:condition = "train[0] == edited_user.trainingvalue"><option value=${train[0]} selected>${train[1]}</option></span>
+								<span tal:condition = "not train[0] == edited_user.trainingvalue"><option value=${train[0]}>${train[1]}</option></span>
+						</div>
+				    </select><br/>
 							    
-				Administrative Level: <select name="administrativevalue">
-									<div tal:repeat = "admin administrativeOptions">
-	  						   			<option value=${admin}>${admin}</option>
-	  								</div>
-							    </select><br/>
+				<label for="admin">Administrative Level: </label>
+					<select id="admin" name="administrativevalue">
+						<div tal:repeat = "admin administrativeOptions">
+							<span tal:condition = "admin[0] == edited_user.administrativevalue"> <option value=${admin[0]} selected>${admin[1]}</option> </span>
+							<span tal:condition = "not admin[0] == edited_user.administrativevalue"> <option value=${admin[0]}>${admin[1]}</option> </span>
+							</div>
+				    </select><br/>
 							    
-				Operational Level: <select name="operationalvalue">
-									<div tal:repeat = "oper operationalOptions">
-	  						   			<option value=${oper}>${oper}</option>
-	  								</div>
-							    </select><br/>	    
+				<label for="oper">Operational Level: </label>
+					<select id="oper" name="operationalvalue">
+						<div tal:repeat = "oper operationalOptions">
+					   			<span tal:condition = "oper[0] == edited_user.operationalvalue"><option value=${oper[0]} selected>${oper[1]}</option></span>
+					   			<span tal:condition = "not oper[0] == edited_user.operationalvalue"><option value=${oper[0]}>${oper[1]}</option></span>
+							</div>
+				    </select><br/>	    
 				
 				<input type="hidden" name="userselected" value="${userselected}" />	
 	          <input type="submit" name="form.submitted" value="Edit User" />
