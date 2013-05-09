@@ -1172,20 +1172,20 @@ def edit_duty_crew(request):
         year = int(request.params['yearNum'])
         month = int(request.params['monthNum'])
         startDay, days = calendar.monthrange(year, month)
-        crewNums = []
+
             #for i in range(number of days in the month)
         for i in range(days):
             crewNum = request.params['{}'.format(i+1)]
-            duty = DBSession.query(DutyCrewCalendar).\
-            filter(DutyCrewCalendar.day == datetime.date(year, month, i+1)).\
-            one()
-
+            print("!!!!!{}:{}!!!!".format(i+1,crewNum))
+            if crewNum == 'OOS':
+                crewNum = 0
+            duty = DBSession.query(DutyCrewCalendar).filter(DutyCrewCalendar.day == datetime.date(year, month, i+1)).one()
             duty.crewnumber = crewNum
-            crewNums.append(crewNum)
     else:
         currentDate = datetime.date.today()
         year = currentDate.year
         month = currentDate.month
+    
     monthName = calendar.month_name[month]
     #startDay is an integer representing the first day of the month
     #should be between 0 representing Sunday and 6 representing Saturday
@@ -1208,7 +1208,7 @@ def edit_duty_crew(request):
                           )
             crewNums.append('OOS')
             
-            
+    print("!!!!!!!!!!!!!!!!!!!{}".format(crewNums))
     return dict(
             title='Duty Crew Calendar',
             monthName=monthName,
