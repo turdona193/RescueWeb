@@ -11,7 +11,7 @@ from pyramid.renderers import get_renderer
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import distinct
-#from sqlalchemy import func
+from sqlalchemy import func
 
 #from pyramid_mailer import get_mailer
 #from pyramid_mailer.message import Message
@@ -1148,9 +1148,9 @@ def add_edit_standby(request):
 def edit_duty_crew(request):
     main = get_renderer('templates/template.pt').implementation()
 
-    numOfCrews = 4
-    #numOfCrews = DBSession.query(func.max(DutyCrews.crewnumber)).scalar()
-    
+    #numOfCrews = 4
+    numOfCrews = DBSession.query(func.max(DutyCrews.crewnumber)).scalar()
+
     year = 0
     month = 0
     if 'form.changedate' in request.params:
@@ -1171,8 +1171,18 @@ def edit_duty_crew(request):
         year = currentDate.year
         month = currentDate.month
     monthName = calendar.month_name[month]
+    #startDay is an integer representing the first day of the month
+    #should be between 0 representing Sunday and 6 representing Saturday
+    #days is the number of days in the month
     startDay, days = calendar.monthrange(year, month)
     startDay = (startDay +1)%7
+
+    #crewNums is a list containing which crew is on for each day in the month
+    crewNums = []
+    for i in range(days):
+        crewNums.append(1)
+    crewNums[5] = 'OOS'
+    crewNums[23] = 2
 
     return dict(
             title='Duty Crew Calendar',
@@ -1182,6 +1192,7 @@ def edit_duty_crew(request):
             monthNum=month,
             days=days,
             numOfCrews=numOfCrews,
+            crewNums=crewNums,
             main=main,
             user=request.user
             )
