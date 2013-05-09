@@ -8,7 +8,7 @@
 
 			  		<br>Posted By: ${getattr(content,headers[4])} 
 
-			  		<br>Posted On: ${getattr(content,headers[5]).strftime("%A, %B %d at %H:%H %p")} 
+			  		<br>Posted On: ${getattr(content,headers[5]).strftime("%A, %B %d at %H:%M")} 
 
 			  </p><br/>
 			</div>
