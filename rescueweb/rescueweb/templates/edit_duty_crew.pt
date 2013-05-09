@@ -32,7 +32,7 @@
 		   <div tal:repeat= " day range(1, 8 - start_day)" >
 		       <td>
 				${day}
-				<select name="day">
+				<select name="${day}">
 					<option value="OOS">OOS</option>
 					<div tal:repeat="i range(numOfCrews)">
 						<div tal:condition="crewNums[day] == i+1">
@@ -50,7 +50,7 @@
 		     <div tal:repeat="day range(week*7 - start_day, min((week+1) *7-start_day, no_of_days))">
 			<td>
 				${day+1}
-				<select name="day+1">
+				<select name="${day+1}">
 					<option value="OOS">OOS</option>
 					<div tal:repeat="i range(numOfCrews)">
 						<div tal:condition="crewNums[day] == i+1">
@@ -66,6 +66,8 @@
 		</tr>
 	
          </table>
+	<input type="hidden" name="monthNum" value="${monthNum}">
+	<input type="hidden" name="yearNum" value="${yearNum}">
 	<input type="submit" name="form.submitted" value="Edit"/>
 
 	</form>

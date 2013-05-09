@@ -1150,7 +1150,7 @@ def add_edit_standby(request):
 def edit_duty_crew(request):
     main = get_renderer('templates/template.pt').implementation()
 
-    #numOfCrews = 4
+    #Stores the number of crews.
     numOfCrews = DBSession.query(func.max(DutyCrews.crewnumber)).scalar()
 
     year = 0
@@ -1168,6 +1168,19 @@ def edit_duty_crew(request):
             if month > 12:
                 month = 1
                 year = year + 1
+    elif 'form.submitted' in request.params:
+        year = int(request.params['yearNum'])
+        month = int(request.params['monthNum'])
+        startDay, days = calendar.monthrange(year, month)
+        crewNums = []
+            #for i in range(number of days in the month)
+        for i in range(days):
+            crewNum = request.params['{}'.format(i+1)]
+            if crewNum == 'OOS':
+                crewNum = 0
+            duty = DBSession.query(DutyCrewCalendar).filter(DutyCrewCalendar.day == datetime.date(year, month, i+1)).one()
+            duty.crewnumber = crewNum
+            crewNums.append(crewNum)
     else:
         currentDate = datetime.date.today()
         year = currentDate.year
@@ -1182,9 +1195,8 @@ def edit_duty_crew(request):
     #crewNums is a list containing which crew is on for each day in the month
     crewNums = []
     for i in range(days):
-        crewNums.append(1)
-    crewNums[5] = 'OOS'
-    crewNums[23] = 2
+        duty = DBSession.query(DutyCrewCalendar).filter(DutyCrewCalendar.day == datetime.date(year, month, i+1)).one()
+        crewNums.append(duty.crewnumber)
 
     return dict(
             title='Duty Crew Calendar',
