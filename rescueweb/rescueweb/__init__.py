@@ -47,7 +47,6 @@ def main(global_config, **settings):
     config.add_route('events' , '/events')
     config.add_route('event' , '/event/{eventid}')
     config.add_route('pictures' , '/pictures')
-    config.add_route('category_pictures', '/category_pictures')
     config.add_route('join' , '/join')
     config.add_route('contact' , '/contact')
     config.add_route('links' , '/links')
