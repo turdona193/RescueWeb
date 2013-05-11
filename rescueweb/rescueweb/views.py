@@ -1482,35 +1482,27 @@ def pictures(request):
     allpictures = []
     pictures = ''
     categoryClicked = ''
+    category_selected = False
 
     categories = DBSession.query(distinct(Pictures.category)).all()
     pictures = [DBSession.query(Pictures).filter(Pictures.category == cate[0]).first() for cate in categories]   
     allpictures = [[apicture.picture,apicture.description, apicture.category] for apicture in pictures] 
 
-    if 'category.chosen' in request.params:
-        categoryClicked = request.params['categoryChosen']
+    if 'category.submitted' in request.params:
+        category_selected = True
+        categoryClicked = request.params['category.submitted']
+        print ("CATEGORY CLICKED ***************************************** {}".format(categoryClicked))
         pictures = [DBSession.query(Pictures).filter(Pictures.category == categoryClicked).all()]
-        print("****************************** INSIDE FORM.SUBMITTED ******************************")
+        print(pictures)
+        allpictures = [[apicture.picture, apicture.description, apicture.category] for apicture in pictures] 
 
     return dict(title = 'Pictures',
 				main = main,
 				user=request.user,
 				pictures = allpictures,
+                category_selected = category_selected,
                )
 
-@view_config(route_name='category_pictures', renderer='templates/category_pictures.pt')
-def category_pictures(request):
-    print("****************************** {}".format(request))
-    main = get_renderer('templates/template.pt').implementation()
-    allpictures = []
-    pictures = ''
-    categoryChosen = ''
-    
-    return dict(title='Pictures',
-				main=main,
-				user=request.user,
-				pictures = allpictures,
-               )
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
