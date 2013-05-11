@@ -397,8 +397,14 @@ def dates(request):
     if 'type' not in request.GET:
         return None
 
-    episode_query = DBSession.query(TABLE_DICT[request.GET['type']]).all()
- 
+    episode_query = DBSession.query(TABLE_DICT[request.GET['type']])
+    # If querying events, cut down the events to only those that the user has
+    # the appropriate privilege levels to see.
+    if request.GET['type'] == 'event':
+        episode_query = episode_query.filter(
+                Events.privileges <= get_privilege_value(request))
+    episode_query = episode_query.all()
+
     return [ 
         (
             '{}/{}/{}'.format(
@@ -443,6 +449,9 @@ def detailed_info(request):
     # Return all of the StandBy dates occurring on this date
     else:
         assert request.GET['type'] == 'event'
+        episode_query = episode_query.filter(Events.privileges <=
+                get_privilege_value(request))
+
         return [
             (
                 episode.eventid,
@@ -452,7 +461,7 @@ def detailed_info(request):
                 episode.privileges,
                 str(episode.startdatetime),
                 str(episode.enddatetime),
-            ) for episode in episode_query 
+            ) for episode in episode_query
                ]
 
 @view_config(route_name='duty_crew_calendar',
@@ -1530,3 +1539,9 @@ def get_username(request):
     else:
         return ''
 
+def get_privilege_value(request):
+    """Returns the privilege level of the user or 0 if no one is logged in"""
+    if request.user:
+        return request.user.privilegevalue
+    else:
+        return 0
