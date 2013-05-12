@@ -398,8 +398,14 @@ def dates(request):
     if 'type' not in request.GET:
         return None
 
-    episode_query = DBSession.query(TABLE_DICT[request.GET['type']]).all()
- 
+    episode_query = DBSession.query(TABLE_DICT[request.GET['type']])
+    # If querying events, cut down the events to only those that the user has
+    # the appropriate privilege levels to see.
+    if request.GET['type'] == 'event':
+        episode_query = episode_query.filter(
+                Events.privileges <= get_privilege_value(request))
+    episode_query = episode_query.all()
+
     return [ 
         (
             '{}/{}/{}'.format(
@@ -444,6 +450,9 @@ def detailed_info(request):
     # Return all of the StandBy dates occurring on this date
     else:
         assert request.GET['type'] == 'event'
+        episode_query = episode_query.filter(Events.privileges <=
+                get_privilege_value(request))
+
         return [
             (
                 episode.eventid,
@@ -453,7 +462,7 @@ def detailed_info(request):
                 episode.privileges,
                 str(episode.startdatetime),
                 str(episode.enddatetime),
-            ) for episode in episode_query 
+            ) for episode in episode_query
                ]
 
 @view_config(route_name='duty_crew_calendar',
@@ -1099,21 +1108,19 @@ def add_edit_standby(request):
                 standby.enddatetime = datetime.datetime.strptime(request.params['enddatetime'],'%Y, %m, %d')
                 DBSession.add(standby)
             except:
-                dateError += 'improper date entry, please use the following format: YYYY, MM, DD'
-
+                dateError = 'improper date entry, please use the following format: YYYY, MM, DD'
         if request.params['option'] == 'Load':
             editstandby = request.params['editstandby']
             standby = DBSession.query(StandBy).filter_by(event = editstandby).first()
             standby.event = request.params['event']
-            standby.location = ['location']
-            standby.notes = ['notes']
+            standby.location = request.params['location']
+            standby.notes = request.params['notes']
             try:
                 standby.startdatetime = datetime.datetime.strptime(request.params['startdatetime'],'%Y, %m, %d')
                 standby.enddatetime = datetime.datetime.strptime(request.params['enddatetime'],'%Y, %m, %d')
                 DBSession.add(standby)
             except:
-                dateError += 'improper date entry, please use the following format: YYYY, MM, DD'
-            DBSession.add(standby)
+                dateError = 'improper date entry, please use the following format: YYYY, MM, DD'
         return HTTPFound(location = request.route_url('standbys'))
 
     if 'form.selected' in request.params:
@@ -1136,7 +1143,8 @@ def add_edit_standby(request):
         standbychosen = ''
 
 
-    all_standBy = DBSession.query(StandBy).order_by(StandBy.standbyid).all()
+    get_all_standBy = DBSession.query(StandBy).all()
+    all_standBy = [standB.event for standB in get_all_standBy]
     return dict(title='Add/Edit Standby',
             main=main,
             all_standBy=all_standBy,
@@ -1483,16 +1491,10 @@ def pictures(request):
     main = get_renderer('templates/template.pt').implementation()
     allpictures = []
     pictures = ''
-    categoryClicked = ''
 
     categories = DBSession.query(distinct(Pictures.category)).all()
     pictures = [DBSession.query(Pictures).filter(Pictures.category == cate[0]).first() for cate in categories]   
     allpictures = [[apicture.picture,apicture.description, apicture.category] for apicture in pictures] 
-
-    if 'category.chosen' in request.params:
-        categoryClicked = request.params['categoryChosen']
-        pictures = [DBSession.query(Pictures).filter(Pictures.category == categoryClicked).all()]
-        print("****************************** INSIDE FORM.SUBMITTED ******************************")
 
     return dict(title = 'Pictures',
 				main = main,
@@ -1500,18 +1502,24 @@ def pictures(request):
 				pictures = allpictures,
                )
 
-@view_config(route_name='category_pictures', renderer='templates/category_pictures.pt')
-def category_pictures(request):
-    print("****************************** {}".format(request))
+@view_config(route_name='pictures_view', renderer='templates/pictures_view.pt')
+def pictures_view(request):
     main = get_renderer('templates/template.pt').implementation()
     allpictures = []
     pictures = ''
-    categoryChosen = ''
+    category = request.matchdict['category']
+
+    if 'category' not in request.matchdict:
+        return HTTPNotFound('No category passed in.')
+
+    pictures = DBSession.query(Pictures).filter(Pictures.category == category).all()
+    allpictures = [(apicture.picture,apicture.description, apicture.category) for apicture in pictures]
     
-    return dict(title='Pictures',
-				main=main,
+    return dict(title = 'Pictures',
+				main = main,
 				user=request.user,
 				pictures = allpictures,
+                category = category,
                )
 
 
@@ -1551,7 +1559,6 @@ def check_logins(request):
                 user=request.user,
                )
 
-
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
@@ -1579,3 +1586,9 @@ def get_username(request):
     else:
         return ''
 
+def get_privilege_value(request):
+    """Returns the privilege level of the user or 0 if no one is logged in"""
+    if request.user:
+        return request.user.privilegevalue
+    else:
+        return 0

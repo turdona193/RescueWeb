@@ -278,12 +278,21 @@ def main(argv = sys.argv):
                         ),
 
                     Events(
+                        startdatetime=datetime.datetime(2013, 5, 15),
+                        enddatetime=datetime.datetime(2013, 5, 15),
+                        name='A Secret Gathering',
+                        notes='Only Admins should be able to view this Event',
+                        location = 'Area 51',
+                        privileges=2
+                        ),
+
+                    Events(
                         startdatetime=datetime.datetime(2013, 5, 5),
                         enddatetime=datetime.datetime(2013, 5, 5),
                         name='Dance',
                         notes='not going',
                         location = 'Union MPR',
-                        privileges=0
+                        privileges=1
                         ),
 
                     Events(
@@ -292,7 +301,7 @@ def main(argv = sys.argv):
                         name='Grad',
                         notes='we leave!',
                         location = 'Accademic Quad',
-                        privileges=0
+                        privileges=2
                         )
                 ])
 

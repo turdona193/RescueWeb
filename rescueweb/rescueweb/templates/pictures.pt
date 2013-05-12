@@ -6,15 +6,11 @@
 
 <div metal:use-macro="main.macros['template']">  
     <div metal:fill-slot="content">
-        <p><h3>Click an image to see the rest of the set</h3></p>
+        <p><center><h3>Click the category to see the rest of the set</h3></center></p>
         <ul class="hoverbox">
 			<div tal:repeat="pic pictures">
-            <form method="post">
-			        <li><a href ="/category_pictures#${pic[2]}"><img src="${request.static_url('rescueweb:static/pictures/{}'.format(pic[0]))}" alt="${pic[2]}" />
-                        <input type="image" src="${request.static_url('rescueweb:static/pictures/{}'.format(pic[0]))}" name="category.submitted" value="${pic[2]}" alt="Submit" class="Preview">
-                        </a><br><h4>${pic[2]}</h4></li>
-                </form>			
-            </div>
+			<li><a href ="pictures_view/${pic[2]}"><img src="${request.static_url('rescueweb:static/{}'.format(pic[0]))}" alt="description" /><img src="${request.static_url('rescueweb:static/{}'.format(pic[0]))}" alt="description" class="preview" /></a></li>
+			</div>
 		</ul>
     </div>
 </div>
