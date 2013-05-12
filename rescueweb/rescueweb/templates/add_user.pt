@@ -2,13 +2,13 @@
     <div metal:fill-slot="content">
     	<b>${message}</b>
         <form method="post">
-
-			<label for="login">Login: </label><input id="login" type="text" name="username" value="" required/><br/>
-			<label for="password">Password:</label><input id="password" type="text" name="password" value="" required/><br/>
-			<label for="firstname">First Name: </label><input id="firstname" type="text" name="firstname" value="" required/><br/>
-			<label for="middlename">Middle Name: </label> <input id="middlename"  type="text" name="middlename" value=""/><br/>
-			<label for="lastname">Last Name: </label><input id="lastname" type="text" name="lastname" value=""required/><br/>
-			<label for="birth">Birthday:</label>
+            <table border = "0">
+			<tr><td><label for="login">Login: </label></td><td><input id="login" type="text" name="username" value="" required/></td></tr>
+			<tr><td><label for="password">Password:</label></td><td><input id="password" type="text" name="password" value="" required/></td></tr>
+			<tr><td><label for="firstname">First Name: </label></td><td><input id="firstname" type="text" name="firstname" value="" required/></td></tr>
+			<tr><td><label for="middlename">Middle Name: </label></td><td><input id="middlename"  type="text" name="middlename" value=""/></td></tr>
+			<tr><td><label for="lastname">Last Name: </label></td><td><input id="lastname" type="text" name="lastname" value=""required/></td></tr>
+			<tr><td><label for="birth">Birthday:</label></td><td>
 			<select id ="birth" name="month">
 				<div tal:repeat = "month monthlist">
 					 <option value=${month[1]}>${month[0]}</option>
@@ -25,46 +25,46 @@
 				<div tal:repeat = "year range(120)">
 					 <option value=${year+1900}>${year+1900}</option>
   				</div>
-			</select> <br/>
+			</select> </td></tr>
 						
-			<label for="street">Street: </label><input id="street" type="text" name="street" value=""/><br/>
-			<label for="city">City: </label><input id="city" type="text" name="city" value=""/><br/>
-			<label for="state">State: </label><input id="state" type="text" name="state" value=""/><br/>
-			<label for="zip">Zipcode: </label><input id="zip" type="text" name="zipcode" value=""/><br/>
-			<label for="residence">Residence: </label><input id="residence" type="text" name="residence" value=""/><br/>
-			<label for="room">Room Number: </label><input id="room" type="text" name="roomnumber" value=""/><br/>
-			<label for="phone">Phone Number: </label><input id="phone" type="text" name="phonenumber" value="" required/><br/>
-			<label for="email">Email: </label><input id="email" type="email" name="email" value="" required/><br/>
+			<tr><td><label for="street">Street: </label></td><td><input id="street" type="text" name="street" value=""/></td></tr>
+			<tr><td><label for="city">City: </label></td><td><input id="city" type="text" name="city" value=""/></td></tr>
+			<tr><td><label for="state">State: </label></td><td><input id="state" type="text" name="state" value=""/></td></tr>
+			<tr><td><label for="zip">Zipcode: </label></td><td><input id="zip" type="text" name="zipcode" value=""/></td></tr>
+			<tr><td><label for="residence">Residence: </label></td><td><input id="residence" type="text" name="residence" value=""/></td></tr>
+			<tr><td><label for="room">Room Number: </label></td><td><input id="room" type="text" name="roomnumber" value=""/></td></tr>
+			<tr><td><label for="phone">Phone Number: </label></td><td><input id="phone" type="text" name="phonenumber" value="" required/></td></tr>
+			<tr><td><label for="email">Email: </label></td><td><input id="email" type="email" name="email" value="" required/></td></tr>
 
-			<label for="priv">Privileges: </label>
+			<tr><td><label for="priv">Privileges: </label></td><td>
 				<select id="priv" name="privileges">
 					<div tal:repeat = "priv privilegesOptions">
   						<option value=${priv[0]}>${priv[1]}</option>
   					</div>
-				</select><br/>
+				</select></td></tr>
 						  
-			<label for="train">Training Level </label>
+			<tr><td><label for="train">Training Level: </label></td><td>
 				<select id="train" name="trainingvalue">
 					<div tal:repeat = "train trainingOptions">
 				   		<option value=${train[0]}>${train[1]}</option>
 					</div>
-				</select><br/>
+				</select></td></tr>
 						    
-			<label for="admin">Administrative Level: </label>
+			<tr><td><label for="admin">Administrative Level: </label></td><td>
 				<select id="admin" name="administrativevalue">
 					<div tal:repeat = "admin administrativeOptions">
 					   		<option value=${admin[0]}>${admin[1]}</option>
 						</div>
-				</select><br/>
+				</select></td></tr>
 						    
-			<label for="oper">Operational Level: </label>
+			<tr><td><label for="oper">Operational Level: </label></td><td>
 				<select id="oper" name="operationalvalue">
 					<div tal:repeat = "oper operationalOptions">
 					   		<option value=${oper[0]}>${oper[1]}</option>
 						</div>
-				</select><br/>	    
+				</select></td></tr>    
 			
-			
+		  </table>	
           <input type="submit" name="form.submitted" value="Add User"/>
         </form>
     </div>
