@@ -1,81 +1,16 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
         <h1>${title}</h1>
-
-        <script>
-        // List that gets populated with the Standby dates
-        var dates = [];
-        $(function() {
-            function get_updates() {
-                var request = $.ajax({
-                    url: '/dates.json',
-                    type: 'GET',
-                    data: {type : 'event'}
-                });
-                request.done(function(data) {
-                    // Add random numbers to the unordered list
-                    $.each(data, function (key, val) {
-                        // Add the start date and end date onto the dates array
-                        // for so `highlightDays' knows which dates to highlight.
-                        dates.push(val[0]);
-                        dates.push(val[1]);
-                    });
-
-                    // Display the calendar
-                    $('#datepicker').datepicker( {
-                        onSelect: function(date) {
-                            $.ajax({
-                                type: 'GET',
-                                url: '/detailed_info.json',
-                                data: {date: date, type: 'event'}
-                                }).done(function(msg) {
-                                    $('#standbys').empty();
-                                    $('#standbys').append('<br />');
-                                    $.each(msg, function (key, val) {
-                                        // Clear out the standbys display area and
-                                        // add all information about the standbys
-                                        // happening that day.
-                                        $('#standbys').append('<a href="/event/' + val[0] + '">' + val[1] + ' (' + val[5] + ')</a>');
-                                        //$('#standbys').append('Event ID: ' + val[0] + '<br />');
-                                        //$('#standbys').append('Event: ' + val[1] + '<br />');
-                                        //$('#standbys').append('Location: ' + val[2] + '<br />');
-                                        //$('#standbys').append('Notes: ' + val[3] + '<br />');
-                                        //$('#standbys').append('Privileges: ' + val[4] + '<br />');
-                                        //$('#standbys').append('Start date: ' + val[5] + '<br />');
-                                        //$('#standbys').append('End date: ' + val[6] + '<br />');
-                                        $('#standbys').append('<br />');
-                                    });
-                            });
-                        },
-                        // Hilight the days which Standbys occur on
-                        beforeShowDay: highlightDays
-                    });
-
-                    // Highlights the days in the `dates' array
-                    function highlightDays(date) {
-                        for (var i = 0; i < dates.length; i++) {
-                            if (new Date(dates[i]).toString() == date.toString())
-                                return [true, 'highlight'];
-                        }
-
-                        return [true, ''];
-                    }
-                });
-
-                // Test Calendar stuff by clicking the title
-                $('h1').click(function () {
-                    get_updates();
-                });
-            }
-
-            // Get the Standby days from the server and highlight them on the
-            // calendar.
-            get_updates();
-
-        });
-        </script>
-
         <div id="datepicker" style="float:right;"></div>
-        <p id="standbys"><p>
+        <p id="events"><p>
     </div>
 </div>
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+
+<script type="text/javascript" src="${request.static_url('rescueweb:static/jquery-1.9.1.js')}"></script>
+<script type="text/javascript" src="${request.static_url('rescueweb:static/jquery-ui.js')}"></script>
+<script type="text/javascript">
+  var episode = 'event';
+</script>
+<script type="text/javascript" src="${request.static_url('rescueweb:static/calendar.js')}"></script>
