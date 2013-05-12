@@ -1,0 +1,23 @@
+<div metal:use-macro="main.macros['template']">
+    <div metal:fill-slot="content">
+        <p>
+          	<form method="post">
+        		Assign Duty Crews:<br/> 
+      			<table>
+						<div tal:repeat = "userA all_user_records">
+						${userA[0]}
+							<span tal:repeat ="val range(12)">
+								<span tal:condition = "val in userA[2]">
+  									${val}<input type="checkbox" name=${userA[1]} value=${val} checked>
+  								</span> 
+  								<span tal:condition = "not val in userA[2]">
+  									${val}<input type="checkbox" name=${userA[1]} value=${val} >
+  								</span> 
+  							</span>
+  						</div>	
+  				</table>			
+				<input type="submit" name="form.submitted" value="Update"/><br/>
+			</form>       
+		 </p>
+    </div>
+</div>

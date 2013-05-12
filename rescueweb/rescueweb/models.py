@@ -311,5 +311,5 @@ class DutyCrewSchedule(Base):
 class LoginIns(Base):
     __tablename__ = 'Login_Ins'
     username = Column(Text, ForeignKey('Users.username'), primary_key=True)
-    TSTAMP = Column(TIMESTAMP)
+    TSTAMP = Column(TIMESTAMP, primary_key=True)
 

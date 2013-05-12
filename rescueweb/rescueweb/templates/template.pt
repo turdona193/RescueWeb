@@ -57,7 +57,7 @@
 	<a href="/"><img src="${request.static_url('rescueweb:static/CRSbanner.jpg')}" alt="CRS Banner"/></a>
 	</th>
 		<span tal:condition="user">
-   			<td style="width:175px;text-align:center"><a href="/">${user.username}</a></td>
+   			<td style="width:175px;text-align:center"><a href="/member_info">${user.username}</a></td>
 		</span>
 		<span tal:condition="not: user">
    			<td rowspan="2" style="width:175px;vertical-align:bottom;text-align:center"><a href="/login">Login</a></td>
@@ -98,6 +98,7 @@
             <ul>
                 <li><a href="/join">How to Join</a></li>
                 <li><a href="/contact">Contact Us</a></li>
+				<li><a href="/eboard">Our Executive Board</a></li>
                 <li><a href="/links">Links</a></li><!-- Move Links to a different menu!-->
             </ul>
         </li>
@@ -116,6 +117,7 @@
 	                    <ul>
 	                        <li class="noborder"><a href="/standbys">Stand-bys</a></li>
 	                        <li><a href="/duty_crew_calendar">Duty Crew</a></li>
+							<li tal:condition = "user and (user.operationalvalue > 4)"><a href="/crew_chief_signup">Crew Chief Sign-Up</a></li>
 	                        <li><a href="/coverage">Coverage</a></li>
 	                    </ul>
 				</li>
@@ -136,6 +138,7 @@
 	        			<li class = "submenu"><span>Website</span>
 	        				<ul>
 		        				<li class="noborder"><a href="/edit_pages">Edit Pages</a></li>
+		        				<li class="noborder"><a href="/edit_eboard">Edit Eboard</a></li>	
 		        				<li><a href="/add_edit_links">Add/Edit Links</a></li>
 		        				<li><a href="/add_edit_documents">Add/Edit<br/>Documents</a></li>
 		        				<li><a href="/add_edit_minutes">Add/Edit Meeting Minutes</a></li>
@@ -150,7 +153,7 @@
         				<li class="submenu"><span>User</span>
         					<ul>
         						<li class="noborder"><a href="/edit_portable_numbers">Edit Portable Numbers</a></li>
-		        				<li><a href="/set_duty_crew">Set Duty Crew</a></li>
+		        				<li><a href="/assign_duty_crew">Assign Duty Crew</a></li>
 		        				<li><a href="/add_edit_certifications">Add/Edit Certifications</a></li>
         				
         					</ul>
@@ -171,6 +174,7 @@
         			<ul>
         				<li class="noborder"><a href="/add_edit_announcements">Add/Edit Announcements</a></li>
         				<li><a href="/add_edit_events">Add/Edit Events</a></li>
+						<li><a href="/check_login">Check Logins</a></li>
         			</ul>
         		</li>   	
         	</ul>

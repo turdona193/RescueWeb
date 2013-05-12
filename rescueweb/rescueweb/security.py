@@ -25,6 +25,8 @@ def get_user(request):
                     Users.roomnumber,
                     Users.phonenumber,
                     Users.email,
+                    Users.operationalvalue,
+                    Users.privileges,
                     Privileges.privilege,
                     Privileges.pyramidsecuritygroup).\
                     join(Privileges).\

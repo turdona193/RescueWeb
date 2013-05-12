@@ -56,6 +56,7 @@ from .models import (
     DutyCrews,
     DutyCrewCalendar,
     DutyCrewSchedule,
+    LoginIns
     )
 
 TABLE_DICT = {'standby' : StandBy, 'event' : Events}
@@ -547,6 +548,7 @@ def add_user(request):
                 trainingvalue = request.params['trainingvalue'],
                 administrativevalue = request.params['administrativevalue'],
                 operationalvalue = request.params['operationalvalue'],
+                portablenumber = 0
                 ))
             
     Options = DBSession.query(Privileges).all()
@@ -1223,9 +1225,9 @@ def edit_duty_crew(request):
             )
 
 
-@view_config(route_name='set_duty_crew', renderer='templates/set_duty_crew.pt',
+@view_config(route_name='assign_duty_crew', renderer='templates/assign_duty_crew.pt',
              permission='admin')
-def set_duty_crew(request):
+def assign_duty_crew(request):
     main = get_renderer('templates/template.pt').implementation()
     allusers = DBSession.query(Users).all() 
 
@@ -1254,7 +1256,7 @@ def set_duty_crew(request):
     print(all_user_records)
 
     return dict(
-            title='Edit Portable Numbers', 
+            title='Assign Duty Crew', 
             main=main,
             all_user_records=all_user_records,
             user=request.user
@@ -1272,7 +1274,7 @@ def add_edit_announcements(request):
             announcement = Announcements('','','','','',)
             announcement.header = request.params['title']
             announcement.text = request.params['body']
-            announcement.priority = 0
+            announcement.priority = int(request.params['privilege_level'])
             announcement.username = authenticated_userid(request)
             announcement.posted = datetime.datetime.today()
             DBSession.add(announcement)
@@ -1306,11 +1308,15 @@ def add_edit_announcements(request):
     allannouncements = DBSession.query(Announcements).all() 
     announcements = [announce.header for announce in allannouncements]
     
+    all_privilege_levels = DBSession.query(Privileges).all()
+    all_levels_list = [[level.privilegevalue, level.privilege] for level in all_privilege_levels]
+    
     return dict(
             title='Add/Edit Announcements',
             main=main,
             announcements=announcements,
             announcement=announcement,
+            privilege_levels=all_levels_list,
             form=form,
             announcementchosen=announcementchosen,
             user=request.user
@@ -1432,7 +1438,7 @@ def login(request):
     login_url = request.route_url('login')
     referrer = request.url
     if referrer == login_url:
-        referrer = '/' # never use the login form itself as came_from
+        referrer = '/member_info' # never use the login form itself as came_from
     came_from = request.params.get('came_from', referrer)
     message = ''
     login = ''
@@ -1444,6 +1450,11 @@ def login(request):
         if password_query:
             if password_query[0] == password:
                 headers = remember(request, login)
+                DBSession.add(
+                              LoginIns(
+                                       username = login,
+                                       TSTAMP = datetime.datetime.now()
+                              ))
                 return HTTPFound(location = came_from,
                              headers = headers)
         message = 'Failed login'
@@ -1502,6 +1513,44 @@ def category_pictures(request):
 				user=request.user,
 				pictures = allpictures,
                )
+
+
+@view_config(route_name='eboard', renderer='templates/eboard.pt')
+def eboard(request):
+    main = get_renderer('templates/template.pt').implementation()
+    
+    return dict(title='Our Executive Branch',
+                main=main,
+                user=request.user,
+               )
+    
+@view_config(route_name='crew_chief_signup', renderer='templates/crew_chief_signup.pt')
+def crew_chief_signup(request):
+    main = get_renderer('templates/template.pt').implementation()
+    
+    return dict(title='Crew Chief Sign-Up',
+                main=main,
+                user=request.user,
+               )
+    
+@view_config(route_name='edit_eboard', renderer='templates/edit_eboard.pt')
+def edit_eboard(request):
+    main = get_renderer('templates/template.pt').implementation()
+    
+    return dict(title='Edit Eboard',
+                main=main,
+                user=request.user,
+               )
+    
+@view_config(route_name='check_login', renderer='templates/check_login.pt')
+def check_logins(request):
+    main = get_renderer('templates/template.pt').implementation()
+    
+    return dict(title='Check Logins',
+                main=main,
+                user=request.user,
+               )
+
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem

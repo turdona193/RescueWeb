@@ -49,6 +49,7 @@ def main(global_config, **settings):
     config.add_route('pictures' , '/pictures')
     config.add_route('category_pictures', '/category_pictures')
     config.add_route('join' , '/join')
+    config.add_route('eboard' , '/eboard')
     config.add_route('contact' , '/contact')
     config.add_route('links' , '/links')
     config.add_route('documents' , '/documents')
@@ -60,6 +61,7 @@ def main(global_config, **settings):
     config.add_route('standbys' , '/standbys')
     config.add_route('standby' , '/standby/{standbyid}')
     config.add_route('duty_crew_calendar', '/duty_crew_calendar')
+    config.add_route('crew_chief_signup' , '/crew_chief_signup')
     config.add_route('coverage' , '/coverage')
     
     # Routes for admin tools
@@ -67,17 +69,19 @@ def main(global_config, **settings):
     config.add_route('edit_user' , '/edit_user')
     config.add_route('delete_user' , '/delete_user')
     config.add_route('edit_pages' , '/edit_pages')
+    config.add_route('edit_eboard' , '/edit_eboard')
     config.add_route('add_edit_links' , '/add_edit_links')
     config.add_route('add_edit_documents' , '/add_edit_documents')
     config.add_route('add_edit_minutes' , '/add_edit_minutes')
     config.add_route('add_edit_pictures' , '/add_edit_pictures')
     config.add_route('edit_portable_numbers' , '/edit_portable_numbers')
-    config.add_route('set_duty_crew' , '/set_duty_crew')
+    config.add_route('assign_duty_crew' , '/assign_duty_crew')
     config.add_route('add_edit_certifications' , '/add_edit_certifications')
     config.add_route('add_edit_standby' , '/add_edit_standby')
     config.add_route('edit_duty_crew' , '/edit_duty_crew')
     config.add_route('add_edit_announcements' , '/add_edit_announcements')
     config.add_route('add_edit_events' , '/add_edit_events')
+    config.add_route('check_login' , '/check_login')
     config.add_route('email' , '/email')
 
     # Attach a `user' attribute to the request object that's passed around
