@@ -1106,21 +1106,19 @@ def add_edit_standby(request):
                 standby.enddatetime = datetime.datetime.strptime(request.params['enddatetime'],'%Y, %m, %d')
                 DBSession.add(standby)
             except:
-                dateError += 'improper date entry, please use the following format: YYYY, MM, DD'
-
+                dateError = 'improper date entry, please use the following format: YYYY, MM, DD'
         if request.params['option'] == 'Load':
             editstandby = request.params['editstandby']
             standby = DBSession.query(StandBy).filter_by(event = editstandby).first()
             standby.event = request.params['event']
-            standby.location = ['location']
-            standby.notes = ['notes']
+            standby.location = request.params['location']
+            standby.notes = request.params['notes']
             try:
                 standby.startdatetime = datetime.datetime.strptime(request.params['startdatetime'],'%Y, %m, %d')
                 standby.enddatetime = datetime.datetime.strptime(request.params['enddatetime'],'%Y, %m, %d')
                 DBSession.add(standby)
             except:
-                dateError += 'improper date entry, please use the following format: YYYY, MM, DD'
-            DBSession.add(standby)
+                dateError = 'improper date entry, please use the following format: YYYY, MM, DD'
         return HTTPFound(location = request.route_url('standbys'))
 
     if 'form.selected' in request.params:
@@ -1143,7 +1141,8 @@ def add_edit_standby(request):
         standbychosen = ''
 
 
-    all_standBy = DBSession.query(StandBy).order_by(StandBy.standbyid).all()
+    get_all_standBy = DBSession.query(StandBy).all()
+    all_standBy = [standB.event for standB in get_all_standBy]
     return dict(title='Add/Edit Standby',
             main=main,
             all_standBy=all_standBy,
