@@ -1291,6 +1291,7 @@ def add_edit_announcements(request):
             editannounce = request.params['editannouncement']
             announcement = DBSession.query(Announcements).filter_by(header = editannounce).first()
             announcement.text = request.params['body']
+            announcement.priority = int(request.params['privilege_level'])
             DBSession.add(announcement)
         return HTTPFound(location = request.route_url('announcements'))
 
