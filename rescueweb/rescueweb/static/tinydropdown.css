@@ -203,8 +203,8 @@ td.highlight {
 	color: inherit;
 	padding: 2px;
 	vertical-align: top;
-	width: 100px;
-	height: 75px;
+	width: 200px;
+	height: 150px;
 }
 
 .hoverbox li{
@@ -222,6 +222,6 @@ td.highlight {
 
 .hoverbox .preview{
 	border-color: #000;
-	width: 200px;
-	height: 150px;
+	width: 400px;
+	height: 300px;
 }	
