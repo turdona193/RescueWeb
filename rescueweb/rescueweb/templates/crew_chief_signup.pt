@@ -35,8 +35,8 @@
 					<input type="hidden" name="day" value="${day}">
 					<input type="hidden" name="monthNum" value="${monthNum}">
 					<input type="hidden" name="yearNum" value="${yearNum}">
-					CC:<input type="submit" name="form.CC" value="Sign Up"><br/>
-					PCC:<input type="submit" name="form.PCC" value="Sign Up">
+					CC:<input type="submit" name="form.CC" value="${CCList[day-1]}"><br/>
+					PCC:<input type="submit" name="form.PCC" value="${PCCList[day-1]}">
 				</form>
 		     </td>
 		   </div>
@@ -49,8 +49,8 @@
 						<input type="hidden" name="day" value="${day+1}">
 						<input type="hidden" name="monthNum" value="${monthNum}">
 						<input type="hidden" name="yearNum" value="${yearNum}">
-						CC:<input type="submit" name="form.CC" value="Sign Up"> <br/>
-						PCC:<input type="submit" name="form.PCC" value="Sign Up">
+						CC:<input type="submit" name="form.CC" value="${CCList[day]}"> <br/>
+						PCC:<input type="submit" name="form.PCC" value="${PCCList[day]}">
 					</form>
 				</td>
 			</div>

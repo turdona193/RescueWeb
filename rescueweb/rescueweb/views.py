@@ -50,12 +50,13 @@ from .models import (
     WebLinks,
     StandBy,
     MeetingMinutes,
-	Pictures,
+    Pictures,
     StandByPersonnel,
     Attendees,
     DutyCrews,
     DutyCrewCalendar,
     DutyCrewSchedule,
+    CrewChiefSchedule,
     LoginIns
     )
 
@@ -1551,6 +1552,22 @@ def crew_chief_signup(request):
             if month > 12:
                 month = 1
                 year = year + 1
+    elif ('form.CC' in request.params) or ('form.PCC' in request.params):
+        year = int(request.params['yearNum'])
+        month = int(request.params['monthNum'])
+        day = int(request.params['day'])
+        if 'form.CC' in request.params:
+            chiefOnCall = DBSession.query(CrewChiefSchedule).filter(CrewChiefSchedule.date == datetime.date(year, month, day)).first()
+            if chiefOnCall.ccusername:
+                chiefOnCall.ccusername = None
+            else:
+                chiefOnCall.ccusername = request.user.username
+        if 'form.PCC' in request.params:
+            chiefOnCall = DBSession.query(CrewChiefSchedule).filter(CrewChiefSchedule.date == datetime.date(year, month, day)).first()
+            if chiefOnCall.pccusername:
+                chiefOnCall.pccusername = None
+            else:
+                chiefOnCall.pccusername = request.user.username
     else:
         currentDate = datetime.date.today()
         year = currentDate.year
@@ -1559,12 +1576,42 @@ def crew_chief_signup(request):
     monthName = calendar.month_name[month]
     startDay, days = calendar.monthrange(year, month)
     startDay = (startDay +1)%7
+
+    CCList = []
+    PCCList = []
+    for i in range(days):
+        chiefOnCall = DBSession.query(CrewChiefSchedule).filter(CrewChiefSchedule.date == datetime.date(year, month, i+1)).first()
+        if chiefOnCall:
+            print('NOT NONE')
+            CC = chiefOnCall.ccusername
+            if CC:
+                CCList.append(CC)
+            else:
+                CCList.append('Sign Up')
+            PCC = chiefOnCall.pccusername
+            if PCC:
+                PCCList.append(PCC)
+            else:
+                PCCList.append('Sign Up')
+        else:
+            DBSession.add(
+                CrewChiefSchedule(
+                    date = datetime.date(year, month, i+1),
+                    ccusername = None,
+                    pccusername = None
+                    )
+                )
+            CCList.append('Sign Up')
+            PCCList.append('Sign Up')
+    
     return dict(title='Crew Chief Sign-Up',
                 monthName=monthName,
                 startDay=startDay,
                 yearNum=year,
                 monthNum=month,
                 days=days,
+                CCList=CCList,
+                PCCList=PCCList,
                 main=main,
                 user=request.user,
                )
