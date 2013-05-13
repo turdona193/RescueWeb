@@ -1537,8 +1537,35 @@ def eboard(request):
 @view_config(route_name='crew_chief_signup', renderer='templates/crew_chief_signup.pt')
 def crew_chief_signup(request):
     main = get_renderer('templates/template.pt').implementation()
-    
+    year = 0
+    month = 0
+    if 'form.changedate' in request.params:
+        if request.params['form.changedate'] == '<--':
+            year = int(request.params['yearNum'])
+            month = int(request.params['monthNum']) - 1
+            if month < 1:
+                month = 12
+                year = year - 1
+        if request.params['form.changedate'] == '-->':
+            year = int(request.params['yearNum'])
+            month = int(request.params['monthNum']) + 1
+            if month > 12:
+                month = 1
+                year = year + 1
+    else:
+        currentDate = datetime.date.today()
+        year = currentDate.year
+        month = currentDate.month
+
+    monthName = calendar.month_name[month]
+    startDay, days = calendar.monthrange(year, month)
+    startDay = (startDay +1)%7
     return dict(title='Crew Chief Sign-Up',
+                monthName=monthName,
+                startDay=startDay,
+                yearNum=year,
+                monthNum=month,
+                days=days,
                 main=main,
                 user=request.user,
                )
