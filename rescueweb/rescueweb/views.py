@@ -56,7 +56,8 @@ from .models import (
     DutyCrews,
     DutyCrewCalendar,
     DutyCrewSchedule,
-    LoginIns
+    LoginIns,
+    EboardPositions
     )
 
 TABLE_DICT = {'standby' : StandBy, 'event' : Events}
@@ -1545,6 +1546,11 @@ def crew_chief_signup(request):
 @view_config(route_name='edit_eboard', renderer='templates/edit_eboard.pt')
 def edit_eboard(request):
     main = get_renderer('templates/template.pt').implementation()
+    eboard = DBSession.query(EboardPositions).\
+                filter(not EboardPositions.username == '').\
+                join(Users)\
+                .all()
+    
     
     return dict(title='Edit Eboard',
                 main=main,
@@ -1554,10 +1560,13 @@ def edit_eboard(request):
 @view_config(route_name='check_login', renderer='templates/check_login.pt')
 def check_logins(request):
     main = get_renderer('templates/template.pt').implementation()
+    logins = DBSession.query(LoginIns).order_by(LoginIns.TSTAMP.desc()).all()
+    all_logins = [[log.username , log.TSTAMP] for log in logins]
     
     return dict(title='Check Logins',
                 main=main,
                 user=request.user,
+                all_logins = all_logins,
                )
 
 conn_err_msg = """\

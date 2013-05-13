@@ -155,10 +155,12 @@ class EboardPositions(Base):
     __tablename__ = 'EboardPosition'
     eboardposition = Column(Text, primary_key=True)
     username = Column(Text, ForeignKey('Users.username'))
+    bio = Column(Text)
 
-    def __init__(self,eboardposition,username):
+    def __init__(self,eboardposition,username,bio):
         self.eboardposition = eboardposition
         self.username = username
+        self.bio
       
 class TrainingLevel(Base):
     __tablename__ = 'TrainingLevel'

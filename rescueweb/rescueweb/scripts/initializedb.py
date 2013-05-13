@@ -231,7 +231,12 @@ def main(argv = sys.argv):
 
         DBSession.add_all(
                 [
-                    EboardPositions(eboardposition='Chief', username='guarintb193'),
+                    EboardPositions(eboardposition='Chief Line Officer', username='guarintb193'),
+                    EboardPositions(eboardposition='Assistant Chief Line Officer', username=''),
+                    EboardPositions(eboardposition='President', username=''),
+                    EboardPositions(eboardposition='Vice President', username=''),
+                    EboardPositions(eboardposition='Treasurer', username=''),
+                    EboardPositions(eboardposition='Secretary', username=''),
                     EboardPositions(eboardposition='Parliamentarian', username='muehlbjp193'),
                 ])
         
