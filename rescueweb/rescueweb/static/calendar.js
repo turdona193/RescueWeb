@@ -74,7 +74,7 @@ $(function() {
                             // Redirect the user to the page which contains
                             // information about the duty crew that's on for
                             // this day. Pass along the date in a sanitized way.
-                            window.location.replace('/duty_crew/' + date.replace(/\//g, '-'));
+                            window.location.href = '/duty_crew/' + date.replace(/\//g, '-');
                         }
                     });
                 }
