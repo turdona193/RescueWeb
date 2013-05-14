@@ -1423,26 +1423,25 @@ def add_edit_events(request):
             )
 
 
-@view_config(route_name='email', renderer='templates/email.pt')
-def email(request):
-    mainR = get_renderer('templates/template.pt').implementation()
-    mailer = get_mailer(request)
-    
-    message = Message(subject= "testing",
-                      sender= "laddbc@potsdam.edu",
-                      recipients= ["drbcladd@gmail.com"],
-                      body= "hopefully this thing works")
-    
-    mailer.send_immediately(message)
-    
-    return dict(
-             title='Email',
-             form=form,
-             message=message,
-             main=mainR,
-             user=request.user
-             )
-
+#@view_config(route_name='email', renderer='templates/email.pt')
+#def email(request):
+#    mainR = get_renderer('templates/template.pt').implementation()
+#    mailer = get_mailer(request)
+#    
+#    message = Message(subject= "testing",
+#                      sender= "laddbc@potsdam.edu",
+#                     recipients= ["drbcladd@gmail.com"],
+#                      body= "hopefully this thing works")
+#    
+#    mailer.send_immediately(message)
+#    
+#    return dict(
+#             title='Email',
+#             form=form,
+#             message=message,
+#            main=mainR,
+#             user=request.user
+#             )
 
 
 @view_config(route_name='login', renderer='templates/login.pt')
