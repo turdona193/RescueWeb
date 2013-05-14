@@ -155,10 +155,12 @@ class EboardPositions(Base):
     __tablename__ = 'EboardPosition'
     eboardposition = Column(Text, primary_key=True)
     username = Column(Text, ForeignKey('Users.username'))
+    bio = Column(Text)
 
-    def __init__(self,eboardposition,username):
+    def __init__(self,eboardposition,username,bio):
         self.eboardposition = eboardposition
         self.username = username
+        self.bio
       
 class TrainingLevel(Base):
     __tablename__ = 'TrainingLevel'
@@ -196,15 +198,12 @@ class StandBy(Base):
     location = Column(Text)
     notes = Column(Text)
     startdatetime = Column(DateTime)
-    enddatetime = Column(DateTime)
 
-    def __init__(self, event, location, notes, startdatetime,
-                 enddatetime):
+    def __init__(self, event, location, notes, startdatetime):
         self.event = event
         self.location = location
         self.notes = notes
         self.startdatetime = startdatetime
-        self.enddatetime = enddatetime
     
 class StandByPersonnel(Base):
     __tablename__ = 'StandByPersonnel'
@@ -234,15 +233,13 @@ class Events(Base):
     __tablename__ = 'Events'
     eventid = Column(Integer, primary_key=True)
     startdatetime = Column(DateTime)
-    enddatetime = Column(DateTime)
     name = Column(Text)
     notes = Column(Text)
     location = Column(Text)
     privileges = Column(Integer, ForeignKey('Privileges.privilegevalue'))
 
-    def __init__(self, startdatetime, enddatetime, name, notes, location, privileges):
+    def __init__(self, startdatetime, name, notes, location, privileges):
         self.startdatetime = startdatetime
-        self.enddatetime = enddatetime
         self.name = name
         self.notes = notes
         self.location = location
@@ -292,15 +289,15 @@ class DutyCrews(Base):
         
 class DutyCrewCalendar(Base):
     __tablename__ = 'Duty_Crew_Calendar'
-    day = Column(Date, primary_key = True)
-    crewnumber = Column(Integer,ForeignKey('Duty_Crews.crewnumber'))
+    day = Column(Date, primary_key=True)
+    crewnumber = Column(Integer, ForeignKey('Duty_Crews.crewnumber'))
     def __init__(self,day,crewnumber):
         self.day = day
         self.crewnumber = crewnumber
-        
+
 class DutyCrewSchedule(Base):
     __tablename__ = 'Duty_Crew_Schedule'
-    day = Column(Date, primary_key = True)
+    day = Column(Date, primary_key=True)
     username = Column(Text, ForeignKey('Users.username'), primary_key=True)
     coveragerequest = Column(Boolean)
     def __init__(self,day,username,coveragerequest):
@@ -312,4 +309,3 @@ class LoginIns(Base):
     __tablename__ = 'Login_Ins'
     username = Column(Text, ForeignKey('Users.username'), primary_key=True)
     TSTAMP = Column(TIMESTAMP, primary_key=True)
-

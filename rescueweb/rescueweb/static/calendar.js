@@ -15,14 +15,15 @@ $(function() {
             $.each(data, function (key, val) {
                 // Add the start date and end date onto the dates array so
                 // `highlightDays' knows which dates to highlight.
-                dates.push(val[0]);
-                dates.push(val[1]);
+                dates.push(val);
             });
 
             // Display the calendar
             $('#datepicker').datepicker({
                 // Hilight the days which Episodes occur on
                 beforeShowDay: highlightDays,
+                changeYear: true,
+                yearRange: '2010:2013',
 
                 // When the user clicks on a date, make an AJAX call to the
                 // pyramid server to get all of the episodes occurring on that
@@ -69,6 +70,11 @@ $(function() {
                                 $('#events').append('<a href="/event/' + val[0] + '">' + val[1] + ' (' + val[5] + ')</a>');
                                 $('#events').append('<br />');
                             });
+                        } else if (episode == 'duty_crew') {
+                            // Redirect the user to the page which contains
+                            // information about the duty crew that's on for
+                            // this day.
+                            window.location.replace('/duty_crew/' + date.split('/')[1]);
                         }
                     });
                 }

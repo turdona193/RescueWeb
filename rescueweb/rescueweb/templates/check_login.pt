@@ -1,5 +1,11 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-		${title}
+    	<table border = 1>
+    		<th>User</th><th>Time</th>
+			<div tal:repeat = "log all_logins">
+				<tr><td>${log[0]}</td><td>${log[1]}</td></tr>
+			</div>
+		</table>
+
     </div>
 </div>
