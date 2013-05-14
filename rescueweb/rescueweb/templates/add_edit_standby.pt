@@ -23,10 +23,46 @@
 				Event Name: <input input="text" name="event" value="${standby.event}" /><br/>
 				Event Location: <input input="text" name="location" value="${standby.location}" /><br/>
 				Notes: <textarea name="notes" tal:content="standby.notes" rows="16" cols="80"/><br/>
-				(Dates: dates should be in the format yyyy, mm, dd)<br/>
-				(For example, January 9th 2001 would be: 2001, 01, 09)<br/>
-				Start Date: <input input="text" name="startdatetime" value="${standby.startdatetime}" /><br/>
-				End Date: <input input="text" name="enddatetime" value="${standby.enddatetime}" /><br/>
+					
+				<label for='start'>Start Date: </label>
+				<select id ="start" name="startmonth">
+					<div tal:repeat = "month monthlist">
+						<span tal:condition = "month[1]== standby.startdatetime.month"><option value=${month[1]} selected>${month[0]}</option></span>
+						<span tal:condition = "not month[1]== standby.startdatetime.month"><option value=${month[1]}>${month[0]}</option></span>
+		  			</div>
+				</select>
+
+				<select name="startday">
+					<div tal:repeat = "day range(30)">
+						<span tal:condition ="(day+1) == standby.startdatetime.day"><option value=${day+1} selected>${day+1}</option> </span>
+						<span tal:condition ="not (day+1) == standby.startdatetime.day"><option value=${day+1}>${day+1}</option> </span>
+					</div>
+				</select>
+
+				<select name="startyear">
+					<div tal:repeat = "year range(120)">
+						<span tal:condition ="(year+1900) == standby.startdatetime.year"><option value=${year+1900} selected>${year+1900}</option> </span>
+						<span tal:condition ="not (year+1900) == standby.startdatetime.year"><option value=${year+1900} >${year+1900}</option> </span>
+		  			</div>
+				</select><br/>
+				
+				
+				<label for='starttime'>Start Time: </label>
+					<select id = 'starttime' name="starthour">
+						<div tal:repeat = "hour range(24)">
+							 <span tal:condition ="hour == standby.startdatetime.hour"> <option value=${hour} selected>${hour}</option> </span>
+		  					 <span tal:condition ="not hour == standby.startdatetime.hour"> <option value=${hour} >${hour}</option> </span>
+
+						</div>
+						</select>
+
+						<select name="startminute">
+						<div tal:repeat = "minute range(60)">
+							 <span tal:condition ="minute == standby.startdatetime.minute"> <option value=${minute} selected>${minute}</option> </span>
+		  					 <span tal:condition ="not minute == standby.startdatetime.minute"> <option value=${minute}>${minute}</option> </span>
+						</div>
+						</select>
+						<br/>				
 				<input type="hidden" name="editstandby" value="${standbychosen}" />
 				<input type="hidden" name="option" value="${form}" />
 				<input type="submit" name="form.submitted" value="Save"/>

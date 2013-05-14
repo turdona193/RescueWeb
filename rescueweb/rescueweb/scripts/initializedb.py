@@ -231,13 +231,13 @@ def main(argv = sys.argv):
 
         DBSession.add_all(
                 [
-                    EboardPositions(eboardposition='Chief Line Officer', username='guarintb193'),
-                    EboardPositions(eboardposition='Assistant Chief Line Officer', username=''),
-                    EboardPositions(eboardposition='President', username=''),
-                    EboardPositions(eboardposition='Vice President', username=''),
-                    EboardPositions(eboardposition='Treasurer', username=''),
-                    EboardPositions(eboardposition='Secretary', username=''),
-                    EboardPositions(eboardposition='Parliamentarian', username='muehlbjp193'),
+                    EboardPositions(eboardposition='Chief Line Officer', username='guarintb193', bio=''),
+                    EboardPositions(eboardposition='Assistant Chief Line Officer', username='', bio=''),
+                    EboardPositions(eboardposition='President', username='', bio=''),
+                    EboardPositions(eboardposition='Vice President', username='', bio=''),
+                    EboardPositions(eboardposition='Treasurer', username='', bio=''),
+                    EboardPositions(eboardposition='Secretary', username='', bio=''),
+                    EboardPositions(eboardposition='Parliamentarian', username='muehlbjp193', bio=''),
                 ])
         
         DBSession.add_all(
@@ -275,7 +275,6 @@ def main(argv = sys.argv):
                 [
                     Events(
                         startdatetime=datetime.datetime(2013, 5, 15),
-                        enddatetime=datetime.datetime(2013, 5, 15),
                         name='Birthday Party',
                         notes='Someone is having a birthday today!',
                         location = 'Townhouse J4',
@@ -284,7 +283,6 @@ def main(argv = sys.argv):
 
                     Events(
                         startdatetime=datetime.datetime(2013, 5, 15),
-                        enddatetime=datetime.datetime(2013, 5, 15),
                         name='A Secret Gathering',
                         notes='Only Admins should be able to view this Event',
                         location = 'Area 51',
@@ -293,7 +291,6 @@ def main(argv = sys.argv):
 
                     Events(
                         startdatetime=datetime.datetime(2013, 5, 5),
-                        enddatetime=datetime.datetime(2013, 5, 5),
                         name='Dance',
                         notes='not going',
                         location = 'Union MPR',
@@ -302,7 +299,6 @@ def main(argv = sys.argv):
 
                     Events(
                         startdatetime=datetime.datetime(2013, 5, 30),
-                        enddatetime=datetime.datetime(2013, 5, 30),
                         name='Grad',
                         notes='we leave!',
                         location = 'Accademic Quad',
@@ -318,7 +314,6 @@ def main(argv = sys.argv):
                         notes='''This is a very important standby! A lot of people
                         are bound to get hurt!''',
                         startdatetime=datetime.datetime(2013, 4, 15),
-                        enddatetime=datetime.datetime(2013, 4, 15)
                         ),
 
                     StandBy(
@@ -327,7 +322,6 @@ def main(argv = sys.argv):
                         notes='''Another event where an ambulance is surely
                         needed!''',
                         startdatetime=datetime.datetime(2013, 4, 20),
-                        enddatetime=datetime.datetime(2013, 4, 20)
                         ),
 
                     StandBy(
@@ -336,7 +330,6 @@ def main(argv = sys.argv):
                         notes='''Would you really trust a Bake Sale at Townhouse
                         J4?''',
                         startdatetime=datetime.datetime(2013, 4, 1),
-                        enddatetime=datetime.datetime(2013, 4, 1)
                         ),
 
                     StandBy(
@@ -344,7 +337,6 @@ def main(argv = sys.argv):
                         location='Barrington Union',
                         notes='''The REAL Bake sale.''',
                         startdatetime=datetime.datetime(2013, 4, 1),
-                        enddatetime=datetime.datetime(2013, 4, 1)
                         ),
                 ])
 

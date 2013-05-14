@@ -50,7 +50,7 @@ from .models import (
     WebLinks,
     StandBy,
     MeetingMinutes,
-	Pictures,
+    Pictures,
     StandByPersonnel,
     Attendees,
     DutyCrews,
@@ -154,12 +154,12 @@ def event(request):
 
     # Get the event that was chosen and the headers to display it
     event = DBSession.query(Events.name, Events.location, Events.notes,
-            Events.privileges, Events.startdatetime, Events.enddatetime).\
+            Events.privileges, Events.startdatetime).\
             filter(Events.eventid == request.matchdict['eventid']).\
             first()
 
     event_headers = ['Event', 'Location', 'Notes', 'Privileges',
-            'Start Date Time', 'End Date Time']
+            'Start Date Time']
 
     # Get the personnel that are signed up for the event and the headers that
     # are used to display the information.
@@ -340,7 +340,7 @@ def standby(request):
 
     # Get the standby event that was chosen and the headers to display it
     standby = DBSession.query(StandBy.event, StandBy.location, StandBy.notes,
-            StandBy.startdatetime, StandBy.enddatetime).\
+            StandBy.startdatetime).\
             filter(StandBy.standbyid == request.matchdict['standbyid']).\
             first()
 
@@ -348,8 +348,7 @@ def standby(request):
             'Event', 
             'Location', 
             'Notes', 
-            'Start Date Time', 
-            'End Date Time'
+            'Start Date Time'
             ]
 
     # Get the personnel that are signed up for the standby and the headers that
@@ -414,11 +413,6 @@ def dates(request):
                 episode.startdatetime.day,
                 episode.startdatetime.year
                              ),
-            '{}/{}/{}'.format(
-                episode.enddatetime.month,
-                episode.enddatetime.day, 
-                episode.enddatetime.year
-                             )
         ) for episode in episode_query 
            ]
 
@@ -445,7 +439,6 @@ def detailed_info(request):
                 episode.location,
                 episode.notes,
                 str(episode.startdatetime),
-                str(episode.enddatetime),
             ) for episode in episode_query 
                ]
     # Return all of the StandBy dates occurring on this date
@@ -462,7 +455,6 @@ def detailed_info(request):
                 episode.notes,
                 episode.privileges,
                 str(episode.startdatetime),
-                str(episode.enddatetime),
             ) for episode in episode_query
                ]
 
@@ -508,6 +500,40 @@ def duty_crew_calendar(request):
              permission='Member')
 def coverage(request):
     main = get_renderer('templates/template.pt').implementation()
+    message = ''
+    if 'Cancel_Standby' in request.params:
+        string = request.params['Cancel_Standby']
+        list = eval(string)
+        standby = DBSession.query(StandByPersonnel).filter(StandByPersonnel.standbyid == list[0]).one()
+        standby.coverrequested = False
+
+        message = request.params['Cancel_Standby']
+    if 'Cover_Standby' in request.params:
+        string = request.params['Cover_Standby']
+        list = eval(string)
+        standby = DBSession.query(StandByPersonnel).\
+        filter(StandByPersonnel.standbyid == list[0]).\
+        filter(StandByPersonnel.username == request.user.username).\
+        count()
+        if standby:
+            message = "You are already signed up for this standby, you cannot cover personnel"
+        if not standby:
+            standby = DBSession.query(StandByPersonnel).\
+            filter(StandByPersonnel.standbyid == list[0]).\
+            filter(StandByPersonnel.username == list[1]).\
+            one()
+            DBSession.add(
+                StandByPersonnel(
+                        standbyid=standby.standbyid,
+                        username=request.user.username,
+                        standbyposition=standby.standbyposition,
+                        coverrequested=False
+                                 )
+                          )
+            DBSession.delete(standby)
+        
+    
+    
     standby_requests = DBSession.query(StandByPersonnel.username,
                                        StandByPersonnel.standbyid,
                                        StandByPersonnel.standbyposition,
@@ -520,6 +546,7 @@ def coverage(request):
     return dict(
             title='Coverage Requests',
             main=main,
+            message = message,
             standby_requests=all_standby_requests,
             duty_crew_requests=all_duty_crew_requests,
             user=request.user
@@ -595,15 +622,8 @@ def edit_user(request):
         userselected = request.params['userselected']
     
     if 'form.submitted' in request.params:
-        edit_username_string = request.params['username']
-        userselected = request.params['userselected']
-        edit_username_exists = DBSession.query(Users).filter_by(username = edit_username_string).first()
-        if edit_username_exists and not edit_username_exists.username == userselected :
-            message = 'That username exist, Please select a new one'
-        else:
-            userselected = request.params['userselected']
             edited_user = DBSession.query(Users).filter_by(username=userselected).first()
-            edited_user.username = edit_username_string
+            edited_user.username = request.params['userselected']
             edited_user.password = request.params['password']
             edited_user.firstname = request.params['firstname']
             edited_user.middlename = request.params['middlename']
@@ -1096,17 +1116,21 @@ def add_edit_standby(request):
     standby = ''
     form = ''
     dateError = ''
+    
+    monthlist = [['January', 1],[ 'February', 2],[ 'March', 3],[ 'April',4],[ 'May', 5],[ 'June', 6],
+                 ['July', 7],[ 'August', 8],[ 'September', 9],[ 'October', 10],[ 'November', 11],[ 'December', 12]]
+    
 
     if 'form.submitted' in request.params:
         if request.params['option'] == 'New':
-            standby = StandBy('','','','','')
+            standby = StandBy('','','','')
             standby.standbyid = 1 + DBSession.query(StandBy).count()
             standby.event = request.params['event']
             standby.location = request.params['location']
             standby.notes = request.params['notes']
             try:
-                standby.startdatetime = datetime.datetime.strptime(request.params['startdatetime'],'%Y, %m, %d')
-                standby.enddatetime = datetime.datetime.strptime(request.params['enddatetime'],'%Y, %m, %d')
+                standby.startdatetime = datetime.datetime(int(request.params['startyear']), int(request.params['startmonth']),
+                int(request.params['startday']), int(request.params['starthour']), int(request.params['startminute']), 0)
                 DBSession.add(standby)
             except:
                 dateError = 'improper date entry, please use the following format: YYYY, MM, DD'
@@ -1117,8 +1141,8 @@ def add_edit_standby(request):
             standby.location = request.params['location']
             standby.notes = request.params['notes']
             try:
-                standby.startdatetime = datetime.datetime.strptime(request.params['startdatetime'],'%Y, %m, %d')
-                standby.enddatetime = datetime.datetime.strptime(request.params['enddatetime'],'%Y, %m, %d')
+                standby.startdatetime = datetime.datetime(int(request.params['startyear']), int(request.params['startmonth']),
+                int(request.params['startday']), int(request.params['starthour']), int(request.params['startminute']), 0)
                 DBSession.add(standby)
             except:
                 dateError = 'improper date entry, please use the following format: YYYY, MM, DD'
@@ -1127,7 +1151,7 @@ def add_edit_standby(request):
     if 'form.selected' in request.params:
         if request.params['form.selected'] == 'New':
             standbychosen = ''
-            standby = StandBy('','','','','')
+            standby = StandBy('','','','')
             form = 'New'
         if request.params['form.selected'] == 'Load':
             standbychosen = request.params['selectedstandby']
@@ -1140,20 +1164,21 @@ def add_edit_standby(request):
             return HTTPFound(location = request.route_url('standbys'))
 
     else:
-        stanby = StandBy('','','','','')
+        stanby = StandBy('','','','')
         standbychosen = ''
 
 
     get_all_standBy = DBSession.query(StandBy).all()
     all_standBy = [standB.event for standB in get_all_standBy]
     return dict(title='Add/Edit Standby',
-            main=main,
-            all_standBy=all_standBy,
-	    standby = standby,
-	    standbychosen=standbychosen,
-	    form=form,
-            dateError = dateError,
-            user=request.user
+                main=main,
+                all_standBy=all_standBy,
+                standby = standby,
+                monthlist=monthlist,
+                standbychosen=standbychosen,
+                form=form,
+                dateError = dateError,
+                user=request.user
             )
 
 @view_config(route_name='edit_duty_crew', renderer='templates/edit_duty_crew.pt',
@@ -1192,6 +1217,8 @@ def edit_duty_crew(request):
                 crewNum = 0
             duty = DBSession.query(DutyCrewCalendar).filter(DutyCrewCalendar.day == datetime.date(year, month, i+1)).one()
             duty.crewnumber = crewNum
+            
+        regenerate_table()
     else:
         currentDate = datetime.date.today()
         year = currentDate.year
@@ -1232,6 +1259,43 @@ def edit_duty_crew(request):
             main=main,
             user=request.user
             )
+    
+def regenerate_table():
+    today = datetime.datetime.today()
+    number_of_requests = DBSession.query(DutyCrewSchedule).filter(DutyCrewSchedule.coveragerequest == True).count()
+    all_duty_crew_requests = []
+    if number_of_requests:
+        requests_for_coverage = DBSession.query(DutyCrewSchedule).filter(DutyCrewSchedule.coveragerequest == True).all()
+        all_duty_crew_requests = [[crew.day, crew.username] for crew in requests_for_coverage]
+
+    new_duty_crew_combination = DBSession.query(
+                        DutyCrewCalendar.day,
+                        DutyCrewCalendar.crewnumber,
+                        DutyCrews.username).join(DutyCrews).filter(DutyCrewCalendar.day > today).all()
+    all_new_crews_members = [[crew.day, crew.username] for crew in new_duty_crew_combination]
+    
+    DBSession.query(DutyCrewSchedule).filter(DutyCrewSchedule.day > today).delete()
+    for new_crew in all_new_crews_members:
+        if new_crew in all_duty_crew_requests:
+            DBSession.add(
+                DutyCrewSchedule(
+                        day = new_crew[0],
+                        username = new_crew[1],
+                        coveragerequest = True
+                                )
+                          )     
+        else:
+            DBSession.add(
+                DutyCrewSchedule(
+                        day = new_crew[0],
+                        username = new_crew[1],
+                        coveragerequest = False
+                                )
+                          )    
+        
+    all_crews = DBSession.query(DutyCrewSchedule).filter(DutyCrewSchedule.day > today).all()
+    all = [[crew.day, crew.username] for crew in all_crews]
+    print(all)
 
 
 @view_config(route_name='assign_duty_crew', renderer='templates/assign_duty_crew.pt',
@@ -1242,12 +1306,9 @@ def assign_duty_crew(request):
 
     if 'form.submitted' in request.params:
         DBSession.query(DutyCrews).delete() #Delete all Duty Crews
-        print("{}".format(request.params))
         allusernames = [auser.username for auser in allusers]
         for key,val in request.params.items():
-            print("{}:{}".format(key,val))
             if key in allusernames:
-                print("{}:{}".format(key,val))
                 DBSession.add(
                               DutyCrews(
                                         crewnumber = int(val),
@@ -1343,13 +1404,11 @@ def add_edit_events(request):
 
     if 'form.submitted' in request.params:
         if request.params['option'] == 'New':
-            event = Events('','','','','','')
+            event = Events('','','','','')
             event.name = request.params['title']
             event.notes = request.params['body']
             event.startdatetime = datetime.datetime(int(request.params['startyear']), monthdict[request.params['startmonth']],
                 int(request.params['startday']), int(request.params['starthour']), int(request.params['startminute']), 0)
-            event.enddatetime = datetime.datetime(int(request.params['endyear']), monthdict[request.params['startmonth']],
-                int(request.params['endday']) , int(request.params['endhour']), int(request.params['endminute']), 0)
             event.location = request.params['location']
             event.privileges = request.params['privileges']
             DBSession.add(event)
@@ -1360,8 +1419,6 @@ def add_edit_events(request):
             event.notes = request.params['body']
             event.startdatetime = datetime.datetime(int(request.params['startyear']), monthdict[request.params['startmonth']],
                 int(request.params['startday']), int(request.params['starthour']), int(request.params['startminute']), 0)
-            event.enddatetime = datetime.datetime(int(request.params['endyear']), monthdict[request.params['startmonth']],
-                int(request.params['endday']) , int(request.params['endhour']), int(request.params['endminute']), 0)
             DBSession.add(event)
             event.location = request.params['location']
             event.privileges = request.params['privileges']
@@ -1370,7 +1427,7 @@ def add_edit_events(request):
     if 'form.selected' in request.params:
         if request.params['form.selected'] == 'New':
             eventchosen = ''
-            event = Events('','','','','','')
+            event = Events('','','','','')
             form = 'New'
         if request.params['form.selected'] == 'Load':
             eventchosen = request.params['selectedevent']
@@ -1383,7 +1440,7 @@ def add_edit_events(request):
             return HTTPFound(location = request.route_url('events'))
 
     else:
-        event = Events('','','','','','')
+        event = Events('','','','','')
         eventchosen = ''
     
     allevents = DBSession.query(Events).all() 
@@ -1407,6 +1464,10 @@ def add_edit_events(request):
             min = '0'+str(min)
         hourlist.append(min)
 
+    all_privilege_levels = DBSession.query(Privileges).all()
+    all_levels_list = [[level.privilegevalue, level.privilege] for level in all_privilege_levels]
+    
+
     return dict(
             title='Add/Edit Events', 
             yearlist=yearlist,
@@ -1414,6 +1475,7 @@ def add_edit_events(request):
             daylist=daylist,
             hourlist=hourlist,
             minutelist=minutelist,
+            privilege_levels=all_levels_list,
             main=main,
             user=request.user,
             events = events,
