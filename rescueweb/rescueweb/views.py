@@ -618,6 +618,30 @@ def coverage(request):
         duty_crew.coveragerequest = False
 
         message = request.params['Cancel_Duty']
+        
+        
+    if 'Cover_Duty' in request.params:
+        string = request.params['Cover_Duty']
+        list = eval(string)
+        duty_crew = DBSession.query(DutyCrewSchedule).\
+        filter(DutyCrewSchedule.day == list[0]).\
+        filter(DutyCrewSchedule.username == request.user.username).\
+        count()
+        if duty_crew:
+            message = "You are already signed up for this standby, you cannot cover personnel"
+        if not duty_crew:
+            duty_crew = DBSession.query(DutyCrewSchedule).\
+            filter(DutyCrewSchedule.day == list[0]).\
+            filter(DutyCrewSchedule.username == list[1]).\
+            one()
+            DBSession.add(
+                DutyCrewSchedule(
+                        day=duty_crew.day,
+                        username=request.user.username,
+                        coveragerequest=False
+                                 )
+                          )
+            DBSession.delete(duty_crew)
     
     
     standby_requests = DBSession.query(StandByPersonnel.username,
@@ -1357,7 +1381,7 @@ def edit_duty_crew(request):
             )
     
 def regenerate_table():
-    today = datetime.datetime.today()
+    today = datetime.datetime.today().date()
     #collects number of people who requested coverage.
     number_of_requests = DBSession.query(DutyCrewSchedule).filter(DutyCrewSchedule.coveragerequest == True).count()
     all_duty_crew_requests = []
@@ -1413,7 +1437,8 @@ def assign_duty_crew(request):
                                         crewnumber = int(val),
                                         username = key,
                                         )
-                              )        
+                              )
+        regenerate_table()        
     all_user_records = []
     print("!!!!!!!!!!!")
     for some_user in allusers:

@@ -2,13 +2,13 @@
     <div metal:fill-slot="content">        
 		${message}
         <h2>Stand-By Coverage</h2>
-        <div tal:condition = "standby_requests">
-	        <table border=2>
-	   			<tr>
-	   				<th>Standby</th><th>Date:Time</th><th>Personnel</th>
-					<th>Position</th><th>Accept Coverage</th>
-						<th>Cancel Coverage</th>
-	        	</tr>
+		  <table border=2>
+                <tr>
+                    <th>Standby</th><th>Date:Time</th><th>Personnel</th>
+                    <th>Position</th><th>Accept Coverage</th>
+                        <th>Cancel Coverage</th>
+                </tr>
+            <div tal:condition = "standby_requests">
 				<form>
 					<div tal:repeat = "request standby_requests">
 						<tr>
@@ -21,8 +21,8 @@
 						</tr>
 	        		</div>
 				</form>
-	        </table>
-        </div>
+            </div>
+			</table>
         <form>
             <h2>Duty Crew Coverage</h2>
 			<table border = 1>
