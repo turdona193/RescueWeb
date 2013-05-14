@@ -29,6 +29,7 @@ from ..models import (
     MeetingMinutes,
     Pictures,
     DutyCrews,
+    DutyCrewCalendar,
     DutyCrewSchedule,
     )
 
@@ -524,6 +525,14 @@ Just as all of the SUNY Potsdam community, CRS does not discriminate membership 
                     DutyCrews(crewnumber=1, username='muehlbjp193'),
                     DutyCrews(crewnumber=2, username='guarintb193')
                 ])
+
+        DBSession.add_all(
+                [
+                    DutyCrews(0, 'turdona193'),
+                    DutyCrews(1, 'muehlbjp193'),
+                    DutyCrews(2, 'guarintb193'),
+                ]
+            )
 
         DBSession.add_all(
                 [
