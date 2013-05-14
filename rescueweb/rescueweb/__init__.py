@@ -58,7 +58,7 @@ def main(global_config, **settings):
 
     # Routes for the duty crew calendar and for specific duty crew nights.
     config.add_route('duty_crew_calendar', '/duty_crew_calendar')
-    config.add_route('duty_crew', '/duty_crew/{day}')
+    config.add_route('duty_crew', '/duty_crew/{date}')
 
     config.add_route('pictures' , '/pictures')
     config.add_route('pictures_view' , '/pictures_view/{category}')

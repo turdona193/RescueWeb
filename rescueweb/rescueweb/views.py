@@ -93,8 +93,8 @@ def history(request):
 def personnel(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Users.portablenumber, Users.fullname,
-			AdministrativeStatus.status, OperationalStatus.status).\
-			join(AdministrativeStatus) .join(OperationalStatus).order_by(Users.portablenumber)
+            AdministrativeStatus.status, OperationalStatus.status).\
+            join(AdministrativeStatus) .join(OperationalStatus).order_by(Users.portablenumber)
     headers = ['Portable', 'Name', 'Administrative', 'Operational']
 
     return dict(
@@ -385,23 +385,42 @@ def duty_crew(request):
     main = get_renderer('templates/template.pt').implementation()
 
     # Sanity check
-    if 'day' not in request.matchdict:
-        return HTTPNotFound('No day passed in.')
+    if 'date' not in request.matchdict:
+        return HTTPNotFound('No date passed in.')
+
+    # Create a datetime object from the passed in date string
+    month, day, year = request.matchdict['date'].split('-')
+    date = datetime.date(int(year), int(month), int(day))
+
+    # Get your own row if you're on call tonight
+    myself = DBSession.query(DutyCrewSchedule).\
+            filter(DutyCrewSchedule.day == date).\
+            filter(DutyCrewSchedule.username == request.user.username).first()
+
+    # Mark the user as requesting coverage if they clicked the button to do so
+    if 'coverage_request.submitted' in request.params and myself:
+        myself.coveragerequest = True
+    elif 'cancel_coverage_request.submitted' in request.params and myself:
+        myself.coveragerequest = False
+
+    # Decide if the user is requesting coverage
+    if myself:
+        requesting_coverage = myself.coveragerequest
+    else:
+        requesting_coverage = False
 
     # Get all members that are on call tonight
-    duty_members = DBSession.query(DutyCrewSchedule).\
-            filter(DutyCrewSchedule.day == request.matchdict['day'])
-    myself = duty_members.\
-            filter(DutyCrewSchedule.username == request.user.username).first()
+    duty_members = DBSession.query(
+            DutyCrewSchedule.username, DutyCrewSchedule.coveragerequest).\
+            filter(DutyCrewSchedule.day == date).all()
     duty_member_headers = ['Member', 'Coverage Requested']
-
-    if 'coverage_request.submitted' in request.params:
-        myself.coverrequested = True
-    elif 'cancel_coverage_request.submitted' in request.params:
-        myself.coverrequested = False
 
     return dict(
             title='Duty Crew Night',
+            duty_crew_personnel=duty_members,
+            duty_crew_personnel_headers=duty_member_headers,
+            on_call=myself,
+            requesting_coverage=requesting_coverage,
             main=main,
             user=request.user
             )
@@ -423,6 +442,21 @@ def dates(request):
 
         # Query only events for the current month
         episode_query = DBSession.query(Episode)
+
+        for episode in episode_query:
+            print(episode.standbyid)
+            print(episode.event)
+            print(episode.location)
+            print(episode.notes)
+            print(episode.startdatetime)
+
+        total_query = DBSession.query(StandBy).all()
+        for query in total_query:
+            print(query.standbyid)
+            print(query.event)
+            print(query.location)
+            print(query.notes)
+            print(query.startdatetime)
 
         # If querying events, cut down the events to only those that the user has
         # the appropriate privilege levels to see.
@@ -1504,6 +1538,7 @@ def add_edit_events(request):
             eventchosen=eventchosen
             )
 
+
 #@view_config(route_name='email', renderer='templates/email.pt')
 #def email(request):
 #    mainR = get_renderer('templates/template.pt').implementation()
@@ -1511,14 +1546,16 @@ def add_edit_events(request):
 #    
 #    message = Message(subject= "testing",
 #                      sender= "laddbc@potsdam.edu",
-#                      recipients= ["drbcladd@gmail.com"],
+#                     recipients= ["drbcladd@gmail.com"],
 #                      body= "hopefully this thing works")
 #    
 #    mailer.send_immediately(message)
 #    
 #    return dict(
 #             title='Email',
-#             main=mainR,
+#             form=form,
+#             message=message,
+#            main=mainR,
 #             user=request.user
 #             )
 
@@ -1590,9 +1627,9 @@ def pictures(request):
     allpictures = [[apicture.picture,apicture.description, apicture.category] for apicture in pictures] 
 
     return dict(title = 'Pictures',
-				main = main,
-				user=request.user,
-				pictures = allpictures,
+                main = main,
+                user=request.user,
+                pictures = allpictures,
                )
 
 @view_config(route_name='pictures_view', renderer='templates/pictures_view.pt')
@@ -1609,9 +1646,9 @@ def pictures_view(request):
     allpictures = [(apicture.picture,apicture.description, apicture.category) for apicture in pictures]
     
     return dict(title = 'Pictures',
-				main = main,
-				user=request.user,
-				pictures = allpictures,
+                main = main,
+                user=request.user,
+                pictures = allpictures,
                 category = category,
                )
 
@@ -1711,10 +1748,38 @@ def crew_chief_signup(request):
 def edit_eboard(request):
     main = get_renderer('templates/template.pt').implementation()
     eboard = DBSession.query(EboardPositions).all()
+    eboardlist = [[record.username, record.eboardposition] for record in eboard]    
+    eboardmembers = DBSession.query(Users.username, Users.fullname).all()
+    memberlist = [[record.username, record.fullname] for record in eboardmembers]
+    positionchosen = ' '
+    form = ''
+    position = ''
+    if 'form.submitted' in request.params:
+        if request.params['option'] == 'Load':
+            editposition = request.params['editposition']
+            position = DBSession.query(EboardPosition).filter_by(eboardpositions=editposition).first()
+            position.bio = request.params['body']
+            position.priority = int(request.params['privilege_level'])
+            DBSession.add(position)
+        return HHTPFound(location = request.route_url('eboard'))
     
+    if 'form.selected' in request.params:
+        if request.params['form.selected'] == 'Load':
+            positionchosen = request.params['selectedposition']
+            position = DBSession.query(EboardPositions).filter_by(eboardposition=positionchosen).first()
+            form = 'Load'
+        
+    all_privilege_levels = DBSession.query(Privileges).all()
+    all_levels_list = [[level.privilegevalue, level.privilege] for level in all_privilege_levels]
     
     return dict(title='Edit Eboard',
                 main=main,
+                eboardlist=eboardlist,
+                memberlist=memberlist,
+                positionchosen=positionchosen,
+                privilege_levels=all_levels_list,
+                position=position,
+                form=form,
                 user=request.user,
                )
     

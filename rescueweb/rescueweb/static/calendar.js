@@ -73,8 +73,8 @@ $(function() {
                         } else if (episode == 'duty_crew') {
                             // Redirect the user to the page which contains
                             // information about the duty crew that's on for
-                            // this day.
-                            window.location.replace('/duty_crew/' + date.split('/')[1]);
+                            // this day. Pass along the date in a sanitized way.
+                            window.location.href = '/duty_crew/' + date.replace(/\//g, '-');
                         }
                     });
                 }
