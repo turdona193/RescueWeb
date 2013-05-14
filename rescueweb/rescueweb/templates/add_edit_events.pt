@@ -22,7 +22,11 @@
 			<form method="post">
 				Event Name: <input input = "text" name="title" value="${event.name}" /><br/>
 				Event Location: <input input = "text" name="location" value="${event.location}" /><br/>
-				Permissions: <input input = "text" name="privileges" value="${event.privileges}" /><br/><br/>
+				Permissions: <br/><br/>
+				 				<select name="privileges">
+									<div tal:repeat = "level privilege_levels">
+					 						<option value="${level[0]}">${level[1]}</option>
+					  				</div><br/><br/>
 				
 				Start Date: <select name="startmonth">
 						<div tal:repeat = "month monthlist">
@@ -49,37 +53,6 @@
 						</select>
 
 						<select name="startminute">
-						<div tal:repeat = "minute minutelist">
-							 <option value=${minute}>${minute}</option>
-		  				</div>
-						</select>
-						<br/>
-
-				End Date: <select name="endmonth">
-						<div tal:repeat = "month monthlist">
-							 <option value=${month}>${month}</option>
-		  				</div>
-						</select>
-
-						<select name="endday">
-						<div tal:repeat = "day daylist">
-							 <option value=${day}>${day}</option>
-		  				</div>
-						</select>
-
-						<select name="endyear">
-						<div tal:repeat = "year yearlist">
-							 <option value=${year}>${year}</option>
-		  				</div>
-						</select>
-
-				End Time: <select name="endhour">
-						<div tal:repeat = "hour hourlist">
-							 <option value=${hour}>${hour}</option>
-		  				</div>
-						</select>
-
-						<select name="endminute">
 						<div tal:repeat = "minute minutelist">
 							 <option value=${minute}>${minute}</option>
 		  				</div>

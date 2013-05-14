@@ -1,5 +1,6 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">        
+		${message}
         <h2>Stand-By Coverage</h2>
         <div tal:condition = "standby_requests">
 	        <table border=2>
@@ -7,13 +8,15 @@
 	   				<th>Standby</th><th>Date</th><th>Personnel</th><th>Position</th><th>Accept Coverage</th>
 					<span tal:condition = "user and user.pyramidsecuritygroup == 'admin'"><th>Cancel Coverage</th></span>
 	        	</tr>
-				<tr>
+				<form>
 					<div tal:repeat = "request standby_requests">
+						<tr>
 	        			<td><a href = "${'/standby/{}'.format(request[0])}">${request[1]}</a></td><td>${request[2]}</td><td>${request[3]}</td><td>${request[4]}</td>
-						
+						<td> <button type="submit" name = "Cover_Standby" value = "${[request[0],request[3]]}">Cover</button> </td>
+						<td> <button type="submit" name = "Cancel_Standby" value = "${[request[0],request[3]]}">Cancel</button> </td>
+						</tr>
 	        		</div>
-				</tr>
-	        
+				</form>
 	        </table>
         </div>
 
