@@ -5,8 +5,9 @@
         		Assign Duty Crews:<br/> 
       			<table>
 						<div tal:repeat = "userA all_user_records">
-						${userA[0]}
-							<span tal:repeat ="val range(12)">
+						<td>${userA[0]}</td>
+						<td>
+							<span tal:repeat ="val range(1, 12)">
 								<span tal:condition = "val in userA[2]">
   									${val}<input type="checkbox" name=${userA[1]} value=${val} checked>
   								</span> 
@@ -14,6 +15,8 @@
   									${val}<input type="checkbox" name=${userA[1]} value=${val} >
   								</span> 
   							</span>
+						</td>
+						<tr>
   						</div>	
   				</table>			
 				<input type="submit" name="form.submitted" value="Update"/><br/>
