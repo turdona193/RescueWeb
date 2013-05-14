@@ -1,0 +1,5 @@
+<div metal:use-macro="main.macros['template']">
+    	<div metal:fill-slot="content">
+    		<a href="/"><img src="${request.static_url('rescueweb:static/404.jpg')}" alt="CRS Banner"/></a>
+		</div>
+</div>
