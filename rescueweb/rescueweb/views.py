@@ -8,6 +8,8 @@ from pyramid.response import Response
 from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 
+from sqlalchemy.exc import DBAPIError
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import distinct
 from sqlalchemy import func
 
@@ -120,17 +122,6 @@ def announcements(request):
             announcements=announcements,
             headers=headers,
             user=request.user)
-    
-@view_config(route_name='events', renderer='templates/events.pt')
-def event_table(request):
-    main = get_renderer('templates/template.pt').implementation()
-    event_list = DBSession.query(Events).all()
-
-    return dict(
-            title='Events', 
-            main=main,
-            user=request.user
-            )
 
 @view_config(route_name='event', renderer='templates/event.pt')
 def event(request):
@@ -1186,7 +1177,7 @@ def add_edit_certifications(request):
 def add_edit_standby(request):
     main = get_renderer('templates/template.pt').implementation()
     standbychosen = ''
-    standby = ''
+    standby = StandBy('','','',datetime.datetime.today())
     form = ''
     dateError = ''
     
@@ -1196,7 +1187,7 @@ def add_edit_standby(request):
 
     if 'form.submitted' in request.params:
         if request.params['option'] == 'New':
-            standby = StandBy('','','','')
+            standby = StandBy('','','',datetime.datetime.now())
             standby.standbyid = 1 + DBSession.query(StandBy).count()
             standby.event = request.params['event']
             standby.location = request.params['location']
@@ -1224,7 +1215,7 @@ def add_edit_standby(request):
     if 'form.selected' in request.params:
         if request.params['form.selected'] == 'New':
             standbychosen = ''
-            standby = StandBy('','','','')
+            standby = StandBy('','','',datetime.datetime.now())
             form = 'New'
         if request.params['form.selected'] == 'Load':
             standbychosen = request.params['selectedstandby']
@@ -1235,9 +1226,8 @@ def add_edit_standby(request):
             standby = DBSession.query(StandBy).filter_by(event=standbychosen).first()
             DBSession.delete(standby)
             return HTTPFound(location = request.route_url('standbys'))
-
     else:
-        stanby = StandBy('','','','')
+        standby = StandBy('','','',datetime.datetime.now())
         standbychosen = ''
 
 
@@ -1335,12 +1325,15 @@ def edit_duty_crew(request):
     
 def regenerate_table():
     today = datetime.datetime.today()
+    #collects number of people who requested coverage.
     number_of_requests = DBSession.query(DutyCrewSchedule).filter(DutyCrewSchedule.coveragerequest == True).count()
     all_duty_crew_requests = []
+    #if anyone has requested coverage, go through all requests and add them to a list of the user and date.
     if number_of_requests:
         requests_for_coverage = DBSession.query(DutyCrewSchedule).filter(DutyCrewSchedule.coveragerequest == True).all()
         all_duty_crew_requests = [[crew.day, crew.username] for crew in requests_for_coverage]
-
+    #Joins 'DutyCrewCalendar' and 'DutyCrews' to create a list of user and the day they 
+    #are on after an admin has edited the database.
     new_duty_crew_combination = DBSession.query(
                         DutyCrewCalendar.day,
                         DutyCrewCalendar.crewnumber,
@@ -1617,9 +1610,18 @@ def login(request):
         password=password,
         user=request.user,
         )
+    
+def notfound_view(self, request):
+    request.response.status_int = 404
+    main = get_renderer('templates/template.pt').implementation()
+    title = '404 Error'
+    return dict(main=main,
+                title=title,
+                user=request.user)
 
 @view_config(route_name='logout')
 def logout(request):
+    
     headers = forget(request)
     return HTTPFound(
             location=request.route_url('home'),
@@ -1715,22 +1717,65 @@ def crew_chief_signup(request):
     startDay, days = calendar.monthrange(year, month)
     startDay = (startDay +1)%7
 
-    CCList = []
-    PCCList = []
+    CCList = []         #List of crew chiefs for each day of month
+    PCCList = []        #List of probationary crew chiefs for the month
+    CCEditable = []     #Tells whether the crew chief is editable for each day
+    PCCEditable = []     #Tells whether the p. crew chief is editable for each day
+    
     for i in range(days):
         chiefOnCall = DBSession.query(CrewChiefSchedule).filter(CrewChiefSchedule.date == datetime.date(year, month, i+1)).first()
         if chiefOnCall:
-            print('NOT NONE')
             CC = chiefOnCall.ccusername
+            PCC = chiefOnCall.pccusername
+                #Figure out which crew chiefs are currently signed up
             if CC:
                 CCList.append(CC)
             else:
-                CCList.append('Sign Up')
-            PCC = chiefOnCall.pccusername
+                CCList.append('Nobody')
+                
+                #Figure out which p. crew chiefs are signed up
             if PCC:
                 PCCList.append(PCC)
             else:
-                PCCList.append('Sign Up')
+                PCCList.append('Nobody')
+
+                #Figure out whether the user can edit stuff
+            if CC == request.user.username:
+                if request.user.privilege == 'Admin':
+                    if PCC:
+                        CCEditable.append(True)
+                        PCCEditable.append(True)
+                    else:
+                        CCEditable.append(True)
+                        PCCEditable.append(False)
+                else:
+                    CCEditable.append(True)
+                    PCCEditable.append(False)
+            elif CC:
+                if request.user.privilege == 'Admin':
+                    CCEditable.append(True)
+                    PCCEditable.append(True)
+                else:
+                    if PCC:
+                        CCEditable.append(False)
+                        PCCEditable.append(False)
+                    else:
+                        CCEditable.append(False)
+                        PCCEditable.append(True)
+            elif PCC == request.user.username:
+                CCEditable.append(False)
+                PCCEditable.append(True)
+            elif PCC:
+                if request.user.privilege == 'Admin':
+                    CCEditable.append(True)
+                    PCCEditable.append(True)
+                else:
+                    CCEditable.append(True)
+                    PCCEditable.append(False)
+            else:
+                CCEditable.append(True)
+                PCCEditable.append(True)
+                
         else:
             DBSession.add(
                 CrewChiefSchedule(
@@ -1739,8 +1784,10 @@ def crew_chief_signup(request):
                     pccusername = None
                     )
                 )
-            CCList.append('Sign Up')
-            PCCList.append('Sign Up')
+            CCList.append('Nobody')
+            PCCList.append('Nobody')
+            CCEditable.append(True)
+            PCCEditabe.append(True)
     
     return dict(title='Crew Chief Sign-Up',
                 monthName=monthName,
@@ -1750,6 +1797,8 @@ def crew_chief_signup(request):
                 days=days,
                 CCList=CCList,
                 PCCList=PCCList,
+                CCEditable=CCEditable,
+                PCCEditable=PCCEditable,
                 main=main,
                 user=request.user,
                )
@@ -1758,42 +1807,37 @@ def crew_chief_signup(request):
 def edit_eboard(request):
     main = get_renderer('templates/template.pt').implementation()
     eboard = DBSession.query(EboardPositions).all()
-    eboardlist = [[record.username, record.eboardposition] for record in eboard]
-    
+    eboardlist = [[record.username, record.eboardposition] for record in eboard]    
     eboardmembers = DBSession.query(Users.username, Users.fullname).all()
     memberlist = [[record.username, record.fullname] for record in eboardmembers]
     positionchosen = ' '
     form = ''
     position = ''
     if 'form.submitted' in request.params:
+        if request.params['option'] == 'Load':
+            editposition = request.params['editposition']
+            position = DBSession.query(EboardPosition).filter_by(eboardpositions=editposition).first()
+            position.bio = request.params['body']
+            position.priority = int(request.params['privilege_level'])
+            DBSession.add(position)
+        return HHTPFound(location = request.route_url('eboard'))
+    
+    if 'form.selected' in request.params:
         if request.params['form.selected'] == 'Load':
             positionchosen = request.params['selectedposition']
-            form = 'Load'
             position = DBSession.query(EboardPositions).filter_by(eboardposition=positionchosen).first()
-    
-    
-    """
-        def __init__(self,eboardposition,username,bio):
-        self.eboardposition = eboardposition
-        self.username = username
-        self.bio       
+            form = 'Load'
         
-    announcementchosen = ''
-    form = ''
+    all_privilege_levels = DBSession.query(Privileges).all()
+    all_levels_list = [[level.privilegevalue, level.privilege] for level in all_privilege_levels]
     
-    if 'form.submitted' in request.params:
-         if request.params['form.selected'] == 'Load':
-            announcementchosen = request.params['selectedannouncement']
-            announcement = DBSession.query(Announcements).filter_by(header=announcementchosen).first()
-    """        
-            
-            
     return dict(title='Edit Eboard',
                 main=main,
                 eboardlist=eboardlist,
                 memberlist=memberlist,
                 positionchosen=positionchosen,
-                postion=position,
+                privilege_levels=all_levels_list,
+                position=position,
                 form=form,
                 user=request.user,
                )
