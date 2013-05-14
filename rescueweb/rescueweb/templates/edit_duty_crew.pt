@@ -1,20 +1,20 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-        <p>Welcome to the duty crew calendar page!</p>
-        <p>Calendars are awful</p>
-	
 	<div tal:define= "month monthName "> 
 	<div tal:define= "no_of_days days" >
 	<div tal:define= "start_day startDay">
 	
-	<form method="post">	
+	<form method="post">
 		<h2>
-			<input type="submit" name="form.prev" value="<--"/>
-			${month}
-			<input type="submit" name="form.next" value="-->"/>
+			<input type="hidden" name="monthNum" value="${monthNum}">
+			<input type="hidden" name="yearNum" value="${yearNum}">
+			<input type="submit" name="form.changedate" value="<--"/>
+			${month} ${yearNum}
+			<input type="submit" name="form.changedate" value="-->"/>
 		</h2>
 	</form>
-	<table>
+	<form method="post">
+	<table border =2>
 	<tr>
 	    <td>Sunday</td>
 	    <td>Monday</td>
@@ -24,20 +24,49 @@
 	    <td>Friday</td>
 	    <td>Saturday</td>
 	</tr>
-	<tr>
-	   <div tal:repeat = " i range(start_day)" >
-	       <td> </td>
-	   </div>
-	   <div tal:repeat= " day range(1, 8 - start_day)" >
-	       <td tal:content= "day"> </td>
-	   </div>
-	 </tr>
-	<tr tal:repeat= "week range(1, int((no_of_days - 6 + start_day)/4) +1 )">
-	     <div tal:repeat="day range(week*7 - start_day, min((week+1) *7-start_day, no_of_days))">
-	         <td tal:content="day+1"> </td>
-	     </div>
-	</tr>
+
+		<tr>
+		   <div tal:repeat = " i range(start_day)" >
+		       <td> </td>
+		   </div>
+		   <div tal:repeat= " day range(1, 8 - start_day)" >
+		       <td>
+				${day}
+				<select name="${day}">
+					<option value="0">OOS</option>
+					<div tal:repeat="i range(numOfCrews)">
+						<span tal:condition="crewNums[day-1] == i+1"><option value="${i+1}" selected>${i+1}</option></span>
+						<span tal:condition="not crewNums[day-1] == i+1"><option value="${i+1}">${i+1}</option></span>						
+					</div>
+				</select>
+			</td>
+		   </div>
+		 </tr>
+		<tr tal:repeat= "week range(1, int((no_of_days - 6 + start_day)/4) +1 )">
+		     <div tal:repeat="day range(week*7 - start_day, min((week+1) *7-start_day, no_of_days))">
+			<td>
+				${day+1}
+				<select name="${day+1}">
+					<option value="0">OOS</option>
+					<div tal:repeat="i range(numOfCrews)">
+						<div tal:condition="crewNums[day] == i+1">
+							<option value="${i+1}" selected>${i+1}</option>
+						</div>
+						<div tal:condition="not crewNums[day] == i+1">
+							<option value="${i+1}">${i+1}</option>
+						</div>
+					</div>
+				</select>
+			</td>
+		     </div>
+		</tr>
+	
          </table>
+	<input type="hidden" name="monthNum" value="${monthNum}">
+	<input type="hidden" name="yearNum" value="${yearNum}">
+	<input type="submit" name="form.submitted" value="Edit"/>
+
+	</form>
 	
 	</div>
 	</div>

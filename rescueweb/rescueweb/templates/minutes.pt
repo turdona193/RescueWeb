@@ -1,15 +1,23 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-        <div tal:repeat="content meeting_minutes">
-  				<p>
-              		<h3>${getattr(content,headers[1])}</h3>
-
-			  		<br>Header: ${getattr(content,headers[2])} 
-
-			  		<br>subheader: ${getattr(content,headers[3])} 
-
-			  		<br>Content: ${getattr(content,headers[4])} 
-			  </p><br/>
+    <form>
+    	Meeting Dates: <select name="selected_date">
+					  		<div tal:repeat = "date all_dates">
+					 	 		<option value="${date}">${date}</option>
+							</div>
+						</select><br/>
+		<input type="submit" name="date.selected" value="Load"/><br/>
+		
+		<div tal:condition = "selected">
+	        <div tal:repeat="content meeting_minutes">
+	  				<p>
+				  		<br>Header: ${content.header} 
+	
+				  		<br>subheader: ${content.subheader} 
+	
+				  		<br>Content: ${content.content} 
+				  </p><br/>
 			</div>
+		</form>
     </div>
 </div>

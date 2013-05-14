@@ -25,7 +25,9 @@ def get_user(request):
                     Users.roomnumber,
                     Users.phonenumber,
                     Users.email,
+                    Users.operationalvalue,
                     Privileges.privilege,
+                    Privileges.privilegevalue,
                     Privileges.pyramidsecuritygroup).\
                     join(Privileges).\
                     filter(Users.username == userid[0]).first()

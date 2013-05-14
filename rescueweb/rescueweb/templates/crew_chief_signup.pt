@@ -13,7 +13,7 @@
 			<input type="submit" name="form.changedate" value="-->"/>
 		</h2>
 	</form>
-	<table>
+	<table border =2>
 	<tr>
 	    <td>Sunday</td>
 	    <td>Monday</td>
@@ -29,13 +29,31 @@
 		       <td> </td>
 		   </div>
 		   <div tal:repeat= " day range(1, 8 - start_day)" >
-		       <td tal:content= "day"> </td>
+		     <td>
+				<form method="post">
+					${day}<br/>
+					<input type="hidden" name="day" value="${day}">
+					<input type="hidden" name="monthNum" value="${monthNum}">
+					<input type="hidden" name="yearNum" value="${yearNum}">
+					CC:<input type="submit" name="form.CC" value="${CCList[day-1]}"><br/>
+					PCC:<input type="submit" name="form.PCC" value="${PCCList[day-1]}">
+				</form>
+		     </td>
 		   </div>
 		 </tr>
 		<tr tal:repeat= "week range(1, int((no_of_days - 6 + start_day)/4) +1 )">
-		     <div tal:repeat="day range(week*7 - start_day, min((week+1) *7-start_day, no_of_days))">
-			<td>${day+1}</td>
-		     </div>
+			<div tal:repeat="day range(week*7 - start_day, min((week+1) *7-start_day, no_of_days))">
+				<td>
+					<form method="post">
+						${day+1}<br/>
+						<input type="hidden" name="day" value="${day+1}">
+						<input type="hidden" name="monthNum" value="${monthNum}">
+						<input type="hidden" name="yearNum" value="${yearNum}">
+						CC:<input type="submit" name="form.CC" value="${CCList[day]}"> <br/>
+						PCC:<input type="submit" name="form.PCC" value="${PCCList[day]}">
+					</form>
+				</td>
+			</div>
 		</tr>
 	
          </table>

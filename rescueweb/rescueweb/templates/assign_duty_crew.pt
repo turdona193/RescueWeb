@@ -2,7 +2,7 @@
     <div metal:fill-slot="content">
         <p>
           	<form method="post">
-        		Edit Duty Crews:<br/> 
+        		Assign Duty Crews:<br/> 
       			<table>
 						<div tal:repeat = "userA all_user_records">
 						${userA[0]}

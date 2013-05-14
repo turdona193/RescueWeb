@@ -1,7 +1,8 @@
 import calendar
 import datetime
 import random
-
+import os
+import re
 
 from pyramid.response import Response
 from pyramid.view import view_config
@@ -10,9 +11,10 @@ from pyramid.renderers import get_renderer
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import distinct
+from sqlalchemy import func
 
-from pyramid_mailer import get_mailer
-from pyramid_mailer.message import Message
+#from pyramid_mailer import get_mailer
+#from pyramid_mailer.message import Message
 
 
 from pyramid.httpexceptions import (
@@ -48,14 +50,17 @@ from .models import (
     WebLinks,
     StandBy,
     MeetingMinutes,
-	Pictures,
+    Pictures,
     StandByPersonnel,
     Attendees,
     DutyCrews,
     DutyCrewCalendar,
     DutyCrewSchedule,
-
+    CrewChiefSchedule,
+    LoginIns
     )
+
+TABLE_DICT = {'standby' : StandBy, 'event' : Events}
 
 @view_config(route_name='home', renderer='templates/home.pt')
 def home(request):
@@ -232,16 +237,28 @@ def documents(request):
              permission='Member')
 def minutes(request):
     main = get_renderer('templates/template.pt').implementation()
-    meeting_minutes = DBSession.query(MeetingMinutes).order_by(MeetingMinutes.datetime.desc()).all()
-    headers = [column.name for column in meeting_minutes[0].__table__.columns]
-    all_dates = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime.desc())
+    #init empty fields
+    meeting_minutes = []
+    selected=False
+    
+    all_dates = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime).order_by(MeetingMinutes.datetime.desc()).all()
+    all_dates_list = [minute.datetime.timetuple()[:3] for minute in all_dates]
 
+    if "date.selected" in request.params:
+        selected=True
+
+        selected_date = request.params['selected_date']
+        date = datetime.datetime.strptime(selected_date,'(%Y, %m, %d)')
+        meeting_minutes = DBSession.query(MeetingMinutes).\
+        filter_by(datetime = date).\
+        order_by(MeetingMinutes.datetime.desc()).all()
+    
     return dict(
             title='Meeting Minutes',
             main=main,
+            selected = selected,
             meeting_minutes=meeting_minutes,
-            headers=headers,
-            all_dates=all_dates,
+            all_dates=all_dates_list,
             user=request.user
             )
 
@@ -370,19 +387,25 @@ def standby(request):
             user=request.user
             )
 
-@view_config(name='standby_dates.json', renderer='json')
-def standby_dates(request):
-    """Serves up Standby dates via JSON back to the calendar. 
+@view_config(name='dates.json', renderer='json')
+def dates(request):
+    """Serves up Event and StandBy dates via JSON back to the calendar. 
     
     This function is called when the calendar is first loaded. The calendar uses
-    this information to highlight days Standbys are scheduled.
+    this information to highlight days Events or Standbys are going on.
 
     """
     # Ensure the requester specified whether they want StandBy or Events dates
     if 'type' not in request.GET:
         return None
 
-    episode_query = DBSession.query(TABLE_DICT[request.GET['type']]).all()
+    episode_query = DBSession.query(TABLE_DICT[request.GET['type']])
+    # If querying events, cut down the events to only those that the user has
+    # the appropriate privilege levels to see.
+    if request.GET['type'] == 'event':
+        episode_query = episode_query.filter(
+                Events.privileges <= get_privilege_value(request))
+    episode_query = episode_query.all()
 
     return [ 
         (
@@ -399,37 +422,73 @@ def standby_dates(request):
         ) for episode in episode_query 
            ]
 
-@view_config(name='standby_info.json', renderer='json')
-def standby_information(request):
+@view_config(name='detailed_info.json', renderer='json')
+def detailed_info(request):
     """Serves up information about Standbys on a particular date via JSON"""
-    if 'date' not in request.POST:
-        # No date was sent
-        return 'No Date'
+    if 'date' not in request.GET or 'type' not in request.GET:
+        # No date was sent or the type of information was not specified
+        return None
 
-    # Grab the date from the AJAX request
-    month, day, year = request.POST['date'].split('/')
-    standby_date = datetime.datetime(int(year), int(month), int(day))
-    standby_query = DBSession.query(StandBy).filter(StandBy.startdatetime == standby_date)
+    # Grab the date and type of information desired from the AJAX request
+    month, day, year = request.GET['date'].split('/')
+    episode_date = datetime.datetime(int(year), int(month), int(day))
+    Table = TABLE_DICT[request.GET['type']]
+    episode_query = DBSession.query(Table)\
+            .filter(Table.startdatetime == episode_date)
 
-    # Return all of the Standby dates occurring on this date
-    return [
-        (
-            standby.standbyid,
-            standby.event,
-            standby.location,
-            standby.notes,
-            str(standby.startdatetime),
-            str(standby.enddatetime),
-        ) for standby in standby_query 
-           ]
+    # Return all of the StandBy dates occurring on this date
+    if request.GET['type'] == 'standby':
+        return [
+            (
+                episode.standbyid,
+                episode.event,
+                episode.location,
+                episode.notes,
+                str(episode.startdatetime),
+                str(episode.enddatetime),
+            ) for episode in episode_query 
+               ]
+    # Return all of the StandBy dates occurring on this date
+    else:
+        assert request.GET['type'] == 'event'
+        episode_query = episode_query.filter(Events.privileges <=
+                get_privilege_value(request))
+
+        return [
+            (
+                episode.eventid,
+                episode.name,
+                episode.location,
+                episode.notes,
+                episode.privileges,
+                str(episode.startdatetime),
+                str(episode.enddatetime),
+            ) for episode in episode_query
+               ]
 
 @view_config(route_name='duty_crew_calendar',
              renderer='templates/duty_crew_calendar.pt', permission='Member')
 def duty_crew_calendar(request):
     main = get_renderer('templates/template.pt').implementation()
-    currentDate = datetime.date.today()
-    year = currentDate.year
-    month = currentDate.month
+    year = 0
+    month = 0
+    if 'form.changedate' in request.params:
+        if request.params['form.changedate'] == '<--':
+            year = int(request.params['yearNum'])
+            month = int(request.params['monthNum']) - 1
+            if month < 1:
+                month = 12
+                year = year - 1
+        if request.params['form.changedate'] == '-->':
+            year = int(request.params['yearNum'])
+            month = int(request.params['monthNum']) + 1
+            if month > 12:
+                month = 1
+                year = year + 1
+    else:
+        currentDate = datetime.date.today()
+        year = currentDate.year
+        month = currentDate.month
     monthName = calendar.month_name[month]
     startDay, days = calendar.monthrange(year, month)
     startDay = (startDay +1)%7
@@ -438,6 +497,8 @@ def duty_crew_calendar(request):
             title='Duty Crew Calendar',
             monthName=monthName,
             startDay=startDay,
+            yearNum=year,
+            monthNum=month,
             days=days,
             main=main,
             user=request.user
@@ -447,9 +508,20 @@ def duty_crew_calendar(request):
              permission='Member')
 def coverage(request):
     main = get_renderer('templates/template.pt').implementation()
+    standby_requests = DBSession.query(StandByPersonnel.username,
+                                       StandByPersonnel.standbyid,
+                                       StandByPersonnel.standbyposition,
+                                       StandBy.event,
+                                       StandBy.startdatetime,
+                                       ).join(StandBy).filter(StandByPersonnel.coverrequested == True).all()
+    all_standby_requests = [[standby.standbyid, standby.event, standby.startdatetime, standby.username, standby.standbyposition] for standby in standby_requests]
+    duty_crew_requests = DBSession.query(DutyCrewSchedule).filter_by(coveragerequest = True).all()
+    all_duty_crew_requests = [[crew.day, crew.username] for crew in duty_crew_requests]
     return dict(
             title='Coverage Requests',
             main=main,
+            standby_requests=all_standby_requests,
+            duty_crew_requests=all_duty_crew_requests,
             user=request.user
             )
     
@@ -457,47 +529,52 @@ def coverage(request):
              permission='admin')
 def add_user(request):
     main = get_renderer('templates/template.pt').implementation()
+    message = ''
+    monthlist = [['January', 1],[ 'February', 2],[ 'March', 3],[ 'April',4],[ 'May', 5],[ 'June', 6],
+                 ['July', 7],[ 'August', 8],[ 'September', 9],[ 'October', 10],[ 'November', 11],[ 'December', 12]]
 
     if 'form.submitted' in request.params:
-        newuser = Users('','','','','','','','','','','','','','','','','','','')
-        newuser.username = request.params['username']
-        newuser.password = request.params['password']
-        newuser.firstname = request.params['firstname']
-        newuser.middlename = request.params['middlename']
-        newuser.lastname = request.params['lastname']
-        newuser.birthday = datetime.date(int(request.params['year']),int(request.params['month']),int(request.params['day']))
-        newuser.street = request.params['street']
-        newuser.city = request.params['city']
-        newuser.state = request.params['state']
-        newuser.zipcode = request.params['zipcode']
-        newuser.residence = request.params['residence']
-        newuser.roomnumber = request.params['roomnumber']
-        newuser.phonenumber = request.params['phonenumber']
-        newuser.email = request.params['email']
-        
-        list = DBSession.query(Privileges).filter(Privileges.privilege == request.params['privileges']).one()
-        newuser.privileges = list.privilegevalue
-        list = DBSession.query(TrainingLevel).filter(TrainingLevel.traininglevel == request.params['trainingvalue']).one()
-        newuser.trainingvalue = list.trainingvalue
-        list = DBSession.query(AdministrativeStatus).filter(AdministrativeStatus.status == request.params['administrativevalue']).one()
-        newuser.administrativevalue = list.administrativevalue
-        list = DBSession.query(OperationalStatus).filter(OperationalStatus.status == request.params['operationalvalue']).one()
-        newuser.operationalvalue = list.operationalvalue
-        
-        DBSession.add(newuser)
+        new_username_string = request.params['username']
+        new_user_exists = DBSession.query(Users).filter_by(username = new_username_string).first()
+        if new_user_exists:
+            message = 'That username exist, Please select a new one'
+        else:
+            DBSession.add(Users(
+                username = request.params['username'],
+                password = request.params['password'],
+                firstname = request.params['firstname'],
+                middlename = request.params['middlename'],
+                lastname = request.params['lastname'],
+                birthday = datetime.date(int(request.params['year']),int(request.params['month']),int(request.params['day'])),
+                street = request.params['street'],
+                city = request.params['city'],
+                state = request.params['state'],
+                zipcode = request.params['zipcode'],
+                residence = request.params['residence'],
+                roomnumber = request.params['roomnumber'],
+                phonenumber = request.params['phonenumber'],
+                email = request.params['email'],
+                privileges = request.params['privileges'],
+                trainingvalue = request.params['trainingvalue'],
+                administrativevalue = request.params['administrativevalue'],
+                operationalvalue = request.params['operationalvalue'],
+                portablenumber = 0
+                ))
             
     Options = DBSession.query(Privileges).all()
-    privilegesOptions = [option.privilege for option in Options]
+    privilegesOptions = [[option.privilegevalue ,option.privilege] for option in Options]
     Options = DBSession.query(TrainingLevel).all()
-    trainingOptions = [option.traininglevel for option in Options]
+    trainingOptions = [[option.trainingvalue, option.traininglevel] for option in Options]
     Options = DBSession.query(AdministrativeStatus).all()
-    administrativeOptions = [option.status for option in Options]
+    administrativeOptions = [[option.administrativevalue, option.status] for option in Options]
     Options = DBSession.query(OperationalStatus).all()
-    operationalOptions = [option.status for option in Options]
+    operationalOptions = [[option.operationalvalue,option.status] for option in Options]
     
     return dict(
             title='Add User',
             main=main,
+            monthlist = monthlist,
+            message=message,
             privilegesOptions=privilegesOptions,
             trainingOptions=trainingOptions,
             administrativeOptions=administrativeOptions,
@@ -509,37 +586,42 @@ def add_user(request):
              permission='admin')
 def edit_user(request):
     main = get_renderer('templates/template.pt').implementation()
+    message = ''
+    userselected = ''
+    monthlist = [['January', 1],[ 'February', 2],[ 'March', 3],[ 'April',4],[ 'May', 5],[ 'June', 6],
+                 ['July', 7],[ 'August', 8],[ 'September', 9],[ 'October', 10],[ 'November', 11],[ 'December', 12]]
+    
     if 'userselected' in request.params:
         userselected = request.params['userselected']
-    else:
-        userselected = ''
     
     if 'form.submitted' in request.params:
+        edit_username_string = request.params['username']
         userselected = request.params['userselected']
-        edited_user = DBSession.query(Users).filter_by(username=userselected).first()
-        edited_user.username = request.params['username']
-        edited_user.password = request.params['password']
-        edited_user.firstname = request.params['firstname']
-        edited_user.middlename = request.params['middlename']
-        edited_user.lastname = request.params['lastname']
-        edited_user.birthday = datetime.date(int(request.params['year']), int(request.params['month']), int(request.params['day']))
-        edited_user.street = request.params['street']
-        edited_user.city = request.params['city']
-        edited_user.state = request.params['state']
-        edited_user.zipcode = request.params['zipcode']
-        edited_user.residence = request.params['residence']
-        edited_user.roomnumber = request.params['roomnumber']
-        edited_user.phonenumber = request.params['phonenumber']
-        edited_user.email = request.params['email']
-        list = DBSession.query(Privileges).filter(Privileges.privilege == request.params['privileges']).one()
-        edited_user.privileges = list.privilegevalue
-        list = DBSession.query(TrainingLevel).filter(TrainingLevel.traininglevel == request.params['trainingvalue']).one()
-        edited_user.trainingvalue = list.trainingvalue
-        list = DBSession.query(AdministrativeStatus).filter(AdministrativeStatus.status == request.params['administrativevalue']).one()
-        edited_user.administrativevalue = list.administrativevalue
-        list = DBSession.query(OperationalStatus).filter(OperationalStatus.status == request.params['operationalvalue']).one()
-        edited_user.operationalvalue = list.operationalvalue
-        DBSession.add(edited_user)
+        edit_username_exists = DBSession.query(Users).filter_by(username = edit_username_string).first()
+        if edit_username_exists and not edit_username_exists.username == userselected :
+            message = 'That username exist, Please select a new one'
+        else:
+            userselected = request.params['userselected']
+            edited_user = DBSession.query(Users).filter_by(username=userselected).first()
+            edited_user.username = edit_username_string
+            edited_user.password = request.params['password']
+            edited_user.firstname = request.params['firstname']
+            edited_user.middlename = request.params['middlename']
+            edited_user.lastname = request.params['lastname']
+            edited_user.birthday = datetime.date(int(request.params['year']), int(request.params['month']), int(request.params['day']))
+            edited_user.street = request.params['street']
+            edited_user.city = request.params['city']
+            edited_user.state = request.params['state']
+            edited_user.zipcode = request.params['zipcode']
+            edited_user.residence = request.params['residence']
+            edited_user.roomnumber = request.params['roomnumber']
+            edited_user.phonenumber = request.params['phonenumber']
+            edited_user.email = request.params['email']
+            edited_user.privileges = request.params['privileges']
+            edited_user.trainingvalue = request.params['trainingvalue']
+            edited_user.administrativevalue = request.params['administrativevalue']
+            edited_user.operationalvalue = request.params['operationalvalue']
+            DBSession.add(edited_user)
         
     if 'form.selected' in request.params:
         userselected = request.params['selecteduser']
@@ -549,13 +631,13 @@ def edit_user(request):
         edited_user = Users('','','','','','','','','','','','','','','','','','','')
 
     Options = DBSession.query(Privileges).all()
-    privilegesOptions = [option.privilege for option in Options]
+    privilegesOptions = [[option.privilegevalue ,option.privilege] for option in Options]
     Options = DBSession.query(TrainingLevel).all()
-    trainingOptions = [option.traininglevel for option in Options]
+    trainingOptions = [[option.trainingvalue, option.traininglevel] for option in Options]
     Options = DBSession.query(AdministrativeStatus).all()
-    administrativeOptions = [option.status for option in Options]
+    administrativeOptions = [[option.administrativevalue, option.status] for option in Options]
     Options = DBSession.query(OperationalStatus).all()
-    operationalOptions = [option.status for option in Options]
+    operationalOptions = [[option.operationalvalue,option.status] for option in Options]
     
     allusers = DBSession.query(Users).order_by(Users.username).all() 
     allusernames = [auser.username for auser in allusers]
@@ -563,9 +645,11 @@ def edit_user(request):
     return dict(
             title='Edit User',
             main=main,
+            message=message,
             userselected=userselected,
             edited_user=edited_user,
             users=allusernames,
+            monthlist=monthlist,
             privilegesOptions=privilegesOptions,
             trainingOptions=trainingOptions,
             administrativeOptions=administrativeOptions,
@@ -604,7 +688,7 @@ def delete_user(request):
              permission='admin')
 def edit_pages(request):
     main = get_renderer('templates/template.pt').implementation()
-    pagenames = ['Home', 'History', 'Join', 'ContactUs']    
+    pagenames = ['Home', 'History', 'Join', 'ContactUs'] 
     if 'form.submitted' in request.params:
         pageselected = request.params['editpage']
         page = DBSession.query(Page).filter_by(name = pageselected).first()
@@ -690,65 +774,165 @@ def add_edit_links(request):
              permission='admin')
 def add_edit_documents(request):
     main = get_renderer('templates/template.pt').implementation()
+    form = ''
+    if 'form.operation' in request.params:
+        operation = request.params['form.operation']
+        if operation == 'Add New':
+            form='New'
+        if operation =='Delete':
+            form='Delete'
+            doc = eval(request.params['document_selected'])
+            document = DBSession.query(Documents).filter(Documents.name==doc[0]).filter(Documents.filename==doc[1]).first()
+            DBSession.delete(document)
+        
+    if 'form.submitted' in request.params:
+        form=''
+        filename = request.POST['doc'].filename
+        input_file = request.POST['doc'].file
+        file_path = os.path.join('rescueweb/documents', '{}'.format(filename))
+        temp_file_path = file_path + '~'
+        output_file = open(temp_file_path, 'wb')
+        input_file.seek(0)
+        while True:
+            data = input_file.read(2<<16)
+            if not data:
+                break
+            output_file.write(data)
+        output_file.flush()
+        output_file.close()
+        os.rename(temp_file_path, file_path)
+        
+        name = request.params['doc_name']
+        DBSession.add(
+                      Documents(
+                                name=name,
+                                filename=filename,
+                                )
+                      )
+        
+    all_documents = DBSession.query(Documents).all()
+    all_documents_list = [[adoc.name,adoc.filename] for adoc in all_documents]
+    
 
     return dict(
-            title='Add/Edit documents',
+            title='Add/Edit Documents',
             main=main,
+            form=form,
+            all_documents_list=all_documents_list,
             user=request.user
+            
             )
 
 @view_config(route_name='add_edit_minutes', renderer='templates/add_edit_minutes.pt',
              permission='admin')
 def editmeetingminutes(request):
     main = get_renderer('templates/template.pt').implementation()
+    #collect all Meeting Minutes
+    allminutes = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime).order_by(MeetingMinutes.datetime.desc()).all()
+    alldates = [minute.datetime.timetuple()[:3] for minute in allminutes]
+    #Initialize Empty fields
+    date_selected = False
+    minute_selected = False
+    allminutes = []
+    selected_date = 'New'
+    selected_minute = MeetingMinutes('','','','')
     message = ''
-    allminutes = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime)
-    alldates = ['New']+[minute.datetime.timetuple()[:3] for minute in allminutes]
-    allminutes = ['New']
-    datestring = 'New'
-    minutes = ''
     date = ''
     form = ''
+    
     if 'form.new' in request.params:
+        date_selected = True
+        minute_selected = True
         form = 'New'
     
     if 'date.selected' in request.params:
         operation = request.params['date.selected']
-        datestring = request.params['selected_date']
-        if datestring == 'New':
-            form = 'New'
-        else:
-            date = datetime.datetime.strptime(datestring,'(%Y, %m, %d)')
-            allminutesdatabase = DBSession.query(MeetingMinutes.header,MeetingMinutes.subheader).filter_by(datetime = date).all()
-            if operation == 'Load':
-                allminutes = [['New','New']]+[[minutes.header,minutes.subheader] for minutes in allminutesdatabase]
-            if operation == 'Delete':
-                DBSession.delete(allminutesdatabase)
+        selected_date = request.params['selected_date']
+        date = datetime.datetime.strptime(selected_date,'(%Y, %m, %d)')
+        allminutesdatabase = DBSession.query(MeetingMinutes.header,MeetingMinutes.subheader).filter_by(datetime = date).all()
+        if operation == 'Load':
+            form='Load'
+            date_selected = True
+            message = 'Loaded {}'.format(date.timetuple()[:3])
+            allminutes = [['New','New']]+[[minutes.header,minutes.subheader] for minutes in allminutesdatabase]
+        if operation == 'Delete':
+            form='Delete'
+            message = 'Deleted {}'.format(date.timetuple()[:3])
+            DBSession.delete(allminutesdatabase)
             
     if 'report.selected' in request.params:
         operation = request.params['report.selected']
         if operation == 'New':
             form = 'New'
         else:
-            date = request.params['usedate']
-            minutesdatabase = DBSession.query(MeetingMinutes).filter_by(datetime = datetime.datetime.strptime(date,'(%Y, %m, %d)'),).first()
+            selected_date = request.params['use_date']
+            string_of_list = request.params['selected_report']
+            list = eval(string_of_list)
+            minute = DBSession.query(MeetingMinutes).\
+            filter(MeetingMinutes.datetime == datetime.datetime.strptime(selected_date,'(%Y, %m, %d)')).\
+            filter(MeetingMinutes.header == list[0]).\
+            filter(MeetingMinutes.subheader == list[1]).\
+            first()
+            if not minute:
+                form='New'
+                minute = MeetingMinutes('','','','')
+                message = "Message did not exist... Don't know why"
             if operation == 'Load':
-                form = 'Load'
-                minutes = minutesdatabase
+                date_selected = True
+                minute_selected = True
+                selected_minute = minute
+                form='Load'
             if operation == 'Delete':
-                DBSession.delete(minutesdatabase)
-        
-    message = datestring
+                form='Delete'
+                date_selected = False
+                minute_selected = False
+                message = 'Deleted {}'.format(date.timetuple()[:3])
+                DBSession.delete(minute)
+                
+    if 'form.submitted' in request.params:
+        operation = request.params['form']
+        date_string = request.params['date_time']
+        date_object = datetime.datetime.strptime(date_string,'%Y-%m-%d')
+        if operation == 'New':
+            DBSession.add(
+                MeetingMinutes(
+                    datetime = date_object,
+                    header = request.params['header'],
+                    subheader = request.params['subheader'],
+                    content = request.params['body'],
+                    ))
+            message = "Record Edited by new"
+        if operation == 'Load':
+            selected_minute_string = request.params['use_minute']
+            selected_minute_list = eval(selected_minute_string)
+            selected_minute = DBSession.query(MeetingMinutes).\
+            filter(MeetingMinutes.datetime == date_object).\
+            filter(MeetingMinutes.header == selected_minute_list[0]).\
+            filter(MeetingMinutes.subheader == selected_minute_list[1]).\
+            first()
+            if selected_minute:
+                selected_minute.datetime = date_object
+                selected_minute.header = request.params['header']
+                selected_minute.subheader = request.params['subheader']
+                selected_minute.content = request.params['body']
+                DBSession.add(selected_minute)
+                message = "Record Edited by load"
+
+        date_selected = False
+        minute_selected = False
+            
     return dict(
             title='Add/Edit Meeting Minutes',
             main=main,
             alldates=alldates,
-            allminutes = allminutes,
-            minutes = minutes,
-            datestring = datestring,
+            allminutes=allminutes,
             form=form,
             message=message,
-            user=request.user
+            user=request.user,
+            selected_date=selected_date,       #date that is selected
+            selected_minute=selected_minute,   #minute that is selected
+            date_selected = date_selected,     #boolean
+            minute_selected = minute_selected, #boolean
             )
 
 @view_config(route_name='add_edit_pictures', renderer='templates/add_edit_pictures.pt',
@@ -756,9 +940,55 @@ def editmeetingminutes(request):
 def add_edit_pictures(request):
     main = get_renderer('templates/template.pt').implementation()
 
+    form = ''
+    if 'form.operation' in request.params:
+        operation = request.params['form.operation']
+        if operation == 'Add_New':
+            form='New'
+        if operation =='Delete':
+            form='Delete'
+            pic = eval(request.params['picture_selected'])
+            document = DBSession.query(Pictures).filter(Pictures.pictureindex==pic[0]).first()
+            DBSession.delete(document)
+        
+    if 'form.submitted' in request.params:
+        form=''
+        filename = request.POST['pic'].filename
+        input_file = request.POST['pic'].file
+        file_path = os.path.join('rescueweb/static/pictures/', '{}'.format(filename))
+        #print(file_path)
+        #some_path = request.static_url('rescueweb:documents/')
+        #print(some_path)
+        temp_file_path = file_path + '~'
+        output_file = open(temp_file_path, 'wb')
+        input_file.seek(0)
+        while True:
+            data = input_file.read(2<<16)
+            if not data:
+                break
+            output_file.write(data)
+        output_file.flush()
+        output_file.close()
+        os.rename(temp_file_path, file_path)
+        
+        category = request.params['pic_cate']
+        description = request.params['body']
+        DBSession.add(
+                      Pictures(
+                                picture = filename,
+                                description = description,
+                                category = category
+                                )
+                      )
+        
+    all_pictures = DBSession.query(Pictures).order_by(Pictures.category).all()
+    all_pictures_list = [[apic.pictureindex,apic.category,apic.picture] for apic in all_pictures]
+    
     return dict(
             title='Add/Edit Pictures',
-            main=main,
+            main=main,            
+            form=form,
+            all_pictures_list=all_pictures_list,
             user=request.user
             )
 
@@ -865,27 +1095,33 @@ def add_edit_standby(request):
     standbychosen = ''
     standby = ''
     form = ''
+    dateError = ''
 
     if 'form.submitted' in request.params:
         if request.params['option'] == 'New':
             standby = StandBy('','','','','')
-            standby.standbyid = 0
+            standby.standbyid = 1 + DBSession.query(StandBy).count()
             standby.event = request.params['event']
             standby.location = request.params['location']
             standby.notes = request.params['notes']
-            standby.startdatetime = request.params['startdatetime']
-            standby.enddatetime = request.params['enddatetime']
-            DBSession.add(standby)
-
+            try:
+                standby.startdatetime = datetime.datetime.strptime(request.params['startdatetime'],'%Y, %m, %d')
+                standby.enddatetime = datetime.datetime.strptime(request.params['enddatetime'],'%Y, %m, %d')
+                DBSession.add(standby)
+            except:
+                dateError = 'improper date entry, please use the following format: YYYY, MM, DD'
         if request.params['option'] == 'Load':
             editstandby = request.params['editstandby']
             standby = DBSession.query(StandBy).filter_by(event = editstandby).first()
             standby.event = request.params['event']
-            standby.location = ['location']
-            standby.notes = ['notes']
-            standby.startdatetime = ['startdatetime']
-            standby.enddatetime = ['enddatetime']
-            DBSession.add(standby)
+            standby.location = request.params['location']
+            standby.notes = request.params['notes']
+            try:
+                standby.startdatetime = datetime.datetime.strptime(request.params['startdatetime'],'%Y, %m, %d')
+                standby.enddatetime = datetime.datetime.strptime(request.params['enddatetime'],'%Y, %m, %d')
+                DBSession.add(standby)
+            except:
+                dateError = 'improper date entry, please use the following format: YYYY, MM, DD'
         return HTTPFound(location = request.route_url('standbys'))
 
     if 'form.selected' in request.params:
@@ -908,13 +1144,15 @@ def add_edit_standby(request):
         standbychosen = ''
 
 
-    all_standBy = DBSession.query(StandBy).order_by(StandBy.standbyid).all()
+    get_all_standBy = DBSession.query(StandBy).all()
+    all_standBy = [standB.event for standB in get_all_standBy]
     return dict(title='Add/Edit Standby',
             main=main,
             all_standBy=all_standBy,
 	    standby = standby,
 	    standbychosen=standbychosen,
 	    form=form,
+            dateError = dateError,
             user=request.user
             )
 
@@ -922,25 +1160,83 @@ def add_edit_standby(request):
              permission='admin')
 def edit_duty_crew(request):
     main = get_renderer('templates/template.pt').implementation()
-    currentDate = datetime.date.today()
-    year = currentDate.year
-    month = currentDate.month
+
+    #Stores the number of crews.
+    numOfCrews = DBSession.query(func.max(DutyCrews.crewnumber)).scalar()
+
+    year = 0
+    month = 0
+    if 'form.changedate' in request.params:
+        if request.params['form.changedate'] == '<--':
+            year = int(request.params['yearNum'])
+            month = int(request.params['monthNum']) - 1
+            if month < 1:
+                month = 12
+                year = year - 1
+        if request.params['form.changedate'] == '-->':
+            year = int(request.params['yearNum'])
+            month = int(request.params['monthNum']) + 1
+            if month > 12:
+                month = 1
+                year = year + 1
+    elif 'form.submitted' in request.params:
+        year = int(request.params['yearNum'])
+        month = int(request.params['monthNum'])
+        startDay, days = calendar.monthrange(year, month)
+
+            #for i in range(number of days in the month)
+        for i in range(days):
+            crewNum = request.params['{}'.format(i+1)]
+            print("!!!!!{}:{}!!!!".format(i+1,crewNum))
+            if crewNum == 'OOS':
+                crewNum = 0
+            duty = DBSession.query(DutyCrewCalendar).filter(DutyCrewCalendar.day == datetime.date(year, month, i+1)).one()
+            duty.crewnumber = crewNum
+    else:
+        currentDate = datetime.date.today()
+        year = currentDate.year
+        month = currentDate.month
+    
     monthName = calendar.month_name[month]
+    #startDay is an integer representing the first day of the month
+    #should be between 0 representing Sunday and 6 representing Saturday
+    #days is the number of days in the month
     startDay, days = calendar.monthrange(year, month)
     startDay = (startDay +1)%7
 
+    #crewNums is a list containing which crew is on for each day in the month
+    crewNums = []
+    for i in range(days):
+        duty = DBSession.query(DutyCrewCalendar).filter(DutyCrewCalendar.day == datetime.date(year, month, i+1)).first()
+        if duty:
+            crewNums.append(duty.crewnumber)
+        else:
+            DBSession.add(
+                          DutyCrewCalendar(
+                                           day= datetime.date(year, month, i+1),
+                                           crewnumber=0
+                                           )
+                          )
+            crewNums.append('OOS')
+            
+    print("!!!!!!!!!!!!!!!!!!!{}".format(crewNums))
     return dict(
             title='Duty Crew Calendar',
             monthName=monthName,
             startDay=startDay,
+            yearNum=year,
+            monthNum=month,
             days=days,
+            numOfCrews=numOfCrews,
+            crewNums=crewNums,
             main=main,
             user=request.user
             )
-    
-@view_config(route_name='set_duty_crew', renderer='templates/set_duty_crew.pt',
+
+
+@view_config(route_name='assign_duty_crew', renderer='templates/assign_duty_crew.pt',
              permission='admin')
-def set_duty_crew(request):
+def assign_duty_crew(request):
     main = get_renderer('templates/template.pt').implementation()
     allusers = DBSession.query(Users).all() 
 
@@ -958,20 +1254,20 @@ def set_duty_crew(request):
                                         username = key,
                                         )
                               )        
-                      
-    allusersrecords = DBSession.query(Users.fullname, Users.username, DutyCrews.crewnumber).\
-                outerjoin(DutyCrews).order_by(Users.lastname).all()
-    allusernames = [[auser.fullname ,auser.username, auser.crewnumber] for auser in allusersrecords ]
-    
+    all_user_records = []
     print("!!!!!!!!!!!")
-    for user in allusernames:
-        print(user)
+    for some_user in allusers:
+        user_record = DBSession.query(Users.fullname, Users.username, DutyCrews.crewnumber).\
+                        outerjoin(DutyCrews).filter(DutyCrews.username == some_user.username).all()
+        all_crews = [int(crew.crewnumber) for crew in user_record]
+        all_user_records.append([some_user.fullname ,some_user.username,all_crews])
     print("!!!!!!!!!!!")
-    
+    print(all_user_records)
+
     return dict(
-            title='Edit Portable Numbers', 
+            title='Assign Duty Crew', 
             main=main,
-            allusernames=allusernames,
+            all_user_records=all_user_records,
             user=request.user
             )
 
@@ -987,7 +1283,7 @@ def add_edit_announcements(request):
             announcement = Announcements('','','','','',)
             announcement.header = request.params['title']
             announcement.text = request.params['body']
-            announcement.priority = 0
+            announcement.priority = int(request.params['privilege_level'])
             announcement.username = authenticated_userid(request)
             announcement.posted = datetime.datetime.today()
             DBSession.add(announcement)
@@ -996,6 +1292,7 @@ def add_edit_announcements(request):
             editannounce = request.params['editannouncement']
             announcement = DBSession.query(Announcements).filter_by(header = editannounce).first()
             announcement.text = request.params['body']
+            announcement.priority = int(request.params['privilege_level'])
             DBSession.add(announcement)
         return HTTPFound(location = request.route_url('announcements'))
 
@@ -1021,11 +1318,15 @@ def add_edit_announcements(request):
     allannouncements = DBSession.query(Announcements).all() 
     announcements = [announce.header for announce in allannouncements]
     
+    all_privilege_levels = DBSession.query(Privileges).all()
+    all_levels_list = [[level.privilegevalue, level.privilege] for level in all_privilege_levels]
+    
     return dict(
             title='Add/Edit Announcements',
             main=main,
             announcements=announcements,
             announcement=announcement,
+            privilege_levels=all_levels_list,
             form=form,
             announcementchosen=announcementchosen,
             user=request.user
@@ -1037,23 +1338,33 @@ def add_edit_events(request):
     main = get_renderer('templates/template.pt').implementation()
     announcementchosen = ''
     form = ''
+    monthdict = {'January': 1, 'February': 2, 'March': 3, 'April':4, 'May': 5, 'June': 6, 
+        'July': 7, 'August': 8, 'September': 9, 'October': 10, 'November': 11, 'December': 12}
 
     if 'form.submitted' in request.params:
-        if request.params['option'] == 'new':
+        if request.params['option'] == 'New':
             event = Events('','','','','','')
             event.name = request.params['title']
             event.notes = request.params['body']
-            event.startdatetime = 0
-            event.enddatetime = 0
-            event.location = "potsdam"
-            event.privileges = "edit"
+            event.startdatetime = datetime.datetime(int(request.params['startyear']), monthdict[request.params['startmonth']],
+                int(request.params['startday']), int(request.params['starthour']), int(request.params['startminute']), 0)
+            event.enddatetime = datetime.datetime(int(request.params['endyear']), monthdict[request.params['startmonth']],
+                int(request.params['endday']) , int(request.params['endhour']), int(request.params['endminute']), 0)
+            event.location = request.params['location']
+            event.privileges = request.params['privileges']
             DBSession.add(event)
 
-        if request.params['option'] == 'load':
+        if request.params['option'] == 'Load':
             editevent = request.params['editevent']
             event = DBSession.query(Events).filter_by(name = editevent).first()
-            event.notes = request['body']
+            event.notes = request.params['body']
+            event.startdatetime = datetime.datetime(int(request.params['startyear']), monthdict[request.params['startmonth']],
+                int(request.params['startday']), int(request.params['starthour']), int(request.params['startminute']), 0)
+            event.enddatetime = datetime.datetime(int(request.params['endyear']), monthdict[request.params['startmonth']],
+                int(request.params['endday']) , int(request.params['endhour']), int(request.params['endminute']), 0)
             DBSession.add(event)
+            event.location = request.params['location']
+            event.privileges = request.params['privileges']
         return HTTPFound(location = request.route_url('events'))
     
     if 'form.selected' in request.params:
@@ -1077,10 +1388,32 @@ def add_edit_events(request):
     
     allevents = DBSession.query(Events).all() 
     events = [eve.name for eve in allevents]
+    yearlist = [year for year in range(datetime.datetime.now().year,datetime.datetime.now().year+30)]
+    monthlist = ['January', 'February', 'March', 'April', 'May', 'June', 
+        'July', 'August', 'September', 'October', 'November', 'December']
+    daylist = [day for day in range(1,32)]
+    hour = [hour for hour in range(0,24)]
+    minute = [min for min in range(0,60)]
+    minutelist = []
+    hourlist = []
 
+    for min in minute:
+        if len(str(min))==1:
+            min = '0'+str(min)
+        minutelist.append(min)
+
+    for min in hour:
+        if len(str(min))==1:
+            min = '0'+str(min)
+        hourlist.append(min)
 
     return dict(
             title='Add/Edit Events', 
+            yearlist=yearlist,
+            monthlist=monthlist,
+            daylist=daylist,
+            hourlist=hourlist,
+            minutelist=minutelist,
             main=main,
             user=request.user,
             events = events,
@@ -1088,6 +1421,7 @@ def add_edit_events(request):
             form=form,
             eventchosen=eventchosen
             )
+
 
 @view_config(route_name='email', renderer='templates/email.pt')
 def email(request):
@@ -1110,6 +1444,7 @@ def email(request):
              )
 
 
+
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
 def login(request):
@@ -1117,7 +1452,7 @@ def login(request):
     login_url = request.route_url('login')
     referrer = request.url
     if referrer == login_url:
-        referrer = '/' # never use the login form itself as came_from
+        referrer = '/member_info' # never use the login form itself as came_from
     came_from = request.params.get('came_from', referrer)
     message = ''
     login = ''
@@ -1129,6 +1464,11 @@ def login(request):
         if password_query:
             if password_query[0] == password:
                 headers = remember(request, login)
+                DBSession.add(
+                              LoginIns(
+                                       username = login,
+                                       TSTAMP = datetime.datetime.now()
+                              ))
                 return HTTPFound(location = came_from,
                              headers = headers)
         message = 'Failed login'
@@ -1157,16 +1497,10 @@ def pictures(request):
     main = get_renderer('templates/template.pt').implementation()
     allpictures = []
     pictures = ''
-    categoryClicked = ''
 
     categories = DBSession.query(distinct(Pictures.category)).all()
     pictures = [DBSession.query(Pictures).filter(Pictures.category == cate[0]).first() for cate in categories]   
     allpictures = [[apicture.picture,apicture.description, apicture.category] for apicture in pictures] 
-
-    if 'category.chosen' in request.params:
-        categoryClicked = request.params['categoryChosen']
-        pictures = [DBSession.query(Pictures).filter(Pictures.category == categoryClicked).all()]
-        print("****************************** INSIDE FORM.SUBMITTED ******************************")
 
     return dict(title = 'Pictures',
 				main = main,
@@ -1174,18 +1508,134 @@ def pictures(request):
 				pictures = allpictures,
                )
 
-@view_config(route_name='category_pictures', renderer='templates/category_pictures.pt')
-def category_pictures(request):
-    print("****************************** {}".format(request))
+@view_config(route_name='pictures_view', renderer='templates/pictures_view.pt')
+def pictures_view(request):
     main = get_renderer('templates/template.pt').implementation()
     allpictures = []
     pictures = ''
-    categoryChosen = ''
+    category = request.matchdict['category']
+
+    if 'category' not in request.matchdict:
+        return HTTPNotFound('No category passed in.')
+
+    pictures = DBSession.query(Pictures).filter(Pictures.category == category).all()
+    allpictures = [(apicture.picture,apicture.description, apicture.category) for apicture in pictures]
     
-    return dict(title='Pictures',
-				main=main,
+    return dict(title = 'Pictures',
+				main = main,
 				user=request.user,
 				pictures = allpictures,
+                category = category,
+               )
+
+
+@view_config(route_name='eboard', renderer='templates/eboard.pt')
+def eboard(request):
+    main = get_renderer('templates/template.pt').implementation()
+    
+    return dict(title='Our Executive Branch',
+                main=main,
+                user=request.user,
+               )
+    
+@view_config(route_name='crew_chief_signup', renderer='templates/crew_chief_signup.pt')
+def crew_chief_signup(request):
+    main = get_renderer('templates/template.pt').implementation()
+    year = 0
+    month = 0
+    if 'form.changedate' in request.params:
+        if request.params['form.changedate'] == '<--':
+            year = int(request.params['yearNum'])
+            month = int(request.params['monthNum']) - 1
+            if month < 1:
+                month = 12
+                year = year - 1
+        if request.params['form.changedate'] == '-->':
+            year = int(request.params['yearNum'])
+            month = int(request.params['monthNum']) + 1
+            if month > 12:
+                month = 1
+                year = year + 1
+    elif ('form.CC' in request.params) or ('form.PCC' in request.params):
+        year = int(request.params['yearNum'])
+        month = int(request.params['monthNum'])
+        day = int(request.params['day'])
+        if 'form.CC' in request.params:
+            chiefOnCall = DBSession.query(CrewChiefSchedule).filter(CrewChiefSchedule.date == datetime.date(year, month, day)).first()
+            if chiefOnCall.ccusername:
+                chiefOnCall.ccusername = None
+            else:
+                chiefOnCall.ccusername = request.user.username
+        if 'form.PCC' in request.params:
+            chiefOnCall = DBSession.query(CrewChiefSchedule).filter(CrewChiefSchedule.date == datetime.date(year, month, day)).first()
+            if chiefOnCall.pccusername:
+                chiefOnCall.pccusername = None
+            else:
+                chiefOnCall.pccusername = request.user.username
+    else:
+        currentDate = datetime.date.today()
+        year = currentDate.year
+        month = currentDate.month
+
+    monthName = calendar.month_name[month]
+    startDay, days = calendar.monthrange(year, month)
+    startDay = (startDay +1)%7
+
+    CCList = []
+    PCCList = []
+    for i in range(days):
+        chiefOnCall = DBSession.query(CrewChiefSchedule).filter(CrewChiefSchedule.date == datetime.date(year, month, i+1)).first()
+        if chiefOnCall:
+            print('NOT NONE')
+            CC = chiefOnCall.ccusername
+            if CC:
+                CCList.append(CC)
+            else:
+                CCList.append('Sign Up')
+            PCC = chiefOnCall.pccusername
+            if PCC:
+                PCCList.append(PCC)
+            else:
+                PCCList.append('Sign Up')
+        else:
+            DBSession.add(
+                CrewChiefSchedule(
+                    date = datetime.date(year, month, i+1),
+                    ccusername = None,
+                    pccusername = None
+                    )
+                )
+            CCList.append('Sign Up')
+            PCCList.append('Sign Up')
+    
+    return dict(title='Crew Chief Sign-Up',
+                monthName=monthName,
+                startDay=startDay,
+                yearNum=year,
+                monthNum=month,
+                days=days,
+                CCList=CCList,
+                PCCList=PCCList,
+                main=main,
+                user=request.user,
+               )
+    
+@view_config(route_name='edit_eboard', renderer='templates/edit_eboard.pt')
+def edit_eboard(request):
+    main = get_renderer('templates/template.pt').implementation()
+    
+    return dict(title='Edit Eboard',
+                main=main,
+                user=request.user,
+               )
+    
+@view_config(route_name='check_login', renderer='templates/check_login.pt')
+def check_logins(request):
+    main = get_renderer('templates/template.pt').implementation()
+    
+    return dict(title='Check Logins',
+                main=main,
+                user=request.user,
                )
 
 conn_err_msg = """\
@@ -1215,3 +1665,9 @@ def get_username(request):
     else:
         return ''
 
+def get_privilege_value(request):
+    """Returns the privilege level of the user or 0 if no one is logged in"""
+    if request.user:
+        return request.user.privilegevalue
+    else:
+        return 0

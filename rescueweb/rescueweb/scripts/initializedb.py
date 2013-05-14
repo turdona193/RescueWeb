@@ -27,7 +27,8 @@ from ..models import (
     Base, 
     StandBy,
     MeetingMinutes,
-	Pictures,
+    Pictures,
+    DutyCrews,
     )
 
 def usage(argv):
@@ -49,10 +50,10 @@ def main(argv = sys.argv):
     with transaction.manager:
         DBSession.add_all(
                 [
-                    Documents(name='Constitution', fileName='Constitution.pdf'),
-                    Documents(name='Advancement Form', fileName='Advancement_Form.pdf'),
-                    Documents(name='By-Laws', fileName='By-Laws.pdf'),
-                    Documents(name='Standard Operating Guidelines', fileName='SOG.pdf'),
+                    Documents(name='Constitution', filename='Constitution.pdf'),
+                    Documents(name='Advancement Form', filename='Advancement_Form.pdf'),
+                    Documents(name='By-Laws', filename='By-Laws.pdf'),
+                    Documents(name='Standard Operating Guidelines', filename='SOG.pdf'),
                 ])
 
         DBSession.add_all(
@@ -277,12 +278,21 @@ def main(argv = sys.argv):
                         ),
 
                     Events(
+                        startdatetime=datetime.datetime(2013, 5, 15),
+                        enddatetime=datetime.datetime(2013, 5, 15),
+                        name='A Secret Gathering',
+                        notes='Only Admins should be able to view this Event',
+                        location = 'Area 51',
+                        privileges=2
+                        ),
+
+                    Events(
                         startdatetime=datetime.datetime(2013, 5, 5),
                         enddatetime=datetime.datetime(2013, 5, 5),
                         name='Dance',
                         notes='not going',
                         location = 'Union MPR',
-                        privileges=0
+                        privileges=1
                         ),
 
                     Events(
@@ -291,7 +301,7 @@ def main(argv = sys.argv):
                         name='Grad',
                         notes='we leave!',
                         location = 'Accademic Quad',
-                        privileges=0
+                        privileges=2
                         )
                 ])
 
@@ -335,76 +345,78 @@ def main(argv = sys.argv):
 
         DBSession.add_all(
                 [
-                    Page(name='Home', data=("""<b>Welcome to the SUNY Potsdam
-                    Campus Rescue Squad website!</b> </br> Currently the CRS staff
-                    consists of approximately 22 members, many of which have
-                    completed the NYS EMT Curriculum. Also, many of the members
-                    are currently enrolled in the EMT basic class. </br> If you
-                    wish to report a medical emergency please call <b>x2222</b> and ask
-                    for CRS assistance and be ready to give the following
-                    information: a reason for calling (the medical emergency),
-                    your name, the location of the medical emergency, and
-                    remember to remain calm.</br> Disclaimer: Campus Rescue
-                    Squad takes privacy very seriously. Any images shown on this
-                    site are taken from mock events and do not show actual
-                    patients.""")),
-        
-                    Page(name='History', data="""The SUNY Potsdam Campus Rescue
-                    Squad started in 1992 as a group of college students that
-                    formed together to provide much needed medical coverage for
-                    SUNY Potsdam varsity athletic events as well as various
-                    other college events. </br> As responsibilities as a
-                    certified agency came, so did the necessity for
-                    communications. Through their menial budget CRS was able to
-                    purchase four radios. Along with those radios was a donation
-                    of 12 pagers, which finally allowed Campus Safety (now
-                    University Police) to activate CRS via pager alert. </br>
+                    Page(name='Home', data=("""
+Welcome to the State University of New York at Potsdam Campus Rescue Squad (CRS) website.<br/><br/>
 
-                    Almost 17 years later, Campus Rescue continues the tradition
-                    of quality emergency medical care 24/7 while school is in
-                    session. Because of the dedication of true professional EMS
-                    providers, Campus Rescue continues to thrive as an important
-                    link in prehospital care in SUNY Potsdam. </br>
+The Campus Rescue Squad is a New York State First Response agency that responds to medical emergencies on SUNY Potsdam Campus.  Our agency provides high quality, professional medical care to all members and visitors to SUNY Potsdam.  We currently have 18 dedicated volunteers, 9 of whom are New York State certified Emergency Medical Technicians, and another 4 who are now taking the class.  <br/><br/>
 
-                    The Squad today (as of 2008) has approximately 25 members,
-                    14 of which are NYS certified EMT's, 6 of which are
-                    currently enrolled in the NYS EMT-B curriculum, and 23 of
-                    which are American Heart Association BCLS certified in AED
-                    and CPR.</br>
+In case of an Emergency on campus, please contact University Police at (315) 267-2222.  Dispatchers are present at all times to assist you and dispatch Police, Fire and Emergency Medical Services as necessary in case of an emergency.  Be prepared to provide your name as well as the nature and location of the emergency.<br/><br/>
 
-                    The Squad currently has 7 NYS DOH Part 800 compliant BLS
-                    jump bags. One bag is housed in University Police dispatch,
-                    one at the Crumb Library, and 2 are housed in the squad
-                    equipment room. CRS is approved through medical direction
-                    and NY to administer albuterol for respiratory emergencies
-                    and Epinephrine for anaphylaxis. The squad also owns an AED,
-                    housed in one of University Police's patrol cars. AEDs are
-                    also housed in every building on campus due to the PAD
-                    program.</br> Campus Rescue runs on average approximately
-                    150 calls and standbys each year."""),
+CRS responded to over 200 medical emergencies, standbys and requests for assistance in 2012.  Our squad also provides medical training on campus; from CPR and First Aid classes to opportunities to take the EMT-Basic class through SUNY Canton.<br/><br/>
+
+Please visit us in our office in Sisson Hall Room (#) or contact us to learn about ways you can help your campus community, upcoming classes, or to join our team of dedicated volunteers.  <br/><br/>
+
+Campus Rescue Squad takes privacy very seriously.  Any and all patient information is confidential and will not be provided to anyone except for the patient and other medical services.  <br/><br/>
+""")),
         
-                    Page(name='Join', data=("""The Campus Rescue Squad at SUNY
-                    Potsdam is always open for new members! If you are
-                    interested in joining the squad, email rescue@potsdam.edu
-                    </br> The official CRS application is located here. General
-                    membership meetings are held bi-weekly in Forum Room 204 at
-                    8:00pm, preceded by a training at 7:00pm in the Union's Fire
-                    Side Lounge. The meeting dates for the Spring 2012 semester
-                    are: To be Announced! </br> 
-                    
-                    CRS does not discriminate
-                    membership because of race, religion, creed, color, or
-                    lifestyle preference.""")
-                    ),
+                    Page(name='History', data=("""Campus Rescue Squad was founded in 1992 as an organization to provide medical coverage for SUNY Potsdam athletic and large campus events.  By the next year, CRS was providing coverage for the majority of on campus events and continued to expand its medical coverage and resources.<br/><br/>  
+
+In September 2004, reflecting the efforts and hard work of the many volunteers, Campus Rescue became a New York State Department of Health certified Emergency First Response Agency.  CRS became able to provide 24/7 first response care and sponsor members to take the EMT-Basic course, in addition to providing medical coverage for campus events.  With this came the ability to activate Campus Rescue Squad for medical emergencies through the use of radio and pager alerts.<br/><br/>  
+
+Having just celebrated its 20th anniversary, as well as its 9th year in service as a First Response Agency, Campus Rescue continues to serve the SUNY Potsdam community.  Expanding on a great tradition of professional involvement, CRS remains an important link in pre-hospital care in Potsdam.  <br/><br/>
+
+Our members are all certified in AED and CPR and a NYS EMT responds to every call or standby that Campus Rescue covers.  Most of our members are EMT certified and many are also members of other EMS agencies, both at home and in the North Country.  We work closely both with University Police and with Potsdam Volunteer Rescue Squad to ensure safety and response to emergency situations.<br/><br/>  
+
+We have also expanded our resources to include 9 Basic Life Support jump bags, housed in different areas on campus for easy access and quick response.  CRS now has over 10 radios and a number of pagers to effectively communicate with University Police, Dispatch, and the broad range of St. Lawrence County EMS services.  AEDs are now also available in every academic building for public use<br/><br/>
+""")),
         
-                    Page(name='ContactUs', data=""" On Campus Emergency:
-                    315-267-2222 </br>
-                    Off Campus Emergency: 911 </br>
-                    Business Line: 315-267-2253 </br>
-                    Mailing Address: 9010 Barrington Drive, Potsdam, NY 13676</br>
-                    Office Location: Sission Basement </br>
+                    Page(name='ContactUs', data="""
+In case of on-campus emergency:  (315) 267-2222  <br/>
+In case of off-campus emergency: 911  <br/>  <br/>
+
+Email: rescue@potsdam.edu  <br/>
+Business Phone: (315) 267-2253  <br/>
+Mailing Address: 9010 Barrington Dr. Potsdam NY, 13676  <br/>
+Office Location: Sisson Hall Room (#)  <br/>  <br/>
+
+Timothy Guarino, EMT-B  <br/>
+Chief Line Officer  <br/>
+email:  <br/>  <br/>
+
+Andrew DiFabbio, EMT-B  <br/>
+Assistant Chief Line Officer  <br/>
+email:  <br/>  <br/>
+
+Tammy Zanker, EMT-B  <br/>
+President   <br/>
+email:  <br/>  <br/>
+
+Anthony Arena  <br/>
+Vice President  <br/>
+email:  <br/>  <br/>
+
+Bobby Berrios, EMT-B  <br/>
+Treasurer  <br/>
+email:  <br/>  <br/>
+
+Jarrett Bond, EMT-B  <br/>
+Secretary  <br/>
+email:  <br/>  <br/>
+
+Jared Muehlbauer, EMT-B  <br/>
+Parliamentarian  <br/>
+email: muehlbjp193@potsdam.edu  <br/>  <br/>
                     """
                     ),
+                    Page(name='Join', data=("""
+Campus Rescue Squad always welcomes anyone interested in becoming part of our volunteer team.  If  interested, please email us at rescue@potsdam.edu, stop by our office, or come to one of our weekly meetings, held in the Union Forum, Room 204, Sundays at 8:00 pm.    <br/>  <br/>
+
+By joining, you will be a part of a close-knit, dedicated team of volunteers.  We provide medical training and experience to introduce you to the field of EMS and can sponsor members to take the Emergency Medical Technician class, free of charge.  Members gain a great deal of networking opportunities with other professional agencies and University Police as well as a great item for their resume.  Most importantly, however, joining us allows you to be part of an excellent service that contributes and gives back to the SUNY Potsdam community every day.  As a squad, CRS is first and foremost here to help at any time, even and especially when situations are at their worst.    <br/>  <br/>
+
+Our application is located here.  Any and all members of the SUNY Potsdam community are welcome and able to join, regardless of previous experience, training or background.    <br/>  <br/>
+
+Just as all of the SUNY Potsdam community, CRS does not discriminate membership because of race, religion, creed, color, or lifestyle preference.  <br/>
+""")),
                 ])
         DBSession.add_all(
 
@@ -471,39 +483,46 @@ def main(argv = sys.argv):
                         ])
         DBSession.add_all(
                 [
-                    Pictures(picture='/pictures/eqpt1.jpg',description="", category="Equipment"),
-                    Pictures(picture='/pictures/eqpt2.jpg',description="", category="Equipment"),
-                    Pictures(picture='/pictures/eqpt3.jpg',description="", category="Equipment"),
-                    Pictures(picture='/pictures/eqpt4.jpg',description="", category="Equipment"),
-                    Pictures(picture='/pictures/eqpt5.jpg',description="", category="Equipment"),
-                    Pictures(picture='/pictures/mock1.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/mock2.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/mock3.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/mock4.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/mock5.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/mock6.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/mock7.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/mock8.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/mock9.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/mock10.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/mock11.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/mock12.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/mock13.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/mock14.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/mock15.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/mock16.jpg',description="", category="2004 Mock DWI"),
-                    Pictures(picture='/pictures/2005mockdwi1.jpg',description="", category="2005 Mock DWI"),
-                    Pictures(picture='/pictures/2005mockdwi2.jpg',description="", category="2005 Mock DWI"),
-                    Pictures(picture='/pictures/2005mockdwi3.jpg',description="", category="2005 Mock DWI"),
-                    Pictures(picture='/pictures/2005mockdwi4.jpg',description="", category="2005 Mock DWI"),
-                    Pictures(picture='/pictures/2005mockdwi5.jpg',description="", category="2005 Mock DWI"),
-                    Pictures(picture='/pictures/carsmash1.jpg', description="", category="Car Smash Fundraiser"),
-                    Pictures(picture='/pictures/carsmash2.jpg', description="", category="Car Smash Fundraiser"),
-                    Pictures(picture='/pictures/carsmash3.jpg', description="", category="Car Smash Fundraiser"),
-                    Pictures(picture='/pictures/carsmash4.jpg', description="", category="Car Smash Fundraiser"),
-                    Pictures(picture='/pictures/carsmash5.jpg', description="", category="Car Smash Fundraiser"),
-                    Pictures(picture='/pictures/wellnessfair1.jpg', description="", category="2006 Wellness Fair"),
-                    Pictures(picture='/pictures/wellnessfair2.jpg', description="", category="2006 Wellness Fair"),
-                    Pictures(picture='/pictures/wellnessfair4.jpg', description="", category="2006 Wellness Fair"),
+                    Pictures(picture='eqpt1.jpg',description="", category="Equipment"),
+                    Pictures(picture='eqpt2.jpg',description="", category="Equipment"),
+                    Pictures(picture='eqpt3.jpg',description="", category="Equipment"),
+                    Pictures(picture='eqpt4.jpg',description="", category="Equipment"),
+                    Pictures(picture='eqpt5.jpg',description="", category="Equipment"),
+                    Pictures(picture='mock1.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='mock2.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='mock3.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='mock4.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='mock5.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='mock6.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='mock7.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='mock8.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='mock9.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='mock10.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='mock11.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='mock12.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='mock13.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='mock14.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='mock15.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='mock16.jpg',description="", category="2004 Mock DWI"),
+                    Pictures(picture='2005mockdwi1.jpg',description="", category="2005 Mock DWI"),
+                    Pictures(picture='2005mockdwi2.jpg',description="", category="2005 Mock DWI"),
+                    Pictures(picture='2005mockdwi3.jpg',description="", category="2005 Mock DWI"),
+                    Pictures(picture='2005mockdwi4.jpg',description="", category="2005 Mock DWI"),
+                    Pictures(picture='2005mockdwi5.jpg',description="", category="2005 Mock DWI"),
+                    Pictures(picture='carsmash1.jpg', description="", category="Car Smash Fundraiser"),
+                    Pictures(picture='carsmash2.jpg', description="", category="Car Smash Fundraiser"),
+                    Pictures(picture='carsmash3.jpg', description="", category="Car Smash Fundraiser"),
+                    Pictures(picture='carsmash4.jpg', description="", category="Car Smash Fundraiser"),
+                    Pictures(picture='carsmash5.jpg', description="", category="Car Smash Fundraiser"),
+                    Pictures(picture='wellnessfair1.jpg', description="", category="2006 Wellness Fair"),
+                    Pictures(picture='wellnessfair2.jpg', description="", category="2006 Wellness Fair"),
+                    Pictures(picture='wellnessfair4.jpg', description="", category="2006 Wellness Fair"),
+                ])
+
+        DBSession.add_all(
+                [
+                    DutyCrews(crewnumber=0, username='turdona193'),
+                    DutyCrews(crewnumber=1, username='muehlbjp193'),
+                    DutyCrews(crewnumber=2, username='guarintb193')
                 ])
 
