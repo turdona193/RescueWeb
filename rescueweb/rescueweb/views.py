@@ -1739,34 +1739,30 @@ def edit_eboard(request):
     form = ''
     position = ''
     if 'form.submitted' in request.params:
+        if request.params['option'] == 'Load':
+            editposition = request.params['editposition']
+            position = DBSession.query(EboardPosition).filter_by(eboardpositions=editposition).first()
+            position.bio = request.params['body']
+            position.priority = int(request.params['privilege_level'])
+            DBSession.add(position)
+        return HHTPFound(location = request.route_url('eboard'))
+    
+    if 'form.selected' in request.params:
         if request.params['form.selected'] == 'Load':
             positionchosen = request.params['selectedposition']
-            form = 'Load'
             position = DBSession.query(EboardPositions).filter_by(eboardposition=positionchosen).first()
-    
-    
-    """
-        def __init__(self,eboardposition,username,bio):
-        self.eboardposition = eboardposition
-        self.username = username
-        self.bio       
+            form = 'Load'
         
-    announcementchosen = ''
-    form = ''
+    all_privilege_levels = DBSession.query(Privileges).all()
+    all_levels_list = [[level.privilegevalue, level.privilege] for level in all_privilege_levels]
     
-    if 'form.submitted' in request.params:
-         if request.params['form.selected'] == 'Load':
-            announcementchosen = request.params['selectedannouncement']
-            announcement = DBSession.query(Announcements).filter_by(header=announcementchosen).first()
-    """        
-            
-            
     return dict(title='Edit Eboard',
                 main=main,
                 eboardlist=eboardlist,
                 memberlist=memberlist,
                 positionchosen=positionchosen,
-                postion=position,
+                privilege_levels=all_levels_list,
+                position=position,
                 form=form,
                 user=request.user,
                )

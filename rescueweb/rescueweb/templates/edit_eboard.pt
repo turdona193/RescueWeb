@@ -18,8 +18,8 @@
 		<br/><br/>
 		<span tal:condition="form=='Load' ">
 			<form method="post">
-				user: <input input = "text" name="title" value="${memberlist.fullname}" /><br/>
-				Bio: <textarea name="body" tal:content="position.bio" rows="16" cols="80"/><br/>
+				user: <input input = "text" name="title" value="${memberlist[1]}" /><br/>
+				Bio: <textarea name="body" tal:content="position" rows="16" cols="80"/><br/>
 				Privilege Level: <select name="privilege_level">
 									<div tal:repeat = "level privilege_levels">
 					
