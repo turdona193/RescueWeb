@@ -123,6 +123,17 @@ def announcements(request):
             headers=headers,
             user=request.user)
 
+@view_config(route_name='events', renderer='templates/events.pt')
+def events(request):
+    main = get_renderer('templates/template.pt').implementation()
+    event_list = DBSession.query(Events).all()
+
+    return dict(
+            title='Events', 
+            main=main,
+            user=request.user
+            )
+
 @view_config(route_name='event', renderer='templates/event.pt')
 def event(request):
     """Renders information relating to a specific Event"""
