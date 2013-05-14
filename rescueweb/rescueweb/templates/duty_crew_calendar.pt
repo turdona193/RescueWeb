@@ -1,47 +1,16 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-	<div tal:define= "month monthName "> 
-	<div tal:define= "no_of_days days" >
-	<div tal:define= "start_day startDay">
-	
-	<form method="post">
-		<h2>
-			<input type="hidden" name="monthNum" value="${monthNum}">
-			<input type="hidden" name="yearNum" value="${yearNum}">
-			<input type="submit" name="form.changedate" value="<--"/>
-			${month} ${yearNum}
-			<input type="submit" name="form.changedate" value="-->"/>
-		</h2>
-	</form>
-	<table>
-	<tr>
-	    <td>Sunday</td>
-	    <td>Monday</td>
-	    <td>Tuesday</td>
-	    <td>Wednesday</td>
-	    <td>Thursday</td>
-	    <td>Friday</td>
-	    <td>Saturday</td>
-	</tr>
-
-		<tr>
-		   <div tal:repeat = " i range(start_day)" >
-		       <td> </td>
-		   </div>
-		   <div tal:repeat= " day range(1, 8 - start_day)" >
-		       <td tal:content= "day"> </td>
-		   </div>
-		 </tr>
-		<tr tal:repeat= "week range(1, int((no_of_days - 6 + start_day)/4) +1 )">
-		     <div tal:repeat="day range(week*7 - start_day, min((week+1) *7-start_day, no_of_days))">
-			<td>${day+1}</td>
-		     </div>
-		</tr>
-	
-         </table>
-	
-	</div>
-	</div>
-	</div>
-       </div>
+        <h1>${title}</h1>
+        <div id="datepicker" style="float:right;"></div>
+        <p id="duty_crews"><p>
+    </div>
 </div>
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+
+<script type="text/javascript" src="${request.static_url('rescueweb:static/jquery-1.9.1.js')}"></script>
+<script type="text/javascript" src="${request.static_url('rescueweb:static/jquery-ui.js')}"></script>
+<script type="text/javascript">
+  var episode = 'duty_crew';
+</script>
+<script type="text/javascript" src="${request.static_url('rescueweb:static/calendar.js')}"></script>

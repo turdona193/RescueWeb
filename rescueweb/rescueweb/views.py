@@ -56,11 +56,13 @@ from .models import (
     DutyCrews,
     DutyCrewCalendar,
     DutyCrewSchedule,
-    LoginIns,
     EboardPositions
+    CrewChiefSchedule,
+    LoginIns
     )
 
-TABLE_DICT = {'standby' : StandBy, 'event' : Events}
+TABLE_DICT = {'standby' : StandBy, 'event' : Events,
+        'duty_crew' : DutyCrewSchedule}
 
 @view_config(route_name='home', renderer='templates/home.pt')
 def home(request):
@@ -386,6 +388,34 @@ def standby(request):
             user=request.user
             )
 
+@view_config(route_name='duty_crew', renderer='templates/duty_crew.pt',
+             permission='Member')
+def duty_crew(request):
+    """Renders information relating to a specific Duty Crew event"""
+    main = get_renderer('templates/template.pt').implementation()
+
+    # Sanity check
+    if 'day' not in request.matchdict:
+        return HTTPNotFound('No day passed in.')
+
+    # Get all members that are on call tonight
+    duty_members = DBSession.query(DutyCrewSchedule).\
+            filter(DutyCrewSchedule.day == request.matchdict['day'])
+    myself = duty_members.\
+            filter(DutyCrewSchedule.username == request.user.username).first()
+    duty_member_headers = ['Member', 'Coverage Requested']
+
+    if 'coverage_request.submitted' in request.params:
+        myself.coverrequested = True
+    elif 'cancel_coverage_request.submitted' in request.params:
+        myself.coverrequested = False
+
+    return dict(
+            title='Duty Crew Night',
+            main=main,
+            user=request.user
+            )
+
 @view_config(name='dates.json', renderer='json')
 def dates(request):
     """Serves up Event and StandBy dates via JSON back to the calendar. 
@@ -397,38 +427,59 @@ def dates(request):
     # Ensure the requester specified whether they want StandBy or Events dates
     if 'type' not in request.GET:
         return None
+    elif request.GET['type'] == 'standby' or request.GET['type'] == 'event':
+        # Get the current date and episode type
+        Episode = TABLE_DICT[request.GET['type']]
 
-    episode_query = DBSession.query(TABLE_DICT[request.GET['type']])
-    # If querying events, cut down the events to only those that the user has
-    # the appropriate privilege levels to see.
-    if request.GET['type'] == 'event':
-        episode_query = episode_query.filter(
-                Events.privileges <= get_privilege_value(request))
-    episode_query = episode_query.all()
+        # Query only events for the current month
+        episode_query = DBSession.query(Episode)
 
-    return [ 
-        (
-            '{}/{}/{}'.format(
-                episode.startdatetime.month, 
-                episode.startdatetime.day,
-                episode.startdatetime.year
-                             ),
-        ) for episode in episode_query 
-           ]
+        # If querying events, cut down the events to only those that the user has
+        # the appropriate privilege levels to see.
+        if request.GET['type'] == 'event':
+            episode_query = episode_query.filter(
+                    Events.privileges <= get_privilege_value(request))
+        episode_query = episode_query.all()
 
+        return [ 
+            ('{}/{}/{}'.format(
+                    episode.startdatetime.month,
+                    episode.startdatetime.day,
+                    episode.startdatetime.year
+                        )
+            ) for episode in episode_query 
+               ]
+
+    elif request.GET['type'] == 'duty_crew':
+        Episode = TABLE_DICT[request.GET['type']]
+        # Get all of the days the user is scheduled for a duty crew
+        episode_query = DBSession.query(Episode).\
+                filter(Episode.username == request.user.username).all()
+
+        return [ 
+            ('{}/{}/{}'.format(
+                    datetime.datetime.now().month,
+                    episode.day.day,
+                    datetime.datetime.now().year
+                        )
+            ) for episode in episode_query
+               ]
+        
 @view_config(name='detailed_info.json', renderer='json')
 def detailed_info(request):
-    """Serves up information about Standbys on a particular date via JSON"""
+    """Serves up information about Standbys, Events, or Duty Crews based on a
+    particular date via JSON"""
     if 'date' not in request.GET or 'type' not in request.GET:
         # No date was sent or the type of information was not specified
         return None
 
-    # Grab the date and type of information desired from the AJAX request
-    month, day, year = request.GET['date'].split('/')
-    episode_date = datetime.datetime(int(year), int(month), int(day))
-    Table = TABLE_DICT[request.GET['type']]
-    episode_query = DBSession.query(Table)\
-            .filter(Table.startdatetime == episode_date)
+    if request.GET['type'] == 'standby' or request.GET['type'] == 'event':
+        # Grab the date and type of information desired from the AJAX request
+        month, day, year = request.GET['date'].split('/')
+        episode_date = datetime.datetime(int(year), int(month), int(day))
+        Table = TABLE_DICT[request.GET['type']]
+        episode_query = DBSession.query(Table)\
+                .filter(Table.startdatetime == episode_date)
 
     # Return all of the StandBy dates occurring on this date
     if request.GET['type'] == 'standby':
@@ -442,8 +493,7 @@ def detailed_info(request):
             ) for episode in episode_query 
                ]
     # Return all of the StandBy dates occurring on this date
-    else:
-        assert request.GET['type'] == 'event'
+    elif request.GET['type'] == 'event':
         episode_query = episode_query.filter(Events.privileges <=
                 get_privilege_value(request))
 
@@ -457,41 +507,19 @@ def detailed_info(request):
                 str(episode.startdatetime),
             ) for episode in episode_query
                ]
+    elif request.GET['type'] == 'duty_crew':
+        # We don't need to do anything. The javascript calendar already knows
+        # the date the user clicked on and just needs to redirect the user to
+        # the appropriate URL.
+        return None
 
 @view_config(route_name='duty_crew_calendar',
              renderer='templates/duty_crew_calendar.pt', permission='Member')
 def duty_crew_calendar(request):
     main = get_renderer('templates/template.pt').implementation()
-    year = 0
-    month = 0
-    if 'form.changedate' in request.params:
-        if request.params['form.changedate'] == '<--':
-            year = int(request.params['yearNum'])
-            month = int(request.params['monthNum']) - 1
-            if month < 1:
-                month = 12
-                year = year - 1
-        if request.params['form.changedate'] == '-->':
-            year = int(request.params['yearNum'])
-            month = int(request.params['monthNum']) + 1
-            if month > 12:
-                month = 1
-                year = year + 1
-    else:
-        currentDate = datetime.date.today()
-        year = currentDate.year
-        month = currentDate.month
-    monthName = calendar.month_name[month]
-    startDay, days = calendar.monthrange(year, month)
-    startDay = (startDay +1)%7
 
     return dict(
             title='Duty Crew Calendar',
-            monthName=monthName,
-            startDay=startDay,
-            yearNum=year,
-            monthNum=month,
-            days=days,
             main=main,
             user=request.user
             )
@@ -1614,6 +1642,22 @@ def crew_chief_signup(request):
             if month > 12:
                 month = 1
                 year = year + 1
+    elif ('form.CC' in request.params) or ('form.PCC' in request.params):
+        year = int(request.params['yearNum'])
+        month = int(request.params['monthNum'])
+        day = int(request.params['day'])
+        if 'form.CC' in request.params:
+            chiefOnCall = DBSession.query(CrewChiefSchedule).filter(CrewChiefSchedule.date == datetime.date(year, month, day)).first()
+            if chiefOnCall.ccusername:
+                chiefOnCall.ccusername = None
+            else:
+                chiefOnCall.ccusername = request.user.username
+        if 'form.PCC' in request.params:
+            chiefOnCall = DBSession.query(CrewChiefSchedule).filter(CrewChiefSchedule.date == datetime.date(year, month, day)).first()
+            if chiefOnCall.pccusername:
+                chiefOnCall.pccusername = None
+            else:
+                chiefOnCall.pccusername = request.user.username
     else:
         currentDate = datetime.date.today()
         year = currentDate.year
@@ -1622,12 +1666,42 @@ def crew_chief_signup(request):
     monthName = calendar.month_name[month]
     startDay, days = calendar.monthrange(year, month)
     startDay = (startDay +1)%7
+
+    CCList = []
+    PCCList = []
+    for i in range(days):
+        chiefOnCall = DBSession.query(CrewChiefSchedule).filter(CrewChiefSchedule.date == datetime.date(year, month, i+1)).first()
+        if chiefOnCall:
+            print('NOT NONE')
+            CC = chiefOnCall.ccusername
+            if CC:
+                CCList.append(CC)
+            else:
+                CCList.append('Sign Up')
+            PCC = chiefOnCall.pccusername
+            if PCC:
+                PCCList.append(PCC)
+            else:
+                PCCList.append('Sign Up')
+        else:
+            DBSession.add(
+                CrewChiefSchedule(
+                    date = datetime.date(year, month, i+1),
+                    ccusername = None,
+                    pccusername = None
+                    )
+                )
+            CCList.append('Sign Up')
+            PCCList.append('Sign Up')
+    
     return dict(title='Crew Chief Sign-Up',
                 monthName=monthName,
                 startDay=startDay,
                 yearNum=year,
                 monthNum=month,
                 days=days,
+                CCList=CCList,
+                PCCList=PCCList,
                 main=main,
                 user=request.user,
                )

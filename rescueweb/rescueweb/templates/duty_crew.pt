@@ -1,0 +1,55 @@
+<div metal:use-macro="main.macros['template']">
+  <div metal:fill-slot="content">
+    <h1>${title}</h1>
+    <table>
+      <div tal:repeat="d duty_crew_personnel">
+        <tr>
+          <td>${s[0]}</td>
+          <td>${s[1]}</td>
+        </tr>
+      </div>
+    </table>
+    <br />
+    <table>
+      <tr>
+        <div tal:repeat="header standby_personnel_headers"> 
+            <th>${header}</th>
+        </div>
+      </tr>
+      <div tal:repeat="standby_person standby_personnel">
+        <tr>
+          <div tal:repeat="cell standby_person">
+            <td>${cell}</td>
+          </div>
+        </tr>
+      </div>
+    </table>
+    <br />
+    <span tal:condition="not user_already_registered">
+      <form action="${request.url}" method="post">
+        <ul>
+          <li><label for="active">Active</label><input type="radio" name="position" value="Active"></li>
+          <li><label for="probationary">Probationary</label><input type="radio" name="position" value="Probationary"></li>
+          <li><label for="cc/pic">CC/PIC</label><input type="radio" name="position" value="CC/PIC"></li>
+          <li><input type="submit" name="signup.submitted" value="Sign Up!"></li>
+        </ul>
+      </form>
+    </span>
+    <span tal:condition="user_already_registered">
+      <span tal:condition="not requesting_coverage">
+        <form action="${request.url}" method="post">
+          <ul>
+            <li><input type="submit" name="coverage_request.submitted" value="Request Coverage"></li>
+          </ul>
+        </form>
+      </span>
+      <span tal:condition="requesting_coverage">
+        <form action="${request.url}" method="post">
+          <ul>
+            <li><input type="submit" name="cancel_coverage_request.submitted" value="Cancel Coverage Request"></li>
+          </ul>
+        </form>
+      </span>
+    </span>
+  </div>
+</div>

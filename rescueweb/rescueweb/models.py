@@ -289,15 +289,15 @@ class DutyCrews(Base):
         
 class DutyCrewCalendar(Base):
     __tablename__ = 'Duty_Crew_Calendar'
-    day = Column(Date, primary_key = True)
-    crewnumber = Column(Integer,ForeignKey('Duty_Crews.crewnumber'))
+    day = Column(Date, primary_key=True)
+    crewnumber = Column(Integer, ForeignKey('Duty_Crews.crewnumber'))
     def __init__(self,day,crewnumber):
         self.day = day
         self.crewnumber = crewnumber
-        
+
 class DutyCrewSchedule(Base):
     __tablename__ = 'Duty_Crew_Schedule'
-    day = Column(Date, primary_key = True)
+    day = Column(Date, primary_key=True)
     username = Column(Text, ForeignKey('Users.username'), primary_key=True)
     coveragerequest = Column(Boolean)
     def __init__(self,day,username,coveragerequest):
@@ -309,4 +309,3 @@ class LoginIns(Base):
     __tablename__ = 'Login_Ins'
     username = Column(Text, ForeignKey('Users.username'), primary_key=True)
     TSTAMP = Column(TIMESTAMP, primary_key=True)
-

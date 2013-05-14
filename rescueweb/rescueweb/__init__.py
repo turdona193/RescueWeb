@@ -46,6 +46,11 @@ def main(global_config, **settings):
     # up for.
     config.add_route('events' , '/events')
     config.add_route('event' , '/event/{eventid}')
+
+    # Routes for the duty crew calendar and for specific duty crew nights.
+    config.add_route('duty_crew_calendar', '/duty_crew_calendar')
+    config.add_route('duty_crew', '/duty_crew/{day}')
+
     config.add_route('pictures' , '/pictures')
     config.add_route('pictures_view' , '/pictures_view/{category}')
     config.add_route('join' , '/join')
@@ -60,7 +65,6 @@ def main(global_config, **settings):
     # up for.
     config.add_route('standbys' , '/standbys')
     config.add_route('standby' , '/standby/{standbyid}')
-    config.add_route('duty_crew_calendar', '/duty_crew_calendar')
     config.add_route('crew_chief_signup' , '/crew_chief_signup')
     config.add_route('coverage' , '/coverage')
     

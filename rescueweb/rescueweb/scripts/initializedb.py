@@ -29,6 +29,7 @@ from ..models import (
     MeetingMinutes,
     Pictures,
     DutyCrews,
+    DutyCrewSchedule,
     )
 
 def usage(argv):
@@ -478,6 +479,7 @@ Just as all of the SUNY Potsdam community, CRS does not discriminate membership 
                                 content = 'week before:Be prepared' ,
                                 ),
                         ])
+
         DBSession.add_all(
                 [
                     Pictures(picture='eqpt1.jpg',description="", category="Equipment"),
@@ -523,3 +525,72 @@ Just as all of the SUNY Potsdam community, CRS does not discriminate membership 
                     DutyCrews(crewnumber=2, username='guarintb193')
                 ])
 
+        DBSession.add_all(
+                [
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 1), 
+                        username='turdona193',
+                        coveragerequest=False
+                        ),
+
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 4), 
+                        username='turdona193',
+                        coveragerequest=False
+                        ),
+
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 7), 
+                        username='turdona193',
+                        coveragerequest=False
+                        ),
+
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 10), 
+                        username='turdona193',
+                        coveragerequest=False
+                        ),
+
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 13), 
+                        username='turdona193',
+                        coveragerequest=False
+                        ),
+
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 16), 
+                        username='turdona193',
+                        coveragerequest=False
+                        ),
+
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 19), 
+                        username='turdona193',
+                        coveragerequest=False
+                        ),
+
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 22), 
+                        username='turdona193',
+                        coveragerequest=False
+                        ),
+
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 25), 
+                        username='turdona193',
+                        coveragerequest=False
+                        ),
+
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 28), 
+                        username='turdona193',
+                        coveragerequest=False
+                        ),
+
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 31), 
+                        username='turdona193',
+                        coveragerequest=False
+                        ),
+                ]
+            )
