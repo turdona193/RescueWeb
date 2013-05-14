@@ -1,5 +1,35 @@
 <div metal:use-macro="main.macros['template']">
-    <div metal:fill-slot="content">
+	<div metal:fill-slot="content">
+	<p>
 		${title}
-    </div>
+		<form method="post">
+			Eboard Position: <select name="selectedposition">
+				<div tal:repeat = "position eboardlist">
+					<span tal:condition="positionchosen==position">
+						<option value="${position[1]}" selected>${positon[1]}</option>
+ 					</span>
+					<span tal:condition="not positionchosen==position">
+ 						<option value="${position[1]}">${position[1]}</option>
+ 					</span>
+ 				</div>
+			</select> <br/><br/>	
+			<input type="submit" name="form.selected" value="Load"/><br/>
+		</form>
+		<br/><br/>
+		<span tal:condition="form=='Load' ">
+			<form method="post">
+				user: <input input = "text" name="title" value="${memberlist.fullname}" /><br/>
+				Bio: <textarea name="body" tal:content="position.bio" rows="16" cols="80"/><br/>
+				Privilege Level: <select name="privilege_level">
+									<div tal:repeat = "level privilege_levels">
+					
+					 						<option value="${level[0]}">${level[1]}</option>
+					  				</div>
+				<input type="hidden" name="editeboard" value="${positionchosen}" />
+				<input type="hidden" name="option" value="${form}" />
+				<input type="submit" name="form.submitted" value="Save"/>
+			</form>
+		</span>
+	</p>
+	</div>
 </div>

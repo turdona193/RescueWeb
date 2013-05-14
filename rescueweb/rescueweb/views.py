@@ -56,7 +56,7 @@ from .models import (
     DutyCrews,
     DutyCrewCalendar,
     DutyCrewSchedule,
-    EboardPositions
+    EboardPositions,
     CrewChiefSchedule,
     LoginIns
     )
@@ -1712,14 +1712,44 @@ def crew_chief_signup(request):
 @view_config(route_name='edit_eboard', renderer='templates/edit_eboard.pt')
 def edit_eboard(request):
     main = get_renderer('templates/template.pt').implementation()
-    eboard = DBSession.query(EboardPositions).\
-                filter(not EboardPositions.username == '').\
-                join(Users)\
-                .all()
+    eboard = DBSession.query(EboardPositions).all()
+    eboardlist = [[record.username, record.eboardposition] for record in eboard]
+    
+    eboardmembers = DBSession.query(Users.username, Users.fullname).all()
+    memberlist = [[record.username, record.fullname] for record in eboardmembers]
+    positionchosen = ' '
+    form = ''
+    position = ''
+    if 'form.submitted' in request.params:
+        if request.params['form.selected'] == 'Load':
+            positionchosen = request.params['selectedposition']
+            form = 'Load'
+            position = DBSession.query(EboardPositions).filter_by(eboardposition=positionchosen).first()
     
     
+    """
+        def __init__(self,eboardposition,username,bio):
+        self.eboardposition = eboardposition
+        self.username = username
+        self.bio       
+        
+    announcementchosen = ''
+    form = ''
+    
+    if 'form.submitted' in request.params:
+         if request.params['form.selected'] == 'Load':
+            announcementchosen = request.params['selectedannouncement']
+            announcement = DBSession.query(Announcements).filter_by(header=announcementchosen).first()
+    """        
+            
+            
     return dict(title='Edit Eboard',
                 main=main,
+                eboardlist=eboardlist,
+                memberlist=memberlist,
+                positionchosen=positionchosen,
+                postion=position,
+                form=form,
                 user=request.user,
                )
     
