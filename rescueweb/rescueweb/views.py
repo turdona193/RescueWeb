@@ -1704,22 +1704,65 @@ def crew_chief_signup(request):
     startDay, days = calendar.monthrange(year, month)
     startDay = (startDay +1)%7
 
-    CCList = []
-    PCCList = []
+    CCList = []         #List of crew chiefs for each day of month
+    PCCList = []        #List of probationary crew chiefs for the month
+    CCEditable = []     #Tells whether the crew chief is editable for each day
+    PCCEditable = []     #Tells whether the p. crew chief is editable for each day
+    
     for i in range(days):
         chiefOnCall = DBSession.query(CrewChiefSchedule).filter(CrewChiefSchedule.date == datetime.date(year, month, i+1)).first()
         if chiefOnCall:
-            print('NOT NONE')
             CC = chiefOnCall.ccusername
+            PCC = chiefOnCall.pccusername
+                #Figure out which crew chiefs are currently signed up
             if CC:
                 CCList.append(CC)
             else:
-                CCList.append('Sign Up')
-            PCC = chiefOnCall.pccusername
+                CCList.append('Nobody')
+                
+                #Figure out which p. crew chiefs are signed up
             if PCC:
                 PCCList.append(PCC)
             else:
-                PCCList.append('Sign Up')
+                PCCList.append('Nobody')
+
+                #Figure out whether the user can edit stuff
+            if CC == request.user.username:
+                if request.user.privilege == 'Admin':
+                    if PCC:
+                        CCEditable.append(True)
+                        PCCEditable.append(True)
+                    else:
+                        CCEditable.append(True)
+                        PCCEditable.append(False)
+                else:
+                    CCEditable.append(True)
+                    PCCEditable.append(False)
+            elif CC:
+                if request.user.privilege == 'Admin':
+                    CCEditable.append(True)
+                    PCCEditable.append(True)
+                else:
+                    if PCC:
+                        CCEditable.append(False)
+                        PCCEditable.append(False)
+                    else:
+                        CCEditable.append(False)
+                        PCCEditable.append(True)
+            elif PCC == request.user.username:
+                CCEditable.append(False)
+                PCCEditable.append(True)
+            elif PCC:
+                if request.user.privilege == 'Admin':
+                    CCEditable.append(True)
+                    PCCEditable.append(True)
+                else:
+                    CCEditable.append(True)
+                    PCCEditable.append(False)
+            else:
+                CCEditable.append(True)
+                PCCEditable.append(True)
+                
         else:
             DBSession.add(
                 CrewChiefSchedule(
@@ -1728,8 +1771,10 @@ def crew_chief_signup(request):
                     pccusername = None
                     )
                 )
-            CCList.append('Sign Up')
-            PCCList.append('Sign Up')
+            CCList.append('Nobody')
+            PCCList.append('Nobody')
+            CCEditable.append(True)
+            PCCEditabe.append(True)
     
     return dict(title='Crew Chief Sign-Up',
                 monthName=monthName,
@@ -1739,6 +1784,8 @@ def crew_chief_signup(request):
                 days=days,
                 CCList=CCList,
                 PCCList=PCCList,
+                CCEditable=CCEditable,
+                PCCEditable=PCCEditable,
                 main=main,
                 user=request.user,
                )

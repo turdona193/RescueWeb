@@ -35,8 +35,19 @@
 					<input type="hidden" name="day" value="${day}">
 					<input type="hidden" name="monthNum" value="${monthNum}">
 					<input type="hidden" name="yearNum" value="${yearNum}">
-					CC:<input type="submit" name="form.CC" value="${CCList[day-1]}"><br/>
-					PCC:<input type="submit" name="form.PCC" value="${PCCList[day-1]}">
+					<span tal:condition="CCEditable[day-1]">
+						CC:<input type="submit" name="form.CC" value="${CCList[day-1]}"><br/>
+					</span>
+					<span tal:condition="not CCEditable[day-1]">
+						CC:${CCList[day-1]}<br/>
+					</span>
+
+					<span tal:condition="PCCEditable[day-1]">
+						PCC:<input type="submit" name="form.PCC" value="${PCCList[day-1]}"><br/>
+					</span>
+					<span tal:condition="not PCCEditable[day-1]">
+						PCC:${PCCList[day-1]}<br/>
+					</span>
 				</form>
 		     </td>
 		   </div>
@@ -49,8 +60,19 @@
 						<input type="hidden" name="day" value="${day+1}">
 						<input type="hidden" name="monthNum" value="${monthNum}">
 						<input type="hidden" name="yearNum" value="${yearNum}">
-						CC:<input type="submit" name="form.CC" value="${CCList[day]}"> <br/>
-						PCC:<input type="submit" name="form.PCC" value="${PCCList[day]}">
+						<span tal:condition="CCEditable[day]">
+						CC:<input type="submit" name="form.CC" value="${CCList[day]}"><br/>
+						</span>
+						<span tal:condition="not CCEditable[day]">
+							CC:${CCList[day]}<br/>
+						</span>
+
+						<span tal:condition="PCCEditable[day]">
+							PCC:<input type="submit" name="form.PCC" value="${PCCList[day]}"><br/>
+						</span>
+						<span tal:condition="not PCCEditable[day]">
+							PCC:${PCCList[day]}<br/>
+						</span>
 					</form>
 				</td>
 			</div>
