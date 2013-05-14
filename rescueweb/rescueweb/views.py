@@ -8,10 +8,13 @@ from pyramid.response import Response
 from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 
-from sqlalchemy.exc import DBAPIError
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy import distinct
 from sqlalchemy import func
+
+from sqlalchemy.exc import DBAPIError
+from sqlalchemy.exc import IntegrityError
+
+from sqlalchemy.sql import extract
 
 #from pyramid_mailer import get_mailer
 #from pyramid_mailer.message import Message
@@ -453,21 +456,6 @@ def dates(request):
         # Query only events for the current month
         episode_query = DBSession.query(Episode)
 
-        for episode in episode_query:
-            print(episode.standbyid)
-            print(episode.event)
-            print(episode.location)
-            print(episode.notes)
-            print(episode.startdatetime)
-
-        total_query = DBSession.query(StandBy).all()
-        for query in total_query:
-            print(query.standbyid)
-            print(query.event)
-            print(query.location)
-            print(query.notes)
-            print(query.startdatetime)
-
         # If querying events, cut down the events to only those that the user has
         # the appropriate privilege levels to see.
         if request.GET['type'] == 'event':
@@ -518,8 +506,7 @@ def detailed_info(request):
     # Return all of the StandBy dates occurring on this date
     if request.GET['type'] == 'standby':
         return [
-            (
-                episode.standbyid,
+            (   episode.standbyid,
                 episode.event,
                 episode.location,
                 episode.notes,
@@ -532,8 +519,7 @@ def detailed_info(request):
                 get_privilege_value(request))
 
         return [
-            (
-                episode.eventid,
+            (   episode.eventid,
                 episode.name,
                 episode.location,
                 episode.notes,
@@ -551,6 +537,31 @@ def detailed_info(request):
              renderer='templates/duty_crew_calendar.pt', permission='Member')
 def duty_crew_calendar(request):
     main = get_renderer('templates/template.pt').implementation()
+
+    date = datetime.datetime.now()
+
+    # Get every duty crew that's registered for this month
+    duty_crews = DBSession.query(DutyCrews.crewnumber, DutyCrews.username).\
+            join(DutyCrewCalendar).all()
+            #filter(DutyCrewCalendar.day 
+            #        <= datetime.date(date.year, date.month, 1)).\
+            #filter(DutyCrewCalendar.day 
+            #        <= datetime.date(date.year, date.month, 31)).all()
+            
+    #print('!!!!!!!!!!!!!!!!!!!!')
+    #for crew in duty_crews:
+    #    print(crew)
+    #print('!!!!!!!!!!!!!!!!!!!!')
+
+    #print('********************')
+    #for crew in DBSession.query(DutyCrews).all():
+    #    print(crew.crewnumber, crew.username)
+    #print('********************')
+
+    #print('&&&&&&&&&&&&&&&&&&&&')
+    #for crew in DBSession.query(DutyCrewCalendar).all():
+    #    print(crew.day, crew.crewnumber)
+    #print('&&&&&&&&&&&&&&&&&&&&')
 
     return dict(
             title='Duty Crew Calendar',
