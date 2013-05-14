@@ -25,6 +25,7 @@ def get_user(request):
                     Users.roomnumber,
                     Users.phonenumber,
                     Users.email,
+                    Users.operationalvalue,
                     Privileges.privilege,
                     Privileges.privilegevalue,
                     Privileges.pyramidsecuritygroup).\

@@ -23,6 +23,8 @@
 				Event Name: <input input="text" name="event" value="${standby.event}" /><br/>
 				Event Location: <input input="text" name="location" value="${standby.location}" /><br/>
 				Notes: <textarea name="notes" tal:content="standby.notes" rows="16" cols="80"/><br/>
+				(Dates: dates should be in the format yyyy, mm, dd)<br/>
+				(For example, January 9th 2001 would be: 2001, 01, 09)<br/>
 				Start Date: <input input="text" name="startdatetime" value="${standby.startdatetime}" /><br/>
 				End Date: <input input="text" name="enddatetime" value="${standby.enddatetime}" /><br/>
 				<input type="hidden" name="editstandby" value="${standbychosen}" />

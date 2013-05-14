@@ -1,16 +1,18 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
             <div tal:repeat="content announcements">
-  				<p>
-              		<h3>${getattr(content,headers[1])}</h3>
-
-			  		${getattr(content,headers[2])} 
-
-			  		<br>Posted By: ${getattr(content,headers[4])} 
-
-			  		<br>Posted On: ${getattr(content,headers[5]).strftime("%A, %B %d at %H:%M")} 
-
-			  </p><br/>
+            	<div tal:condition = "user and (getattr(content,headers[3]) < user.privilegevalue+1) or (getattr(content,headers[3]) == 0)">
+	  				<p>
+	              		<h3>${getattr(content,headers[1])}</h3>
+	
+				  		${getattr(content,headers[2])} 
+	
+				  		<br>Posted By: ${getattr(content,headers[4])} 
+	
+				  		<br>Posted On: ${getattr(content,headers[5]).strftime("%A, %B %d at %H:%M")} 
+	
+				  	</p><br/>
+				</div>
 			</div>
     </div>
 </div>
