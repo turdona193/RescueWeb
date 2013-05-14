@@ -22,13 +22,14 @@
 			<form method="post">
 				Event Name: <input input = "text" name="title" value="${event.name}" /><br/>
 				Event Location: <input input = "text" name="location" value="${event.location}" /><br/>
-				Permissions: <br/><br/>
-				 				<select name="privileges">
+				Permissions: <select name="privileges">
 									<div tal:repeat = "level privilege_levels">
-					 						<option value="${level[0]}">${level[1]}</option>
-					  				</div><br/><br/>
+					 					<option value="${level[0]}">${level[1]}</option>
+					  				</div>
+							</select><br/><br/>
 				
-				Start Date: <select name="startmonth">
+				Start Date: 
+				    <select name="startmonth">
 						<div tal:repeat = "month monthlist">
 							 <option value=${month}>${month}</option>
 		  				</div>

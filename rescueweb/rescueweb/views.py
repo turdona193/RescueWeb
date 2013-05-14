@@ -556,7 +556,9 @@ def coverage(request):
     if 'Cancel_Standby' in request.params:
         string = request.params['Cancel_Standby']
         list = eval(string)
-        standby = DBSession.query(StandByPersonnel).filter(StandByPersonnel.standbyid == list[0]).one()
+        standby = DBSession.query(StandByPersonnel).\
+        filter(StandByPersonnel.standbyid == list[0]).\
+        filter(StandByPersonnel.username == list[1]).one()
         standby.coverrequested = False
 
         message = request.params['Cancel_Standby']
@@ -583,18 +585,38 @@ def coverage(request):
                                  )
                           )
             DBSession.delete(standby)
-        
+            
+    if 'Cancel_Duty' in request.params:
+        string = request.params['Cancel_Duty']
+        list = eval(string)
+        duty_crew = DBSession.query(DutyCrewSchedule).\
+        filter(DutyCrewSchedule.day == list[0]).\
+        filter(DutyCrewSchedule.username == list[1]).one()
+        duty_crew.coveragerequest = False
+
+        message = request.params['Cancel_Duty']
     
     
     standby_requests = DBSession.query(StandByPersonnel.username,
-                                       StandByPersonnel.standbyid,
-                                       StandByPersonnel.standbyposition,
+                        StandByPersonnel.standbyid,
+                        StandByPersonnel.standbyposition,
                                        StandBy.event,
                                        StandBy.startdatetime,
-                                       ).join(StandBy).filter(StandByPersonnel.coverrequested == True).all()
-    all_standby_requests = [[standby.standbyid, standby.event, standby.startdatetime, standby.username, standby.standbyposition] for standby in standby_requests]
-    duty_crew_requests = DBSession.query(DutyCrewSchedule).filter_by(coveragerequest = True).all()
-    all_duty_crew_requests = [[crew.day, crew.username] for crew in duty_crew_requests]
+                                       Users.fullname,
+                                       ).join(StandBy).\
+                                       join(Users).\
+                                       filter(StandByPersonnel.coverrequested == True).all()
+    all_standby_requests = [[standby.standbyid, standby.event, standby.startdatetime, standby.username,standby.fullname, standby.standbyposition] for standby in standby_requests]
+    
+    duty_crew_requests = DBSession.query(DutyCrewSchedule.day,
+                                         DutyCrewSchedule.username,
+                                         DutyCrewSchedule.coveragerequest,
+                                         Users.fullname,
+                                         TrainingLevel.traininglevel
+                                         ).join(Users).\
+                                         join(TrainingLevel).\
+                                         filter(DutyCrewSchedule.coveragerequest == True).all()
+    all_duty_crew_requests = [[crew.day, crew.username, crew.fullname, crew.traininglevel] for crew in duty_crew_requests]
     return dict(
             title='Coverage Requests',
             main=main,
