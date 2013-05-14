@@ -92,8 +92,8 @@ def history(request):
 def personnel(request):
     main = get_renderer('templates/template.pt').implementation()
     page = DBSession.query(Users.portablenumber, Users.fullname,
-			AdministrativeStatus.status, OperationalStatus.status).\
-			join(AdministrativeStatus) .join(OperationalStatus).order_by(Users.portablenumber)
+            AdministrativeStatus.status, OperationalStatus.status).\
+            join(AdministrativeStatus) .join(OperationalStatus).order_by(Users.portablenumber)
     headers = ['Portable', 'Name', 'Administrative', 'Operational']
 
     return dict(
@@ -395,23 +395,26 @@ def duty_crew(request):
     main = get_renderer('templates/template.pt').implementation()
 
     # Sanity check
-    if 'day' not in request.matchdict:
-        return HTTPNotFound('No day passed in.')
+    if 'date' not in request.matchdict:
+        return HTTPNotFound('No date passed in.')
+
+    # Create a datetime object from teh passed in date string
+    month, day, year = request.matchdict['date'].split('-')
+    date = datetime.date(int(year), int(month), int(day))
 
     # Get all members that are on call tonight
-    duty_members = DBSession.query(DutyCrewSchedule).\
-            filter(DutyCrewSchedule.day == request.matchdict['day'])
+    duty_members = DBSession.query(
+            DutyCrewSchedule.username, DutyCrewSchedule.coveragerequest).\
+            filter(DutyCrewSchedule.day == date)
     myself = duty_members.\
             filter(DutyCrewSchedule.username == request.user.username).first()
+    duty_members = duty_members.all()
     duty_member_headers = ['Member', 'Coverage Requested']
-
-    if 'coverage_request.submitted' in request.params:
-        myself.coverrequested = True
-    elif 'cancel_coverage_request.submitted' in request.params:
-        myself.coverrequested = False
 
     return dict(
             title='Duty Crew Night',
+            duty_crew_personnel=duty_members,
+            duty_crew_personnel_headers=duty_member_headers,
             main=main,
             user=request.user
             )
@@ -433,6 +436,21 @@ def dates(request):
 
         # Query only events for the current month
         episode_query = DBSession.query(Episode)
+
+        for episode in episode_query:
+            print(episode.standbyid)
+            print(episode.event)
+            print(episode.location)
+            print(episode.notes)
+            print(episode.startdatetime)
+
+        total_query = DBSession.query(StandBy).all()
+        for query in total_query:
+            print(query.standbyid)
+            print(query.event)
+            print(query.location)
+            print(query.notes)
+            print(query.startdatetime)
 
         # If querying events, cut down the events to only those that the user has
         # the appropriate privilege levels to see.
@@ -1592,9 +1610,9 @@ def pictures(request):
     allpictures = [[apicture.picture,apicture.description, apicture.category] for apicture in pictures] 
 
     return dict(title = 'Pictures',
-				main = main,
-				user=request.user,
-				pictures = allpictures,
+                main = main,
+                user=request.user,
+                pictures = allpictures,
                )
 
 @view_config(route_name='pictures_view', renderer='templates/pictures_view.pt')
@@ -1611,9 +1629,9 @@ def pictures_view(request):
     allpictures = [(apicture.picture,apicture.description, apicture.category) for apicture in pictures]
     
     return dict(title = 'Pictures',
-				main = main,
-				user=request.user,
-				pictures = allpictures,
+                main = main,
+                user=request.user,
+                pictures = allpictures,
                 category = category,
                )
 
