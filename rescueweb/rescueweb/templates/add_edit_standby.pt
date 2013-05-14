@@ -18,6 +18,8 @@
 			<input type="submit" name="form.selected" value="Delete"/><br/>
 		</form>
 		<br/><br/>
+		
+		
 		<span tal:condition=" form=='Load' or form=='New' ">
 			<form method="post">
 				Event Name: <input input="text" name="event" value="${standby.event}" /><br/>

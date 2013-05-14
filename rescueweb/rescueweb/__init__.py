@@ -5,6 +5,14 @@ from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from rescueweb.security import groupfinder
 
+from pyramid.exceptions import NotFound
+from rescueweb.views import notfound_view
+
+from pyramid.httpexceptions import (
+    HTTPFound,
+    HTTPNotFound,
+    )
+
 from rescueweb.security import (
     groupfinder,
     get_user,
@@ -37,7 +45,8 @@ def main(global_config, **settings):
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_static_view('documents', 'documents', cache_max_age=3600)
     config.add_static_view('pictures', 'static/pictures', cache_max_age=3600)
-
+    config.add_view(notfound_view, renderer = 'templates/404.pt', context=HTTPNotFound)
+    
     config.add_route('home', '/')
     config.add_route('history','/history')
     config.add_route('personnel','/personnel')
@@ -95,6 +104,7 @@ def main(global_config, **settings):
 
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
+
 
 
     config.scan()

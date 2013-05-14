@@ -8,6 +8,7 @@ from pyramid.response import Response
 from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 
+
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import distinct
@@ -56,7 +57,7 @@ from .models import (
     DutyCrews,
     DutyCrewCalendar,
     DutyCrewSchedule,
-    EboardPositions
+    EboardPositions,
     CrewChiefSchedule,
     LoginIns
     )
@@ -117,17 +118,6 @@ def announcements(request):
             announcements=announcements,
             headers=headers,
             user=request.user)
-    
-@view_config(route_name='events', renderer='templates/events.pt')
-def event_table(request):
-    main = get_renderer('templates/template.pt').implementation()
-    event_list = DBSession.query(Events).all()
-
-    return dict(
-            title='Events', 
-            main=main,
-            user=request.user
-            )
 
 @view_config(route_name='event', renderer='templates/event.pt')
 def event(request):
@@ -1141,7 +1131,7 @@ def add_edit_certifications(request):
 def add_edit_standby(request):
     main = get_renderer('templates/template.pt').implementation()
     standbychosen = ''
-    standby = ''
+    standby = StandBy('','','',datetime.datetime.today())
     form = ''
     dateError = ''
     
@@ -1151,7 +1141,7 @@ def add_edit_standby(request):
 
     if 'form.submitted' in request.params:
         if request.params['option'] == 'New':
-            standby = StandBy('','','','')
+            standby = StandBy('','','',datetime.datetime.now())
             standby.standbyid = 1 + DBSession.query(StandBy).count()
             standby.event = request.params['event']
             standby.location = request.params['location']
@@ -1179,7 +1169,7 @@ def add_edit_standby(request):
     if 'form.selected' in request.params:
         if request.params['form.selected'] == 'New':
             standbychosen = ''
-            standby = StandBy('','','','')
+            standby = StandBy('','','',datetime.datetime.now())
             form = 'New'
         if request.params['form.selected'] == 'Load':
             standbychosen = request.params['selectedstandby']
@@ -1190,9 +1180,8 @@ def add_edit_standby(request):
             standby = DBSession.query(StandBy).filter_by(event=standbychosen).first()
             DBSession.delete(standby)
             return HTTPFound(location = request.route_url('standbys'))
-
     else:
-        stanby = StandBy('','','','')
+        standby = StandBy('','','',datetime.datetime.now())
         standbychosen = ''
 
 
@@ -1290,12 +1279,15 @@ def edit_duty_crew(request):
     
 def regenerate_table():
     today = datetime.datetime.today()
+    #collects number of people who requested coverage.
     number_of_requests = DBSession.query(DutyCrewSchedule).filter(DutyCrewSchedule.coveragerequest == True).count()
     all_duty_crew_requests = []
+    #if anyone has requested coverage, go through all requests and add them to a list of the user and date.
     if number_of_requests:
         requests_for_coverage = DBSession.query(DutyCrewSchedule).filter(DutyCrewSchedule.coveragerequest == True).all()
         all_duty_crew_requests = [[crew.day, crew.username] for crew in requests_for_coverage]
-
+    #Joins 'DutyCrewCalendar' and 'DutyCrews' to create a list of user and the day they 
+    #are on after an admin has edited the database.
     new_duty_crew_combination = DBSession.query(
                         DutyCrewCalendar.day,
                         DutyCrewCalendar.crewnumber,
@@ -1569,9 +1561,18 @@ def login(request):
         password=password,
         user=request.user,
         )
+    
+def notfound_view(self, request):
+    request.response.status_int = 404
+    main = get_renderer('templates/template.pt').implementation()
+    title = '404 Error'
+    return dict(main=main,
+                title=title,
+                user=request.user)
 
 @view_config(route_name='logout')
 def logout(request):
+    
     headers = forget(request)
     return HTTPFound(
             location=request.route_url('home'),
@@ -1709,10 +1710,7 @@ def crew_chief_signup(request):
 @view_config(route_name='edit_eboard', renderer='templates/edit_eboard.pt')
 def edit_eboard(request):
     main = get_renderer('templates/template.pt').implementation()
-    eboard = DBSession.query(EboardPositions).\
-                filter(not EboardPositions.username == '').\
-                join(Users)\
-                .all()
+    eboard = DBSession.query(EboardPositions).all()
     
     
     return dict(title='Edit Eboard',
