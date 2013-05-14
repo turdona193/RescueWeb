@@ -400,7 +400,7 @@ def duty_crew(request):
 
     # Get all members that are on call tonight
     duty_members = DBSession.query(DutyCrewSchedule).\
-            filter(DutyCrewSchedule.day == request.matchdict['day']).all()
+            filter(DutyCrewSchedule.day == request.matchdict['day'])
     myself = duty_members.\
             filter(DutyCrewSchedule.username == request.user.username).first()
     duty_member_headers = ['Member', 'Coverage Requested']
