@@ -398,23 +398,39 @@ def duty_crew(request):
     if 'date' not in request.matchdict:
         return HTTPNotFound('No date passed in.')
 
-    # Create a datetime object from teh passed in date string
+    # Create a datetime object from the passed in date string
     month, day, year = request.matchdict['date'].split('-')
     date = datetime.date(int(year), int(month), int(day))
+
+    # Get your own row if you're on call tonight
+    myself = DBSession.query(DutyCrewSchedule).\
+            filter(DutyCrewSchedule.day == date).\
+            filter(DutyCrewSchedule.username == request.user.username).first()
+
+    # Mark the user as requesting coverage if they clicked the button to do so
+    if 'coverage_request.submitted' in request.params and myself:
+        myself.coveragerequest = True
+    elif 'cancel_coverage_request.submitted' in request.params and myself:
+        myself.coveragerequest = False
+
+    # Decide if the user is requesting coverage
+    if myself:
+        requesting_coverage = myself.coveragerequest
+    else:
+        requesting_coverage = False
 
     # Get all members that are on call tonight
     duty_members = DBSession.query(
             DutyCrewSchedule.username, DutyCrewSchedule.coveragerequest).\
-            filter(DutyCrewSchedule.day == date)
-    myself = duty_members.\
-            filter(DutyCrewSchedule.username == request.user.username).first()
-    duty_members = duty_members.all()
+            filter(DutyCrewSchedule.day == date).all()
     duty_member_headers = ['Member', 'Coverage Requested']
 
     return dict(
             title='Duty Crew Night',
             duty_crew_personnel=duty_members,
             duty_crew_personnel_headers=duty_member_headers,
+            on_call=myself,
+            requesting_coverage=requesting_coverage,
             main=main,
             user=request.user
             )
