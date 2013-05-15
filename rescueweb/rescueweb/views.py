@@ -351,12 +351,7 @@ def standby(request):
             filter(StandBy.standbyid == request.matchdict['standbyid']).\
             first()
 
-    standby_headers = [
-            'Event', 
-            'Location', 
-            'Notes', 
-            'Start Date Time'
-            ]
+    standby_headers = ['Event', 'Location', 'Notes', 'Start Date Time']
 
     # Get the personnel that are signed up for the standby and the headers that
     # are used to display the information.
@@ -368,12 +363,7 @@ def standby(request):
                     filter(StandByPersonnel.standbyid ==
                     request.matchdict['standbyid']).all()
 
-    standby_personnel_headers = [
-            'Standby ID',
-            'User', 
-            'Standby Position', 
-            'Requesting Coverage'
-            ]
+    standby_personnel_headers = ['Standby ID', 'User', 'Standby Position', 'Requesting Coverage']
 
     # Flag the user as requesting coverage or not
     if standby_person:
@@ -430,12 +420,26 @@ def duty_crew(request):
             filter(DutyCrewSchedule.day == date).all()
     duty_member_headers = ['Member', 'Coverage Requested']
 
+    # Get the Crew chief and Probabtionary crew cheif
+    chiefs = DBSession.query(CrewChiefSchedule).\
+                filter(CrewChiefSchedule.date == date).first()
+
+    # Check to see if there are any Crew Chiefs signed up
+    if chiefs:
+        crew_chief = chiefs.ccusername
+        probationary_crew_chief = chiefs.pccusername
+    else:
+        crew_chief = ''
+        probationary_crew_chief = ''
+
     return dict(
             title='Duty Crew Night',
             duty_crew_personnel=duty_members,
             duty_crew_personnel_headers=duty_member_headers,
             on_call=myself,
             requesting_coverage=requesting_coverage,
+            crew_chief=crew_chief,
+            probationary_crew_chief=probationary_crew_chief,
             main=main,
             user=request.user
             )
@@ -1237,7 +1241,6 @@ def add_edit_standby(request):
     monthlist = [['January', 1],[ 'February', 2],[ 'March', 3],[ 'April',4],[ 'May', 5],[ 'June', 6],
                  ['July', 7],[ 'August', 8],[ 'September', 9],[ 'October', 10],[ 'November', 11],[ 'December', 12]]
     
-
     if 'form.submitted' in request.params:
         if request.params['option'] == 'New':
             standby = StandBy('','','',datetime.datetime.now())

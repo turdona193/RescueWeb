@@ -31,6 +31,7 @@ from ..models import (
     DutyCrews,
     DutyCrewCalendar,
     DutyCrewSchedule,
+    CrewChiefSchedule,
     )
 
 def usage(argv):
@@ -724,5 +725,15 @@ Just as all of the SUNY Potsdam community, CRS does not discriminate membership 
                         username='guarintb193', 
                         coveragerequest=False,
                         ),
+                ]
+            )
+
+        DBSession.add_all(
+                [
+                    CrewChiefSchedule(
+                        date=datetime.date(2013, 5, 31),
+                        ccusername='bannerem195', 
+                        pccusername='turdona193', 
+                    )
                 ]
             )

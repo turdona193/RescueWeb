@@ -4,7 +4,7 @@
     <table>
       <tr>
         <div tal:repeat="header duty_crew_personnel_headers"> 
-            <th>${header}</th>
+          <th>${header}</th>
         </div>
       </tr>
       <div tal:repeat="duty_crew_person duty_crew_personnel">
@@ -15,6 +15,14 @@
         </tr>
       </div>
     </table>
+    <br />
+    <dl>
+      <dt>Crew chief:</dt>
+      <dd>${crew_chief}</dd>
+      <dt>Probationary crew chief:</dt>
+      <dd>${probationary_crew_chief}</dd>
+    </dl>
+    <br />
     <span tal:condition="on_call">
       <span tal:condition="not requesting_coverage">
         <form action="${request.url}" method="post">
