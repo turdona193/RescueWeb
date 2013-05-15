@@ -453,14 +453,20 @@ def dates(request):
 
     """
     # Ensure the requester specified whether they want StandBy or Events dates
-    if 'type' not in request.GET:
+    if 'type' not in request.GET or 'date' not in request.GET:
         return None
     elif request.GET['type'] == 'standby' or request.GET['type'] == 'event':
-        # Get the current date and episode type
+        # Get the episode type
         Episode = TABLE_DICT[request.GET['type']]
 
+        # Get the current date
+        day, month, year = request.GET['date'].split('/')
+        today = datetime.datetime(int(year), int(month), int(day))
+
         # Query only events for the current month
-        episode_query = DBSession.query(Episode)
+        episode_query = DBSession.query(Episode).\
+                filter(extract('year', Episode.startdatetime) == year).\
+                filter(extract('month', Episode.startdatetime) == month)
 
         # If querying events, cut down the events to only those that the user has
         # the appropriate privilege levels to see.
@@ -480,9 +486,16 @@ def dates(request):
 
     elif request.GET['type'] == 'duty_crew':
         Episode = TABLE_DICT[request.GET['type']]
+
+        # Get the current date
+        day, month, year = request.GET['date'].split('/')
+        today = datetime.date(int(year), int(month), int(day))
+
         # Get all of the days the user is scheduled for a duty crew
         episode_query = DBSession.query(Episode).\
-                filter(Episode.username == request.user.username).all()
+                filter(Episode.username == request.user.username).\
+                filter(extract('year', Episode.day) == year).\
+                filter(extract('month', Episode.day) == month).all()
 
         return [ 
             ('{}/{}/{}'.format(
@@ -518,7 +531,7 @@ def detailed_info(request):
                 episode.event,
                 episode.location,
                 episode.notes,
-                str(episode.startdatetime),
+                episode.startdatetime.strftime('%B %d, %Y at %I:%M %p'),
             ) for episode in episode_query 
                ]
     # Return all of the StandBy dates occurring on this date
@@ -532,7 +545,7 @@ def detailed_info(request):
                 episode.location,
                 episode.notes,
                 episode.privileges,
-                str(episode.startdatetime),
+                episode.startdatetime.strftime('%B %d, %Y at %I:%M %p'),
             ) for episode in episode_query
                ]
     elif request.GET['type'] == 'duty_crew':
@@ -1720,7 +1733,6 @@ def pictures_view(request):
                 pictures = allpictures,
                 category = category,
                )
-
 
 @view_config(route_name='eboard', renderer='templates/eboard.pt')
 def eboard(request):
