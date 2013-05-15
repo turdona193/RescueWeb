@@ -2,31 +2,46 @@
     <div metal:fill-slot="content">        
 		${message}
         <h2>Stand-By Coverage</h2>
-        <div tal:condition = "standby_requests">
-	        <table border=2>
-	   			<tr>
-	   				<th>Standby</th><th>Date</th><th>Personnel</th><th>Position</th><th>Accept Coverage</th>
-					<span tal:condition = "user and user.pyramidsecuritygroup == 'admin'"><th>Cancel Coverage</th></span>
-	        	</tr>
+		  <table border=2>
+                <tr>
+                    <th>Standby</th><th>Date:Time</th><th>Personnel</th>
+                    <th>Position</th><th>Accept Coverage</th>
+                        <th>Cancel Coverage</th>
+                </tr>
+            <div tal:condition = "standby_requests">
 				<form>
 					<div tal:repeat = "request standby_requests">
 						<tr>
-	        			<td><a href = "${'/standby/{}'.format(request[0])}">${request[1]}</a></td><td>${request[2]}</td><td>${request[3]}</td><td>${request[4]}</td>
-						<td> <button type="submit" name = "Cover_Standby" value = "${[request[0],request[3]]}">Cover</button> </td>
-						<td> <button type="submit" name = "Cancel_Standby" value = "${[request[0],request[3]]}">Cancel</button> </td>
+	        			<td><a href = "${'/standby/{}'.format(request[0])}">${request[1]}</a></td><td>${request[2].strftime("%A, %B %d at %H:%M")}</td><td>${request[4]}</td><td>${request[5]}</td>
+						<td> <button type="submit" name = "Cover_Standby" value = "${[request[0],request[3]]}" style="width:100%">Cover</button> </td>
+						<span tal:condition = "user and (user.pyramidsecuritygroup == 'admin' or user.username == request[2])">
+						      <td> <button type="submit" name = "Cancel_Standby" value = "${[request[0],request[3]]}" style="width:100%">Cancel</button> </td>
+						</span>
+
 						</tr>
 	        		</div>
 				</form>
-	        </table>
-        </div>
-
-        <h2>Duty Crew Coverage</h2>
-        <div tal:condition = "duty_crew_requests">
-	        <div tal:repeat = "request duty_crew_requests">
-	        	${request}
-	        </div>
-        </div>
-        
-        
+            </div>
+			</table>
+        <form>
+            <h2>Duty Crew Coverage</h2>
+			<table border = 1>
+				<tr>
+		   			<th>Date</th><th>Personnel</th><th>Level of Training</th>
+					<th>Accept Coverage</th><th>Cancel Coverage</th>
+		        </tr>
+				<div tal:condition = "duty_crew_requests">
+			        <div tal:repeat = "request duty_crew_requests">
+			        	<tr>
+			        	<td><a href = "${'/duty_crew/{}-{}-{}'.format(request[0].month, request[0].day, request[0].year)}">${request[0].strftime("%A, %B %d")}</a></td><td>${request[2]}</td><td>${request[3]}</td>
+						<td> <button type="submit" name = "Cover_Duty" value = "${[request[0],request[1]]}"  style="width:100%">Cover</button> </td>
+						<span tal:condition = "user and (user.pyramidsecuritygroup == 'admin' or user.username == request[1])">
+						      <td> <button type="submit" name = "Cancel_Duty" value = "${[request[0],request[1]]}" style="width:100%" >Cancel</button> </td>
+						</span>
+						</tr>
+			        </div>
+	            </div>
+			</table>  
+		</form>     
     </div>
 </div>

@@ -545,6 +545,7 @@ Just as all of the SUNY Potsdam community, CRS does not discriminate membership 
                 [
                     DutyCrews(crewnumber=0, username='turdona193'),
                     DutyCrews(crewnumber=0, username='bannerem195'),
+                    DutyCrews(crewnumber=3, username='turdona193'),
                     DutyCrews(crewnumber=1, username='muehlbjp193'),
                     DutyCrews(crewnumber=2, username='guarintb193'),
                 ])
