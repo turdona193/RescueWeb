@@ -2,7 +2,7 @@
     <div metal:fill-slot="content">
         <h1>${title}</h1>
         <div id="datepicker" style="float:right;"></div>
-        <p id="events"><p>
+        <ul id="events"></ul>
     </div>
 </div>
 

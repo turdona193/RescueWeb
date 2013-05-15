@@ -2,7 +2,16 @@
     <div metal:fill-slot="content">
         <h1>${title}</h1>
         <div id="datepicker" style="float:right;"></div>
-        <p id="duty_crews"><p>
+        <ul id="duty_crews"></ul>
+        <br />
+        <dl>
+            <div tal:repeat="(crew_number, crew_members) crew_to_members.items()"> 
+                <dt>Crew ${crew_number}:</dt>
+                <div tal:repeat="crew_member crew_members"> 
+                    <dd>${crew_member}</dd>
+                </div>
+            </div>
+        </dl>
     </div>
 </div>
 

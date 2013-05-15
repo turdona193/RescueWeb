@@ -52,8 +52,7 @@ $(function() {
                                     // val[3]: Notes
                                     // val[4]: Start Date
                                     // val[5]: End dDate
-                                    $('#standbys').append('<a href="/standby/' + val[0] + '">' + val[1] + ' (' + val[4] + ')</a>');
-                                    $('#standbys').append('<br />');
+                                    $('#standbys').append('<li><a href="/standby/' + val[0] + '">' + val[1] + ' (' + val[4] + ')</a></li>');
                                 }
                             });
                         } else if (episode == 'event') {
@@ -67,8 +66,7 @@ $(function() {
                                 // val[4]: Privileges
                                 // val[5]: Start Date
                                 // val[6]: End Date
-                                $('#events').append('<a href="/event/' + val[0] + '">' + val[1] + ' (' + val[5] + ')</a>');
-                                $('#events').append('<br />');
+                                $('#events').append('<li><a href="/event/' + val[0] + '">' + val[1] + ' (' + val[5] + ')</a></li>');
                             });
                         } else if (episode == 'duty_crew') {
                             // Redirect the user to the page which contains

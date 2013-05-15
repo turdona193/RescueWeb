@@ -118,6 +118,28 @@ def main(argv = sys.argv):
                         ),
 
                     Users(
+                        username='bannerem195', 
+                        password='edward', 
+                        firstname='Edward', 
+                        middlename='Michael', 
+                        lastname='Banner', 
+                        birthday=datetime.date(1991, 5, 15), 
+                        street = 'Barrington Drive', 
+                        city='Potsdam', 
+                        state='NY', 
+                        zipcode='13676', 
+                        residence='Townhouse',
+                        roomnumber='A1-104', 
+                        phonenumber=6462595690, 
+                        email='bannerem195@potsdam.edu', 
+                        privileges=1,
+                        trainingvalue=2, 
+                        administrativevalue=2, 
+                        operationalvalue=3,
+                        portablenumber=55
+                        ),
+
+                    Users(
                         username='muehlbjp193', 
                         password='jared', 
                         firstname='Jared', 
@@ -522,84 +544,184 @@ Just as all of the SUNY Potsdam community, CRS does not discriminate membership 
         DBSession.add_all(
                 [
                     DutyCrews(crewnumber=0, username='turdona193'),
+                    DutyCrews(crewnumber=0, username='bannerem195'),
                     DutyCrews(crewnumber=1, username='muehlbjp193'),
-                    DutyCrews(crewnumber=2, username='guarintb193')
+                    DutyCrews(crewnumber=2, username='guarintb193'),
                 ])
 
         DBSession.add_all(
                 [
-                    DutyCrews(0, 'turdona193'),
-                    DutyCrews(1, 'muehlbjp193'),
-                    DutyCrews(2, 'guarintb193'),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 14),
+                        crewnumber=0, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 15),
+                        crewnumber=1, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 16),
+                        crewnumber=2, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 17),
+                        crewnumber=0, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 18),
+                        crewnumber=1, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 19),
+                        crewnumber=2, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 20),
+                        crewnumber=0, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 21),
+                        crewnumber=1, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 22),
+                        crewnumber=2, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 23),
+                        crewnumber=0, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 24),
+                        crewnumber=1, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 25),
+                        crewnumber=2, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 26),
+                        crewnumber=0, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 27),
+                        crewnumber=1, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 28),
+                        crewnumber=2, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 29),
+                        crewnumber=0, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 30),
+                        crewnumber=1, 
+                        ),
+                    DutyCrewCalendar(
+                        day=datetime.date(2013, 5, 31),
+                        crewnumber=2, 
+                        ),
                 ]
             )
 
         DBSession.add_all(
                 [
                     DutyCrewSchedule(
-                        day=datetime.date(2013, 5, 1), 
-                        username='turdona193',
-                        coveragerequest=False
+                        day=datetime.date(2013, 5, 14),
+                        username='turdona193', 
+                        coveragerequest=False,
                         ),
-
                     DutyCrewSchedule(
-                        day=datetime.date(2013, 5, 4), 
-                        username='turdona193',
-                        coveragerequest=False
+                        day=datetime.date(2013, 5, 15),
+                        username='muehlbjp193', 
+                        coveragerequest=False,
                         ),
-
                     DutyCrewSchedule(
-                        day=datetime.date(2013, 5, 7), 
-                        username='turdona193',
-                        coveragerequest=False
+                        day=datetime.date(2013, 5, 16),
+                        username='guarintb193', 
+                        coveragerequest=False,
                         ),
-
                     DutyCrewSchedule(
-                        day=datetime.date(2013, 5, 10), 
-                        username='turdona193',
-                        coveragerequest=False
+                        day=datetime.date(2013, 5, 17),
+                        username='turdona193', 
+                        coveragerequest=False,
                         ),
-
                     DutyCrewSchedule(
-                        day=datetime.date(2013, 5, 13), 
-                        username='turdona193',
-                        coveragerequest=False
+                        day=datetime.date(2013, 5, 17),
+                        username='bannerem195', 
+                        coveragerequest=False,
                         ),
-
                     DutyCrewSchedule(
-                        day=datetime.date(2013, 5, 16), 
-                        username='turdona193',
-                        coveragerequest=False
+                        day=datetime.date(2013, 5, 18),
+                        username='muehlbjp193', 
+                        coveragerequest=False,
                         ),
-
                     DutyCrewSchedule(
-                        day=datetime.date(2013, 5, 19), 
-                        username='turdona193',
-                        coveragerequest=False
+                        day=datetime.date(2013, 5, 19),
+                        username='guarintb193', 
+                        coveragerequest=False,
                         ),
-
                     DutyCrewSchedule(
-                        day=datetime.date(2013, 5, 22), 
-                        username='turdona193',
-                        coveragerequest=False
+                        day=datetime.date(2013, 5, 20),
+                        username='turdona193', 
+                        coveragerequest=False,
                         ),
-
                     DutyCrewSchedule(
-                        day=datetime.date(2013, 5, 25), 
-                        username='turdona193',
-                        coveragerequest=False
+                        day=datetime.date(2013, 5, 21),
+                        username='muehlbjp193', 
+                        coveragerequest=False,
                         ),
-
                     DutyCrewSchedule(
-                        day=datetime.date(2013, 5, 28), 
-                        username='turdona193',
-                        coveragerequest=False
+                        day=datetime.date(2013, 5, 22),
+                        username='guarintb193', 
+                        coveragerequest=False,
                         ),
-
                     DutyCrewSchedule(
-                        day=datetime.date(2013, 5, 31), 
-                        username='turdona193',
-                        coveragerequest=False
+                        day=datetime.date(2013, 5, 23),
+                        username='turdona193', 
+                        coveragerequest=False,
+                        ),
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 24),
+                        username='muehlbjp193', 
+                        coveragerequest=False,
+                        ),
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 25),
+                        username='guarintb193', 
+                        coveragerequest=False,
+                        ),
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 26),
+                        username='turdona193', 
+                        coveragerequest=False,
+                        ),
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 27),
+                        username='muehlbjp193', 
+                        coveragerequest=False,
+                        ),
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 28),
+                        username='guarintb193', 
+                        coveragerequest=False,
+                        ),
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 29),
+                        username='turdona193', 
+                        coveragerequest=False,
+                        ),
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 30),
+                        username='muehlbjp193', 
+                        coveragerequest=False,
+                        ),
+                    DutyCrewSchedule(
+                        day=datetime.date(2013, 5, 31),
+                        username='guarintb193', 
+                        coveragerequest=False,
                         ),
                 ]
             )

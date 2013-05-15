@@ -502,8 +502,10 @@ def detailed_info(request):
         month, day, year = request.GET['date'].split('/')
         episode_date = datetime.datetime(int(year), int(month), int(day))
         Table = TABLE_DICT[request.GET['type']]
-        episode_query = DBSession.query(Table)\
-                .filter(Table.startdatetime == episode_date)
+        episode_query = DBSession.query(Table).\
+                filter(extract('year', Table.startdatetime) == year).\
+                filter(extract('month', Table.startdatetime) == month).\
+                filter(extract('day', Table.startdatetime) == day)
 
     # Return all of the StandBy dates occurring on this date
     if request.GET['type'] == 'standby':
@@ -543,30 +545,24 @@ def duty_crew_calendar(request):
     date = datetime.datetime.now()
 
     # Get every duty crew that's registered for this month
-    duty_crews = DBSession.query(DutyCrews.crewnumber, DutyCrews.username).\
-            join(DutyCrewCalendar).all()
-            #filter(DutyCrewCalendar.day 
-            #        <= datetime.date(date.year, date.month, 1)).\
-            #filter(DutyCrewCalendar.day 
-            #        <= datetime.date(date.year, date.month, 31)).all()
-            
-    #print('!!!!!!!!!!!!!!!!!!!!')
-    #for crew in duty_crews:
-    #    print(crew)
-    #print('!!!!!!!!!!!!!!!!!!!!')
+    duty_crews = DBSession.query(
+            DutyCrews.crewnumber, DutyCrews.username).\
+            join(DutyCrewCalendar).\
+                filter(extract('year', DutyCrewCalendar.day) == date.year).\
+                filter(extract('month', DutyCrewCalendar.day) == date.month).\
+                distinct()
 
-    #print('********************')
-    #for crew in DBSession.query(DutyCrews).all():
-    #    print(crew.crewnumber, crew.username)
-    #print('********************')
-
-    #print('&&&&&&&&&&&&&&&&&&&&')
-    #for crew in DBSession.query(DutyCrewCalendar).all():
-    #    print(crew.day, crew.crewnumber)
-    #print('&&&&&&&&&&&&&&&&&&&&')
+    # Create a mapping of crew numbers to everyone in the crew
+    crew_to_members = {}
+    for crew in duty_crews:
+        if crew[0] in crew_to_members:
+            crew_to_members[crew[0]].append(crew[1])
+        else:
+            crew_to_members[crew[0]] = [crew[1]]
 
     return dict(
             title='Duty Crew Calendar',
+            crew_to_members=crew_to_members,
             main=main,
             user=request.user
             )
