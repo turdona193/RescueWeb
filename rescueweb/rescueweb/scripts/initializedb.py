@@ -544,8 +544,8 @@ Just as all of the SUNY Potsdam community, CRS does not discriminate membership 
 
         DBSession.add_all(
                 [
-                    DutyCrews(crewnumber=0, username='turdona193'),
-                    DutyCrews(crewnumber=0, username='bannerem195'),
+                    DutyCrews(crewnumber=4, username='turdona193'),
+                    DutyCrews(crewnumber=4, username='bannerem195'),
                     DutyCrews(crewnumber=3, username='turdona193'),
                     DutyCrews(crewnumber=1, username='muehlbjp193'),
                     DutyCrews(crewnumber=2, username='guarintb193'),
@@ -555,7 +555,7 @@ Just as all of the SUNY Potsdam community, CRS does not discriminate membership 
                 [
                     DutyCrewCalendar(
                         day=datetime.date(2013, 5, 14),
-                        crewnumber=0, 
+                        crewnumber=4, 
                         ),
                     DutyCrewCalendar(
                         day=datetime.date(2013, 5, 15),
@@ -567,7 +567,7 @@ Just as all of the SUNY Potsdam community, CRS does not discriminate membership 
                         ),
                     DutyCrewCalendar(
                         day=datetime.date(2013, 5, 17),
-                        crewnumber=0, 
+                        crewnumber=4, 
                         ),
                     DutyCrewCalendar(
                         day=datetime.date(2013, 5, 18),
@@ -579,7 +579,7 @@ Just as all of the SUNY Potsdam community, CRS does not discriminate membership 
                         ),
                     DutyCrewCalendar(
                         day=datetime.date(2013, 5, 20),
-                        crewnumber=0, 
+                        crewnumber=4, 
                         ),
                     DutyCrewCalendar(
                         day=datetime.date(2013, 5, 21),
@@ -591,7 +591,7 @@ Just as all of the SUNY Potsdam community, CRS does not discriminate membership 
                         ),
                     DutyCrewCalendar(
                         day=datetime.date(2013, 5, 23),
-                        crewnumber=0, 
+                        crewnumber=4, 
                         ),
                     DutyCrewCalendar(
                         day=datetime.date(2013, 5, 24),
@@ -603,7 +603,7 @@ Just as all of the SUNY Potsdam community, CRS does not discriminate membership 
                         ),
                     DutyCrewCalendar(
                         day=datetime.date(2013, 5, 26),
-                        crewnumber=0, 
+                        crewnumber=4, 
                         ),
                     DutyCrewCalendar(
                         day=datetime.date(2013, 5, 27),
@@ -615,7 +615,7 @@ Just as all of the SUNY Potsdam community, CRS does not discriminate membership 
                         ),
                     DutyCrewCalendar(
                         day=datetime.date(2013, 5, 29),
-                        crewnumber=0, 
+                        crewnumber=4, 
                         ),
                     DutyCrewCalendar(
                         day=datetime.date(2013, 5, 30),
