@@ -1844,7 +1844,7 @@ def crew_chief_signup(request):
             CCList.append('Nobody')
             PCCList.append('Nobody')
             CCEditable.append(True)
-            PCCEditabe.append(True)
+            PCCEditable.append(True)
     
     return dict(title='Crew Chief Sign-Up',
                 monthName=monthName,
