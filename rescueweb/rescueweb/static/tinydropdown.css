@@ -150,12 +150,12 @@ li.menuhover span, li.menuhover li.menuhover span {
 
 td.hilight-red {
     background-color: red;
-    border: 1px blue solid;
+    border: 1px red dotted;
 }
 
-td.hilight-yellow {
-    background-color: yellow;
-    border: 1px blue solid;
+td.hilight-green {
+    background-color: green;
+    border: 1px green solid;
 }
 
 td.hilight-blue {
@@ -286,4 +286,8 @@ table.altrowstable td {
 }
 .evenrowcolor{
 	background-color:#c3dde0;
+}
+
+.episode {
+    font-size: 15px;
 }

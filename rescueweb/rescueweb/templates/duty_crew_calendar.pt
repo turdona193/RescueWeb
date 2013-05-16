@@ -1,8 +1,7 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-        <h1>${title}</h1>
         <div id="datepicker" style="float:right;"></div>
-        <ul id="duty_crews"></ul>
+        <ul class="episode" id="duty_crews"></ul>
         <br />
         <dl>
             <div tal:repeat="(crew_number, crew_members) crew_to_members.items()"> 

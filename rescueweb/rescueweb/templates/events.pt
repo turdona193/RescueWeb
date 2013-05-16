@@ -1,8 +1,7 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-        <h1>${title}</h1>
         <div id="datepicker" style="float:right;"></div>
-        <ul id="events"></ul>
+        <ul class="episode" id="events"></ul>
     </div>
 </div>
 

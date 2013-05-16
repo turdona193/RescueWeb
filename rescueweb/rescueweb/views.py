@@ -66,6 +66,7 @@ from .models import (
 
 TABLE_DICT = {'standby' : StandBy, 'event' : Events,
         'duty_crew' : DutyCrewSchedule}
+PERSONNEL_TABLE_DICT = {'standby' : StandByPersonnel, 'event' : Attendees}
 
 @view_config(route_name='home', renderer='templates/home.pt')
 def home(request):
@@ -106,7 +107,6 @@ def personnel(request):
             headers=headers,
             user=request.user
             )
-
 
 @view_config(route_name='announcements', renderer='templates/announcements.pt')
 def announcements(request):
@@ -460,25 +460,36 @@ def dates(request):
     # Ensure the requester specified whether they want StandBy or Events dates
     if 'type' not in request.GET or 'date' not in request.GET:
         return None
-    elif request.GET['type'] == 'standby' or request.GET['type'] == 'event':
-        # Get the episode type
-        Episode = TABLE_DICT[request.GET['type']]
 
-        # Get the current date
-        day, month, year = request.GET['date'].split('/')
-        today = datetime.datetime(int(year), int(month), int(day))
+    # Get the current date
+    day, month, year = request.GET['date'].split('/')
+    today = datetime.datetime(int(year), int(month), int(day))
 
-        # Query only events for the current month
-        episode_query = DBSession.query(Episode).\
-                filter(extract('year', Episode.startdatetime) == year).\
-                filter(extract('month', Episode.startdatetime) == month)
+    # Get the episode type
+    Episode = TABLE_DICT[request.GET['type']]
 
-        # If querying events, cut down the events to only those that the user has
-        # the appropriate privilege levels to see.
-        if request.GET['type'] == 'event':
-            episode_query = episode_query.filter(
-                    Events.privileges <= get_privilege_value(request))
-        episode_query = episode_query.all()
+    if request.GET['type'] == 'standby' or request.GET['type'] == 'event':
+        if 'personalized' in request.GET:
+            # Only get episodes the user is signed up for
+            Personnel = PERSONNEL_TABLE_DICT[request.GET['type']]
+            episode_query = DBSession.query(Episode).\
+                    join(Personnel).\
+                    filter(extract('year', Episode.startdatetime) == year).\
+                    filter(extract('month', Episode.startdatetime) == month).\
+                    filter(Personnel.username == request.user.username).\
+                    all()
+        else:
+            # Just grab all of the episodes in the current month
+            episode_query = DBSession.query(Episode).\
+                    filter(extract('year', Episode.startdatetime) == year).\
+                    filter(extract('month', Episode.startdatetime) == month)
+
+            # If querying events, cut down the events to only those that the user has
+            # the appropriate privilege levels to see.
+            if request.GET['type'] == 'event':
+                episode_query = episode_query.filter(
+                        Events.privileges <= get_privilege_value(request))
+            episode_query = episode_query.all()
 
         return [ 
             ('{}/{}/{}'.format(
@@ -519,15 +530,30 @@ def detailed_info(request):
         # No date was sent or the type of information was not specified
         return None
 
+    # Grab the date from the AJAX request
+    month, day, year = request.GET['date'].split('/')
+    episode_date = datetime.datetime(int(year), int(month), int(day))
+
     if request.GET['type'] == 'standby' or request.GET['type'] == 'event':
-        # Grab the date and type of information desired from the AJAX request
-        month, day, year = request.GET['date'].split('/')
-        episode_date = datetime.datetime(int(year), int(month), int(day))
+        # Get the table we're dealing with
         Table = TABLE_DICT[request.GET['type']]
-        episode_query = DBSession.query(Table).\
-                filter(extract('year', Table.startdatetime) == year).\
-                filter(extract('month', Table.startdatetime) == month).\
-                filter(extract('day', Table.startdatetime) == day)
+
+        if 'personalized' in request.GET:
+            # Only return Events and Standbys the user is signed up for
+            Personnel = PERSONNEL_TABLE_DICT[request.GET['type']]
+            episode_query = DBSession.query(Table).\
+                    join(Personnel).\
+                    filter(extract('year', Table.startdatetime) == year).\
+                    filter(extract('month', Table.startdatetime) == month).\
+                    filter(extract('day', Table.startdatetime) == day).\
+                    filter(Personnel.username == request.user.username)
+
+        else:
+            # Return every Events or Standby happening today
+            episode_query = DBSession.query(Table).\
+                    filter(extract('year', Table.startdatetime) == year).\
+                    filter(extract('month', Table.startdatetime) == month).\
+                    filter(extract('day', Table.startdatetime) == day)
 
     # Return all of the StandBy dates occurring on this date
     if request.GET['type'] == 'standby':
@@ -554,10 +580,15 @@ def detailed_info(request):
             ) for episode in episode_query
                ]
     elif request.GET['type'] == 'duty_crew':
-        # We don't need to do anything. The javascript calendar already knows
-        # the date the user clicked on and just needs to redirect the user to
-        # the appropriate URL.
-        return None
+        if DBSession.query(DutyCrewSchedule).\
+                filter(extract('year', DutyCrewSchedule.day) == year).\
+                filter(extract('month', DutyCrewSchedule.day) == month).\
+                filter(extract('day', DutyCrewSchedule.day) == day).\
+                filter(DutyCrewSchedule.username == request.user.username).\
+                first():
+            return True
+        else:
+            return None
 
 @view_config(route_name='duty_crew_calendar',
              renderer='templates/duty_crew_calendar.pt', permission='Member')

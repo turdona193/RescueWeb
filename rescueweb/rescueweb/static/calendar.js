@@ -4,6 +4,7 @@
 // Events calendar.
 $(function() {
     var dates = [];
+    var colors = {'standby': 'hilight-red', 'event': 'hilight-green', 'duty_crew': 'hilight-blue'};
 
     // Compute the current date
     var currentDate = new Date()
@@ -83,7 +84,7 @@ $(function() {
     function hilightDays(date) {
         for (var i = 0; i < dates.length; i++) {
             if (new Date(dates[i]).toString() == date.toString())
-                return [true, 'hilight-blue'];
+                return [true, colors[episode]];
         }
 
         return [true, ''];

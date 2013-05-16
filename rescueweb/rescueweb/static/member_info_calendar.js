@@ -46,7 +46,7 @@ $(function() {
                 $.ajax({
                     type: 'GET',
                     url: '/detailed_info.json',
-                    data: {date: date, type: episodeTypes[i]},
+                    data: {date: date, type: episodeTypes[i], personalized: true},
                     async: false,
                     success: function(msg) {
                         if (episodeTypes[i] == 'standby') {
@@ -71,10 +71,10 @@ $(function() {
                                 $('#episodes').append('<li><a href="/event/' + val[0] + '">' + val[1] + ' (' + val[5] + ')</a></li>');
                             });
                         } else if (episodeTypes[i] == 'duty_crew') {
-                            // Redirect the user to the page which contains
-                            // information about the duty crew that's on for
-                            // this day. Pass along the date in a sanitized way.
-                            $('#episodes').append('<li><a href="/duty_crew/' + date.replace(/\//g, '-') + '">This night\'s Duty Crew</a></li>');
+                            // Only add a link to today's duty crew if the user
+                            // is signed up for it
+                            if (msg == true)
+                                $('#episodes').append('<li><a href="/duty_crew/' + date.replace(/\//g, '-') + '">Today\'s Duty Crew</a></li>');
                         }
                     }
                 });
@@ -91,7 +91,7 @@ $(function() {
 
         for (var i = 0; i < eventDates.length; i++) {
             if (new Date(eventDates[i]).toString() == date.toString())
-                return [true, 'hilight-yellow'];
+                return [true, 'hilight-green'];
         }
 
         for (var i = 0; i < dutyCrewDates.length; i++) {
@@ -113,7 +113,7 @@ $(function() {
             $.ajax({
                 url: '/dates.json',
                 type: 'GET',
-                data: {type: episodeTypes[i], date: date},
+                data: {type: episodeTypes[i], date: date, personalized: true},
                 async: false,
                 success: function(data) {
                     // Add the dates to the dates array so we know which to hilight

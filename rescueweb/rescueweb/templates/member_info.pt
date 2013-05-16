@@ -18,7 +18,7 @@
 			</table>
 			<span tal:condition="hascert">
 
-            <ul id="episodes" style="float:right"></ul>
+            <ul class="episode" id="episodes" style="float:right"></ul>
 
 			<h2>Certifications</h2>
     		<table class="altrowstable" id="alternatecolor">
