@@ -48,7 +48,6 @@ $(function() {
             request.done(function(msg) {
                 if (episode == 'standby') {
                     $('#standbys').empty();
-                    $('#standbys').append('<br />');
                     $.each(msg, function (key, val) {
                         // val[0]: Standby ID
                         // val[1]: Event
@@ -60,7 +59,6 @@ $(function() {
                     });
                 } else if (episode == 'event') {
                     $('#events').empty();
-                    $('#events').append('<br />');
                     $.each(msg, function (key, val) {
                         // val[0]: Event ID
                         // val[1]: Event

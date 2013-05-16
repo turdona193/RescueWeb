@@ -38,44 +38,44 @@ $(function() {
         // pyramid server to get all of the episodes occurring on that
         // particular date.
         onSelect: function(date) {
+            // Clear out the list
+            $('#episodes').empty();
+
             // Make an AJAX call for every type of episode
             for (var i = 0; i < episodeTypes.length; i++) {
                 $.ajax({
                     type: 'GET',
                     url: '/detailed_info.json',
                     data: {date: date, type: episodeTypes[i]},
+                    async: false,
                     success: function(msg) {
-                        //if (episodeTypes[i] == 'standby') {
-                        //    $('#standbys').empty();
-                        //    $('#standbys').append('<br />');
-                        //    $.each(msg, function (key, val) {
-                        //        // val[0]: Standby ID
-                        //        // val[1]: Event
-                        //        // val[2]: Location
-                        //        // val[3]: Notes
-                        //        // val[4]: Start Date
-                        //        // val[5]: End dDate
-                        //        $('#standbys').append('<li><a href="/standby/' + val[0] + '">' + val[1] + ' (' + val[4] + ')</a></li>');
-                        //    });
-                        //} else if (episode == 'event') {
-                        //    $('#events').empty();
-                        //    $('#events').append('<br />');
-                        //    $.each(msg, function (key, val) {
-                        //        // val[0]: Event ID
-                        //        // val[1]: Event
-                        //        // val[2]: Location
-                        //        // val[3]: Notes
-                        //        // val[4]: Privileges
-                        //        // val[5]: Start Date
-                        //        // val[6]: End Date
-                        //        $('#events').append('<li><a href="/event/' + val[0] + '">' + val[1] + ' (' + val[5] + ')</a></li>');
-                        //    });
-                        //} else if (episode == 'duty_crew') {
-                        //    // Redirect the user to the page which contains
-                        //    // information about the duty crew that's on for
-                        //    // this day. Pass along the date in a sanitized way.
-                        //    window.location.href = '/duty_crew/' + date.replace(/\//g, '-');
-                        //}
+                        if (episodeTypes[i] == 'standby') {
+                            $.each(msg, function (key, val) {
+                                // val[0]: Standby ID
+                                // val[1]: Event
+                                // val[2]: Location
+                                // val[3]: Notes
+                                // val[4]: Start Date
+                                // val[5]: End dDate
+                                $('#episodes').append('<li><a href="/standby/' + val[0] + '">' + val[1] + ' (' + val[4] + ')</a></li>');
+                            });
+                        } else if (episodeTypes[i] == 'event') {
+                            $.each(msg, function (key, val) {
+                                // val[0]: Event ID
+                                // val[1]: Event
+                                // val[2]: Location
+                                // val[3]: Notes
+                                // val[4]: Privileges
+                                // val[5]: Start Date
+                                // val[6]: End Date
+                                $('#episodes').append('<li><a href="/event/' + val[0] + '">' + val[1] + ' (' + val[5] + ')</a></li>');
+                            });
+                        } else if (episodeTypes[i] == 'duty_crew') {
+                            // Redirect the user to the page which contains
+                            // information about the duty crew that's on for
+                            // this day. Pass along the date in a sanitized way.
+                            $('#episodes').append('<li><a href="/duty_crew/' + date.replace(/\//g, '-') + '">This night\'s Duty Crew</a></li>');
+                        }
                     }
                 });
             }

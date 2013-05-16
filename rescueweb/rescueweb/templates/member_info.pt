@@ -1,6 +1,6 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-        <div id="datepicker" style="float:right;"></div>
+        <div id="datepicker" style="float: right;"></div>
         <p>
         	${message}
         	<h2>User Information</h2>
@@ -17,6 +17,9 @@
 				<tr><th>Email:</th><td> ${user.email} </td></tr>
 			</table>
 			<span tal:condition="hascert">
+
+            <ul id="episodes" style="float:right"></ul>
+
 			<h2>Certifications</h2>
     		<table class="altrowstable" id="alternatecolor">
     			<tr>
@@ -28,6 +31,7 @@
 			</table>    
 			</span>
         </p>
+        <br />
     </div>
 </div>
 
