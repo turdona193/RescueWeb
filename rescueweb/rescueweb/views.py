@@ -1210,7 +1210,9 @@ def add_edit_certifications(request):
     main = get_renderer('templates/template.pt').implementation()
         # used to list the names so a user can be selected
     all_users = DBSession.query(Users).order_by(Users.username).all()
-    all_usernames = [auser.username for auser in all_users]
+    all_usernames = [[auser.username,auser.fullname] for auser in all_users]
+    month_list = [['January', 1],[ 'February', 2],[ 'March', 3],[ 'April',4],[ 'May', 5],[ 'June', 6],
+                 ['July', 7],[ 'August', 8],[ 'September', 9],[ 'October', 10],[ 'November', 11],[ 'December', 12]]
 
     result = '' # stores message to be displayed after a change is made to a certification
     selected_user = ''
@@ -1221,55 +1223,58 @@ def add_edit_certifications(request):
 
         # if a user has been selected
     if 'form.selected' in request.params:
-        selected_user = request.params['selectlink']
-        certifications = DBSession.query(Certifications).filter_by(username = selected_user).all()
+        selected_user = eval(request.params['selected_user'])
+        certifications = DBSession.query(Certifications).filter_by(username = selected_user[0]).all()
         name_of_certs = [certs.certification for certs in certifications]
         form = 'userLoad'
 
         # if a certification has been selected
-    if 'form.certselected' in request.params:
-        selected_user = request.params['suser']
-        selected_cert = request.params['selectcert']
+    if 'form.cert_selected' in request.params:
+        selected_user = eval(request.params['selected_user'])
+        selected_cert = request.params['selected_cert']
         if selected_cert == 'New':
             certifications = Certifications('','','','')
         else:
-            certifications = DBSession.query(Certifications).filter_by(username = selected_user)\
+            certifications = DBSession.query(Certifications).filter_by(username = selected_user[0])\
                          .filter_by(certification = selected_cert).first()
         form = 'Edit Cert'
 
         # after a certification has been added/edited/deleted
     if 'form.updated' in request.params:
-        if request.params['scert'] == 'New':
+        
+        if request.params['selected_cert'] == 'New':
             cert = Certifications('','','','')
-            cert.username = request.params['suser']
+            cert.username = eval(request.params['selected_user'])[0]
             cert.certification = request.params['certname']
             cert.certnumber = request.params['certnum']
-            cert.expiration = request.params['exp']
+            cert.expiration = datetime.date(int(request.params['year']),int(request.params['month']),int(request.params['day']),)
             DBSession.add(cert)
             result = 'Certification added.'
         elif request.params['form.updated'] == 'Delete':
-            user = request.params['suser']
-            certname = request.params['scert']
-            cert = DBSession.query(Certifications).filter_by(username = user)\
+            user = eval(request.params['selected_user'])
+            certname = request.params['selected_cert']
+            cert = DBSession.query(Certifications).filter_by(username = user[0])\
                    .filter_by(certification = certname).first()
             DBSession.delete(cert)
             result = 'Certification deleted.'
         else:
-            user = request.params['suser']
-            certname = request.params['scert']
-            cert = DBSession.query(Certifications).filter_by(username = user)\
+            user = eval(request.params['selected_user'])
+            certname = request.params['selected_cert']
+            cert = DBSession.query(Certifications).filter_by(username = user[0])\
                    .filter_by(certification = certname).first()
             cert.certnumber = request.params['certnum']
-            cert.expiration = request.params['exp']
+            cert.expiration = datetime.date(int(request.params['year']),int(request.params['month']),int(request.params['day']),)
             result = 'Certification edited.'
-        certifications = DBSession.query(Certifications).filter_by(username = selected_user).all()
-        name_of_certs = [certs.certification for certs in certifications]
-                         
+        selected_user=''
+        selected_cert=''
+        form = ''
+                                 
     return dict(
             title='Add/Edit Certifications',
             main=main,
             all_users = all_usernames,
             form=form,
+            month_list=month_list,
             certlist=name_of_certs,
             certifications=certifications,
             selected_user=selected_user,
@@ -1911,11 +1916,11 @@ def crew_chief_signup(request):
 @view_config(route_name='edit_eboard', renderer='templates/edit_eboard.pt')
 def edit_eboard(request):
     main = get_renderer('templates/template.pt').implementation()
-    eboard = DBSession.query(EboardPositions).all()
-    eboardlist = [[record.username, record.eboardposition] for record in eboard]    
-    eboardmembers = DBSession.query(Users.username, Users.fullname).all()
-    memberlist = [[record.username, record.fullname] for record in eboardmembers]
-    positionchosen = ' '
+    eboard_query = DBSession.query(EboardPositions).all()
+    eboard_positions = [record.eboardposition for record in eboard_query]    
+    all_members_query = DBSession.query(Users.username, Users.fullname).all()
+    member_list = [[record.username, record.fullname] for record in all_members_query]
+    position_chosen = ' '
     form = ''
     position = ''
     if 'form.submitted' in request.params:
@@ -1929,8 +1934,8 @@ def edit_eboard(request):
     
     if 'form.selected' in request.params:
         if request.params['form.selected'] == 'Load':
-            positionchosen = request.params['selectedposition']
-            position = DBSession.query(EboardPositions).filter_by(eboardposition=positionchosen).first()
+            position_chosen = request.params['selectedposition']
+            position = DBSession.query(EboardPositions).filter_by(eboardposition=position_chosen).first()
             form = 'Load'
         
     all_privilege_levels = DBSession.query(Privileges).all()
@@ -1938,9 +1943,9 @@ def edit_eboard(request):
     
     return dict(title='Edit Eboard',
                 main=main,
-                eboardlist=eboardlist,
-                memberlist=memberlist,
-                positionchosen=positionchosen,
+                eboard_positions=eboard_positions,
+                member_list=member_list,
+                position_chosen=position_chosen,
                 privilege_levels=all_levels_list,
                 position=position,
                 form=form,

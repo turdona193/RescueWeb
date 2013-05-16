@@ -191,42 +191,42 @@ def main(argv = sys.argv):
                         username='turdona193', 
                         certification='CPR', 
                         certnumber=None, 
-                        expiration='02/2015'
+                        expiration=datetime.date(2015,2,1)
                         ),
 
                     Certifications(
                         username='turdona193',
                         certification='EMT-Basic',
                         certnumber=389992,
-                        expiration='06/2014'
+                        expiration=datetime.date(2014,6,1)
                         ),
 
                     Certifications(
                         username='muehlbjp193',
                         certification='CPR',
                         certnumber=None,
-                        expiration='05/2014'
+                        expiration=datetime.date(2014,5,1)
                         ),
 
                     Certifications(
                         username='muehlbjp193',
                         certification='EMT-Basic',
                         certnumber=380246,
-                        expiration='06/2013'
+                        expiration=datetime.date(2013,6,1)
                         ),
 
                     Certifications(
                         username='guarintb193',
                         certification='CPR',
                         certnumber=None,
-                        expiration='10/2014'
+                        expiration= datetime.date(2014, 10, 1)
                         ),
 
                     Certifications(
                         username='guarintb193',
                         certification='EMT-Basic',
                         certnumber=384850,
-                        expiration='01/2014'
+                        expiration=datetime.date(2014,1,1)
                         ),
                 ])
         
