@@ -598,9 +598,9 @@ def detailed_info(request):
 
         # Check to see if the user is on this crew
         if crew.filter(DutyCrews.username == request.user.username).first():
-            return True, crew.first().crewnumber
+            return (True, crew.first().crewnumber)
         else:
-            return False, crew.first().crewnumber
+            return (False, crew.first().crewnumber)
 
 @view_config(route_name='duty_crew_calendar',
              renderer='templates/duty_crew_calendar.pt', permission='Member')

@@ -78,7 +78,7 @@ $(function() {
                             // msg[0]: True if the logged in user is on call for this duty crew
                             // msg[1]: The duty crew number that is on tonight
                             if (msg[0])
-                                $('#episodes').append('<li><a href="/duty_crew/' + date.replace(/\//g, '-') + '-' + msg + '">Today\'s Duty Crew</a></li>');
+                                $('#episodes').append('<li><a href="/duty_crew/' + date.replace(/\//g, '-') + '-' + msg[1] + '">Today\'s Duty Crew</a></li>');
                         }
                     }
                 });
