@@ -1,7 +1,14 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-        <div id="datepicker" style="float:right;"></div>
-        <ul class="episode" id="standbys"></ul>
+        <div id="datepicker-container">
+            <div id="datepicker-center">
+                <div id="datepicker"></div>
+            </div>
+        </div>
+        <br />
+        <h3 style="text-align: center;">Standbys</h3>
+        <br />
+        <ul class="episode centered" id="standbys"></ul>
     </div>
 </div>
 

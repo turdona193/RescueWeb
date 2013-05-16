@@ -168,11 +168,11 @@ def event(request):
 
     # Get the personnel that are signed up for the event and the headers that
     # are used to display the information.
-    attendees = DBSession.query(Attendees.username, Users.firstname).\
-            join(Users).\
+    attendees = DBSession.query(Users.fullname).\
+            join(Attendees).\
             filter(Attendees.eventid == request.matchdict['eventid']).all()
 
-    attendees_headers = ['Username', 'First Name']
+    attendees_headers = ['Name']
 
     return dict(
             title=event.name,
@@ -360,16 +360,14 @@ def standby(request):
     # Get the personnel that are signed up for the standby and the headers that
     # are used to display the information.
     standby_personnel = DBSession.query(
-            StandByPersonnel.username,
-            Users.firstname,
+            Users.fullname,
             StandByPersonnel.standbyposition,
             StandByPersonnel.coverrequested).\
-                    join(Users).\
+                    join(StandByPersonnel).\
                     filter(StandByPersonnel.standbyid ==
                     request.matchdict['standbyid']).all()
 
-    standby_personnel_headers = ['User', 'First Name', 'Position',
-                                    'Requesting Coverage?']
+    standby_personnel_headers = ['Name', 'Position', 'Requesting Coverage']
 
     # Flag the user as requesting coverage or not
     if standby_person:
@@ -400,7 +398,7 @@ def duty_crew(request):
         return HTTPNotFound('No date passed in.')
 
     # Create a datetime object from the passed in date string
-    month, day, year = request.matchdict['date'].split('-')
+    month, day, year, crew_number = request.matchdict['date'].split('-')
     date = datetime.date(int(year), int(month), int(day))
 
     # Get your own row if you're on call tonight
@@ -422,12 +420,11 @@ def duty_crew(request):
 
     # Get all members that are on call tonight
     duty_members = DBSession.query(
-            DutyCrewSchedule.username,
-            Users.firstname,
+            Users.fullname,
             DutyCrewSchedule.coveragerequest).\
-                join(Users).\
+                join(DutyCrewSchedule).\
                     filter(DutyCrewSchedule.day == date).all()
-    duty_member_headers = ['User', 'First Name', 'Coverage Requested']
+    duty_member_headers = ['Name', 'Coverage Requested']
 
     # Get the Crew chief and Probabtionary crew cheif
     chiefs = DBSession.query(CrewChiefSchedule).\
@@ -443,6 +440,7 @@ def duty_crew(request):
 
     return dict(
             title='Duty Crew Night',
+            crew_number=crew_number,
             duty_crew_personnel=duty_members,
             duty_crew_personnel_headers=duty_member_headers,
             on_call=myself,
@@ -582,13 +580,15 @@ def detailed_info(request):
             ) for episode in episode_query
                ]
     elif request.GET['type'] == 'duty_crew':
-        if DBSession.query(DutyCrewSchedule).\
-                filter(extract('year', DutyCrewSchedule.day) == year).\
-                filter(extract('month', DutyCrewSchedule.day) == month).\
-                filter(extract('day', DutyCrewSchedule.day) == day).\
-                filter(DutyCrewSchedule.username == request.user.username).\
-                first():
-            return True
+        crew = DBSession.query(DutyCrewCalendar).\
+                join(DutyCrews).\
+                filter(extract('year', DutyCrewCalendar.day) == year).\
+                filter(extract('month', DutyCrewCalendar.day) == month).\
+                filter(extract('day', DutyCrewCalendar.day) == day).\
+                filter(DutyCrews.username == request.user.username).\
+                first()
+        if crew:
+            return crew.crewnumber
         else:
             return None
 
@@ -601,7 +601,8 @@ def duty_crew_calendar(request):
 
     # Get every duty crew that's registered for this month
     duty_crews = DBSession.query(
-            DutyCrews.crewnumber, DutyCrews.username).\
+            DutyCrews.crewnumber, Users.fullname).\
+            join(Users).\
             join(DutyCrewCalendar).\
                 filter(extract('year', DutyCrewCalendar.day) == date.year).\
                 filter(extract('month', DutyCrewCalendar.day) == date.month).\

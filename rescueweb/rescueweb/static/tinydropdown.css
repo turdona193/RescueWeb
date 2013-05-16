@@ -295,13 +295,22 @@ form.centered {
 dl.centered {
     text-align: center;
 }
+ul.centered {
+    text-align: center;
+}
+#datepicker-container{
+  text-align:center;
+}
+#datepicker-center{
+  display:inline-block;
+  margin:0 auto;
+}
 .oddrowcolor{
 	background-color:#d4e3e5;
 }
 .evenrowcolor{
 	background-color:#c3dde0;
 }
-
-.episode {
-    font-size: 15px;
+ul {
+    list-style-type: none;
 }

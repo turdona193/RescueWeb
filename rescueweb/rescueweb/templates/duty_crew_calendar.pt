@@ -1,9 +1,14 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-        <div id="datepicker" style="float:right;"></div>
+        <div id="datepicker-container">
+            <div id="datepicker-center">
+                <div id="datepicker"></div>
+            </div>
+        </div>
         <ul class="episode" id="duty_crews"></ul>
         <br />
-        <dl>
+        <h3 style="text-align: center">Duty Crews</h3>
+        <dl class="centered">
             <div tal:repeat="(crew_number, crew_members) crew_to_members.items()"> 
                 <dt>Crew ${crew_number}:</dt>
                 <div tal:repeat="crew_member crew_members"> 
