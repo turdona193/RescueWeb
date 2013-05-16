@@ -1,32 +1,32 @@
 <div metal:use-macro="main.macros['template']">
 	<div metal:fill-slot="content">
 	<p>
-		${title}
+		${message}
 		<div tal:condition = "not form">
-		<form method="post">
-			Eboard Position: <select name="selectedposition">
-				<div tal:repeat = "position eboard_positions">
- 						<option value="${position}">${position}</option>
- 				</div>
-			</select> <br/><br/>	
-			<input type="submit" name="form.selected" value="Load"/><br/>
-		</form>
-		<br/><br/>
+			<form method="post">
+				Eboard Position: <select name="selectedposition">
+					<div tal:repeat = "position eboard_positions">
+	 						<option value="${position}">${position}</option>
+	 				</div>
+				</select> <br/><br/>	
+				<input type="submit" name="form.selected" value="Load"/><br/>
+			</form>
+			<br/><br/>
 		</div>
 		
 		<div tal:condition="form">
 			<form method="post">
 				Eboard Position: ${position.eboardposition} <br/>
-				Personnel: 
-				
-				<input input = "text" name="title" value="${position.username}" /><br/>
-				Bio: <textarea name="body" tal:content="position.bio" rows="16" cols="80"/><br/>
-				Privilege Level: <select name="privilege_level">
-									<div tal:repeat = "level privilege_levels">
-					
-					 						<option value="${level[0]}">${level[1]}</option>
-					  				</div>
-				<input type="hidden" name="editeboard" value="${position_chosen}" />
+				Personnel: <select name="selected_user" value="">
+					           <option value = ""></option>
+                               <div tal:repeat = "member member_list">
+                                   <span tal:condition = "member[0] == position.username"><option value="${member[0]}" selected>${member[1]}</option></span>
+                                   <span tal:condition = "not member[0] == position.username"><option value="${member[0]}" >${member[1]}</option></span>
+                               </div>
+                           </select><br/>
+                Bio: <textarea name="bio" tal:content="position.bio" rows="16" cols="80"/><br/>
+
+				<input type="hidden" name="edit_position" value="${position.eboardposition}" />
 				<input type="hidden" name="option" value="${form}" />
 				<input type="submit" name="form.submitted" value="Save"/>
 			</form>

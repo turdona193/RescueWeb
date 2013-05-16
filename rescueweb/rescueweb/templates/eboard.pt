@@ -1,5 +1,10 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-		${title}
+		<div tal:repeat = "position all_eboard">
+		      <b>Position: </b>${position[0].eboardposition} <br/>
+			  <b>Name: </b>${position[1].fullname} <br/>
+			  <b>Email: </b>${position[1].email}<br/>
+			  <b>Bio: </b>${position[0].bio} <br/><br/>
+		</div>
     </div>
 </div>

@@ -1781,9 +1781,11 @@ def pictures_view(request):
 @view_config(route_name='eboard', renderer='templates/eboard.pt')
 def eboard(request):
     main = get_renderer('templates/template.pt').implementation()
+    all_eboard = DBSession.query(EboardPositions,Users).join(Users).all()
     
     return dict(title='Our Executive Branch',
                 main=main,
+                all_eboard=all_eboard,
                 user=request.user,
                )
     
@@ -1919,37 +1921,45 @@ def crew_chief_signup(request):
 @view_config(route_name='edit_eboard', renderer='templates/edit_eboard.pt')
 def edit_eboard(request):
     main = get_renderer('templates/template.pt').implementation()
+    
     eboard_query = DBSession.query(EboardPositions).all()
     eboard_positions = [record.eboardposition for record in eboard_query]    
     all_members_query = DBSession.query(Users.username, Users.fullname).all()
     member_list = [[record.username, record.fullname] for record in all_members_query]
+    
     position_chosen = ' '
     form = ''
     position = ''
+    message = ''
+    
     if 'form.submitted' in request.params:
-        if request.params['option'] == 'Load':
-            editposition = request.params['editposition']
-            position = DBSession.query(EboardPosition).filter_by(eboardpositions=editposition).first()
-            position.bio = request.params['body']
-            position.priority = int(request.params['privilege_level'])
+        user = request.params['selected_user']
+        if user:
+            editposition = request.params['edit_position']
+            position = DBSession.query(EboardPositions).filter_by(eboardposition=editposition).first()
+            position.username = request.params['selected_user']
+            position.bio = request.params['bio']
             DBSession.add(position)
-        return HHTPFound(location = request.route_url('eboard'))
+            return HTTPFound(location = request.route_url('eboard'))
+        if not user:
+            message = "Pease select a person to full the postition"
+    
     
     if 'form.selected' in request.params:
         if request.params['form.selected'] == 'Load':
             position_chosen = request.params['selectedposition']
             position = DBSession.query(EboardPositions).filter_by(eboardposition=position_chosen).first()
             form = 'Load'
+            
+            
         
-    all_privilege_levels = DBSession.query(Privileges).all()
-    all_levels_list = [[level.privilegevalue, level.privilege] for level in all_privilege_levels]
     
     return dict(title='Edit Eboard',
                 main=main,
+                message=message,
                 eboard_positions=eboard_positions,
                 member_list=member_list,
                 position_chosen=position_chosen,
-                privilege_levels=all_levels_list,
                 position=position,
                 form=form,
                 user=request.user,
