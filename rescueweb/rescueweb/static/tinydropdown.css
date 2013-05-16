@@ -286,6 +286,15 @@ table.altrowstable td {
 	border-style: solid;
 	border-color: #a9c6c9;
 }
+table.centered {
+    margin: 0 auto;
+}
+form.centered {
+    text-align: center;
+}
+dl.centered {
+    text-align: center;
+}
 .oddrowcolor{
 	background-color:#d4e3e5;
 }

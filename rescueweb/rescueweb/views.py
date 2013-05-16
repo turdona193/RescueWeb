@@ -168,12 +168,11 @@ def event(request):
 
     # Get the personnel that are signed up for the event and the headers that
     # are used to display the information.
-    attendees = DBSession.query(
-            Attendees.eventid,
-            Attendees.username).\
+    attendees = DBSession.query(Attendees.username, Users.firstname).\
+            join(Users).\
             filter(Attendees.eventid == request.matchdict['eventid']).all()
 
-    attendees_headers = ['Event ID', 'User']
+    attendees_headers = ['Username', 'First Name']
 
     return dict(
             title=event.name,
@@ -361,14 +360,16 @@ def standby(request):
     # Get the personnel that are signed up for the standby and the headers that
     # are used to display the information.
     standby_personnel = DBSession.query(
-            StandByPersonnel.standbyid,
             StandByPersonnel.username,
+            Users.firstname,
             StandByPersonnel.standbyposition,
             StandByPersonnel.coverrequested).\
+                    join(Users).\
                     filter(StandByPersonnel.standbyid ==
                     request.matchdict['standbyid']).all()
 
-    standby_personnel_headers = ['Standby ID', 'User', 'Standby Position', 'Requesting Coverage']
+    standby_personnel_headers = ['User', 'First Name', 'Position',
+                                    'Requesting Coverage?']
 
     # Flag the user as requesting coverage or not
     if standby_person:
@@ -421,9 +422,12 @@ def duty_crew(request):
 
     # Get all members that are on call tonight
     duty_members = DBSession.query(
-            DutyCrewSchedule.username, DutyCrewSchedule.coveragerequest).\
-            filter(DutyCrewSchedule.day == date).all()
-    duty_member_headers = ['Member', 'Coverage Requested']
+            DutyCrewSchedule.username,
+            Users.firstname,
+            DutyCrewSchedule.coveragerequest).\
+                join(Users).\
+                    filter(DutyCrewSchedule.day == date).all()
+    duty_member_headers = ['User', 'First Name', 'Coverage Requested']
 
     # Get the Crew chief and Probabtionary crew cheif
     chiefs = DBSession.query(CrewChiefSchedule).\

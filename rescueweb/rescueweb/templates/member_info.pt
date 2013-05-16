@@ -4,7 +4,7 @@
         <p>
         	${message}
         	<h2>User Information</h2>
-    		<table class="rowstable" id="ernatecolor">
+    		<table class="rowstable" id="alternatecolor">
 				<tr><th>Login:</th><td>${user.username}</td></tr>
 			
 				<tr><th>Full Name:</th><td> ${user.fullname} </td></tr>

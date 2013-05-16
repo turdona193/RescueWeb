@@ -1,7 +1,6 @@
 <div metal:use-macro="main.macros['template']">
   <div metal:fill-slot="content">
-    <h1>${title}</h1>
-    <table>
+    <table class="rowstable centered" id="alternatecolor">
       <div tal:repeat="e event">
         <tr>
           <td>${e[0]}</td>
@@ -10,7 +9,20 @@
       </div>
     </table>
     <br />
-    <table>
+    <span tal:condition="user">
+      <span tal:condition="not user_already_registered">
+        <form class="centered" action="${request.url}" method="post">
+          <input type="submit" name="signup.submitted" value="Attending?">
+        </form>
+      </span>
+      <span tal:condition="user_already_registered">
+        <form class="centered" action="${request.url}" method="post">
+          <input type="submit" name="retract_attendance.submitted" value="Retract Attendance">
+        </form>
+      </span>
+    </span>
+    <br />
+    <table class="rowstable centered">
       <tr>
         <div tal:repeat="header attendees_headers"> 
             <th>${header}</th>
@@ -25,21 +37,5 @@
       </div>
     </table>
     <br />
-    <span tal:condition="user">
-      <span tal:condition="not user_already_registered">
-        <form action="${request.url}" method="post">
-          <ul>
-            <li><input type="submit" name="signup.submitted" value="Attending?"></li>
-          </ul>
-        </form>
-      </span>
-      <span tal:condition="user_already_registered">
-        <form action="${request.url}" method="post">
-          <ul>
-            <li><input type="submit" name="retract_attendance.submitted" value="Retract Attendance"></li>
-          </ul>
-        </form>
-      </span>
-    </span>
   </div>
 </div>
