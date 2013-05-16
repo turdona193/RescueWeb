@@ -16,10 +16,10 @@
 				<tr><th>Phone Number:</th><td> ${user.phonenumber} </td></tr>
 				<tr><th>Email:</th><td> ${user.email} </td></tr>
 			</table>
-			<span tal:condition="hascert">
 
             <ul class="episode" id="episodes" style="float:right"></ul>
 
+			<span tal:condition="hascert">
 			<h2>Certifications</h2>
     		<table class="altrowstable" id="alternatecolor">
     			<tr>

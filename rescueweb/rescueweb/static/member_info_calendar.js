@@ -24,7 +24,7 @@ $(function() {
         // Hilight the days which Episodes occur on
         inline: true,
         changeYear: true,
-        yearRange: '2010:2013',
+        yearRange: (year-3) + ':' + (year+3),
 
         onChangeMonthYear: function(year, month, inst) {
             // Add the days of the month episodes occur on of the month the
