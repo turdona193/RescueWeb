@@ -74,8 +74,8 @@ $(function() {
                         } else if (episodeTypes[i] == 'duty_crew') {
                             // Only add a link to today's duty crew if the user
                             // is signed up for it
-                            if (msg == true)
-                                $('#episodes').append('<li><a href="/duty_crew/' + date.replace(/\//g, '-') + '">Today\'s Duty Crew</a></li>');
+                            if (msg != null)
+                                $('#episodes').append('<li><a href="/duty_crew/' + date.replace(/\//g, '-') + '-' + msg + '">Today\'s Duty Crew</a></li>');
                         }
                     }
                 });

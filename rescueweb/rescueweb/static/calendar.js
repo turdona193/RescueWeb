@@ -76,7 +76,6 @@ $(function() {
                     // information about the duty crew that's on for
                     // this day and pass along the crew number that's on that
                     // day.
-                    alert(msg);
                     window.location.href = '/duty_crew/' + date.replace(/\//g, '-') + '-' + msg;
                 }
             });
