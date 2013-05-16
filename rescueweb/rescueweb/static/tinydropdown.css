@@ -163,6 +163,11 @@ td.hilight-blue {
     border: 1px blue solid;
 }
 
+td.hilight-purple {
+    background-color: purple;
+    border: 1px purple solid;
+}
+
 .footer {
 	width:100%;
 	height:20px;

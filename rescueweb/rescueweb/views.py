@@ -65,7 +65,7 @@ from .models import (
     )
 
 TABLE_DICT = {'standby' : StandBy, 'event' : Events,
-        'duty_crew' : DutyCrewSchedule}
+        'duty_crew' : DutyCrewSchedule, 'cert_expire': Certifications}
 PERSONNEL_TABLE_DICT = {'standby' : StandByPersonnel, 'event' : Attendees}
 
 @view_config(route_name='home', renderer='templates/home.pt')
@@ -461,11 +461,8 @@ def dates(request):
     if 'type' not in request.GET or 'date' not in request.GET:
         return None
 
-    # Get the current date
+    # Get the current date and the Episode type
     day, month, year = request.GET['date'].split('/')
-    today = datetime.datetime(int(year), int(month), int(day))
-
-    # Get the episode type
     Episode = TABLE_DICT[request.GET['type']]
 
     if request.GET['type'] == 'standby' or request.GET['type'] == 'event':
@@ -503,25 +500,26 @@ def dates(request):
     elif request.GET['type'] == 'duty_crew':
         Episode = TABLE_DICT[request.GET['type']]
 
-        # Get the current date
-        day, month, year = request.GET['date'].split('/')
-        today = datetime.date(int(year), int(month), int(day))
-
         # Get all of the days the user is scheduled for a duty crew
         episode_query = DBSession.query(Episode).\
                 filter(Episode.username == request.user.username).\
                 filter(extract('year', Episode.day) == year).\
                 filter(extract('month', Episode.day) == month).all()
 
-        return [ 
-            ('{}/{}/{}'.format(
-                    datetime.datetime.now().month,
-                    episode.day.day,
-                    datetime.datetime.now().year
-                        )
-            ) for episode in episode_query
-               ]
-        
+        return [ ('{}/{}/{}'.format(month, episode.day.day, year)
+            ) for episode in episode_query ]
+
+    elif request.GET['type'] == 'cert_expire':
+        # Return the dates in which the user has a certificate expiring this
+        # month.
+        certs = DBSession.query(Certifications).\
+                filter(Certifications.username == request.user.username).\
+                filter(extract('year', Certifications.expiration) == year).\
+                filter(extract('month', Certifications.expiration) == month).all()
+
+        return [ ('{}/{}/{}'.format(month, cert.expiration.day, year)
+            ) for cert in certs ]
+
 @view_config(name='detailed_info.json', renderer='json')
 def detailed_info(request):
     """Serves up information about Standbys, Events, or Duty Crews based on a

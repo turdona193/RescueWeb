@@ -5,7 +5,7 @@
 $(function() {
     var dates = [];
     // CSS rules to color dates. Rules are defined in `tinydropdown.css'.
-    var colors = {'standby': 'hilight-red', 'event': 'hilight-green', 'duty_crew': 'hilight-blue'};
+    var colors = {'standby': 'hilight-purple', 'event': 'hilight-green', 'duty_crew': 'hilight-blue'};
 
     // Compute the current date
     var currentDate = new Date()
