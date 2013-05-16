@@ -148,8 +148,18 @@ li.menuhover span, li.menuhover li.menuhover span {
 	margin-bottom:100px
 }
 
-td.highlight {
+td.hilight-red {
     background-color: red;
+    border: 1px blue solid;
+}
+
+td.hilight-yellow {
+    background-color: yellow;
+    border: 1px blue solid;
+}
+
+td.hilight-blue {
+    background-color: blue;
     border: 1px blue solid;
 }
 
@@ -225,3 +235,55 @@ td.highlight {
 	width: 400px;
 	height: 300px;
 }	
+
+table.rowstable {
+	font-family: verdana,arial,sans-serif;
+	font-size:12px;
+	color:#333333;
+	border-width: 1px;
+	border-color: #a9c6c9;
+	border-collapse: collapse
+}
+table.rowstable th {
+	border-width: 0px;
+	padding: 8px;
+	border-style: solid;
+	border-collapse: collapse
+	border-color: #a9c6c9;
+	text-align: right;
+}
+table.rowstable td {
+	border-width: 1px;
+	padding: 8px;
+	border-collapse: collapse
+	border-style: solid;
+	border-color: #a9c6c9;
+}
+table.altrowstable {
+	font-family: verdana,arial,sans-serif;
+	font-size:12px;
+	color:#333333;
+	border-width: 1px;
+	border-color: #a9c6c9;
+	border-collapse: collapse
+}
+table.altrowstable th {
+	border-width: 0px;
+	padding: 8px;
+	border-style: solid;
+	border-collapse: collapse
+	border-color: #a9c6c9;
+}
+table.altrowstable td {
+	border-width: 1px;
+	padding: 8px;
+	border-collapse: collapse
+	border-style: solid;
+	border-color: #a9c6c9;
+}
+.oddrowcolor{
+	background-color:#d4e3e5;
+}
+.evenrowcolor{
+	background-color:#c3dde0;
+}

@@ -11,10 +11,11 @@ $(function() {
     var month = currentDate.getMonth() + 1
     var year = currentDate.getFullYear()
 
-    // Add the days of the *current* month to be hilighted
-    addHilightDays(day + "/" + month + "/" + year, false);
+    // Add the *current* month's episodes to the dates array so they can be
+    // hilighted.
+    addHilightDays(day + "/" + month + "/" + year);
 
-    // Display the calendar
+    // Datepicker configs
     $('#datepicker').datepicker({
         // Hilight the days which Episodes occur on
         inline: true,
@@ -22,11 +23,12 @@ $(function() {
         yearRange: '2010:2013',
 
         onChangeMonthYear: function(year, month, inst) {
-            // Add the days of the *current* month to be hilighted
-            addHilightDays(1 + "/" + month + "/" + year, false);
+            // Add the days of the month episodes occur on of the month the
+            // datepicker is on.
+            addHilightDays(1 + "/" + month + "/" + year);
         },
 
-        beforeShowDay: highlightDays,
+        beforeShowDay: hilightDays,
 
         // When the user clicks on a date, make an AJAX call to the
         // pyramid server to get all of the episodes occurring on that
@@ -79,17 +81,17 @@ $(function() {
         }
     });
 
-    // Highlights the days in the `dates' array
-    function highlightDays(date) {
+    // Hilights the days in the `dates' array
+    function hilightDays(date) {
         for (var i = 0; i < dates.length; i++) {
             if (new Date(dates[i]).toString() == date.toString())
-                return [true, 'highlight'];
+                return [true, 'hilight-blue'];
         }
 
         return [true, ''];
     }
 
-    function addHilightDays(date, asynchronous) {
+    function addHilightDays(date) {
         // Clear out the dates array so we hilight dates for the current month
         dates.length = 0;
 
@@ -98,7 +100,7 @@ $(function() {
             url: '/dates.json',
             type: 'GET',
             data: {type: episode, date: date},
-            async: asynchronous,
+            async: false,
             success: function(data) {
                 // Add the dates to the dates array so we know which to hilight
                 $.each(data, function (key, val) {

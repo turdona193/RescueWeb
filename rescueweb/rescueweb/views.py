@@ -21,7 +21,6 @@ from sqlalchemy.sql import extract
 #from pyramid_mailer import get_mailer
 #from pyramid_mailer.message import Message
 
-
 from pyramid.httpexceptions import (
     HTTPFound,
     HTTPNotFound,
@@ -37,7 +36,6 @@ from pyramid.security import (
     forget,
     authenticated_userid,
     )
-
 
 from .models import (
     DBSession,
@@ -276,10 +274,17 @@ def member_info(request):
     user = request.user
     message = ''
     certs = ''
-    hascert = DBSession.query(Certifications).filter(Certifications.username == user.username).count()
+    hascert = DBSession.query(Certifications).\
+            filter(Certifications.username == user.username).count()
+
     if hascert:
-        all_certs = DBSession.query(Certifications).filter(Certifications.username == user.username).all()
-        certs = [[cert.certification,cert.certnumber,cert.expiration] for cert in all_certs]
+        all_certs = DBSession.query(Certifications).\
+                filter(Certifications.username == user.username).all()
+        certs = [[     cert.certification,
+                       cert.certnumber,
+                       cert.expiration
+                 ] for cert in all_certs ]
+
     return dict(
             title='Member Information',
             main=main,

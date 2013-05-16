@@ -18,10 +18,6 @@
   -->
   <script type="text/javascript" src="${request.static_url('rescueweb:static/tinydropdown.js')}"></script>
 
-  <!-- JQuery datepicker stuff -->
-  <link rel="stylesheet" href="/resources/demos/style.css" />
-  <!-- End JQuery datepicker stuff -->
-
   <!-- Alternating table colors script -->
 	<script type="text/javascript">
 	function altRows(id){
