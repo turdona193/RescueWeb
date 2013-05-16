@@ -438,9 +438,14 @@ def duty_crew(request):
         crew_chief = ''
         probationary_crew_chief = ''
 
+    if crew_number == 'null':
+        crew_message = 'No Duty Crew Scheduled'
+    else:
+        crew_message = ''.join(['Duty Crew ', crew_number])
+
     return dict(
-            title='Duty Crew Night',
-            crew_number=crew_number,
+            title='Duty Crew',
+            crew_message=crew_message,
             duty_crew_personnel=duty_members,
             duty_crew_personnel_headers=duty_member_headers,
             on_call=myself,
@@ -580,17 +585,22 @@ def detailed_info(request):
             ) for episode in episode_query
                ]
     elif request.GET['type'] == 'duty_crew':
+        # Get the crew for this day
         crew = DBSession.query(DutyCrewCalendar).\
                 join(DutyCrews).\
                 filter(extract('year', DutyCrewCalendar.day) == year).\
                 filter(extract('month', DutyCrewCalendar.day) == month).\
-                filter(extract('day', DutyCrewCalendar.day) == day).\
-                filter(DutyCrews.username == request.user.username).\
-                first()
-        if crew:
-            return crew.crewnumber
+                filter(extract('day', DutyCrewCalendar.day) == day)
+
+        # No crew is signed up
+        if not crew.all():
+            return False, None
+
+        # Check to see if the user is on this crew
+        if crew.filter(DutyCrews.username == request.user.username).first():
+            return True, crew.first().crewnumber
         else:
-            return None
+            return False, crew.first().crewnumber
 
 @view_config(route_name='duty_crew_calendar',
              renderer='templates/duty_crew_calendar.pt', permission='Member')

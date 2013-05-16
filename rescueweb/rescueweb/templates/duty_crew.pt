@@ -1,7 +1,7 @@
 <div metal:use-macro="main.macros['template']">
   <div metal:fill-slot="content">
     <table class="rowstable centered" id="alternatecolor">
-      <h2 style="text-align: center">Duty Crew ${crew_number}</h2>
+      <h2 style="text-align: center">${crew_message}</h2>
       <br />
       <tr>
         <div tal:repeat="header duty_crew_personnel_headers"> 

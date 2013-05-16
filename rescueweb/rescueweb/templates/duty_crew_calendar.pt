@@ -8,12 +8,14 @@
         <ul class="episode" id="duty_crews"></ul>
         <br />
         <h3 style="text-align: center">Duty Crews</h3>
+        <br />
         <dl class="centered">
             <div tal:repeat="(crew_number, crew_members) crew_to_members.items()"> 
                 <dt>Crew ${crew_number}:</dt>
                 <div tal:repeat="crew_member crew_members"> 
                     <dd>${crew_member}</dd>
                 </div>
+                <br />
             </div>
         </dl>
     </div>
