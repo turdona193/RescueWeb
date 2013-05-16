@@ -65,7 +65,7 @@ from .models import (
     )
 
 TABLE_DICT = {'standby' : StandBy, 'event' : Events,
-        'duty_crew' : DutyCrewSchedule}
+        'duty_crew' : DutyCrewSchedule, 'cert_expire': Certifications}
 PERSONNEL_TABLE_DICT = {'standby' : StandByPersonnel, 'event' : Attendees}
 
 @view_config(route_name='home', renderer='templates/home.pt')
@@ -168,12 +168,11 @@ def event(request):
 
     # Get the personnel that are signed up for the event and the headers that
     # are used to display the information.
-    attendees = DBSession.query(
-            Attendees.eventid,
-            Attendees.username).\
+    attendees = DBSession.query(Users.fullname).\
+            join(Attendees).\
             filter(Attendees.eventid == request.matchdict['eventid']).all()
 
-    attendees_headers = ['Event ID', 'User']
+    attendees_headers = ['Name']
 
     return dict(
             title=event.name,
@@ -361,14 +360,14 @@ def standby(request):
     # Get the personnel that are signed up for the standby and the headers that
     # are used to display the information.
     standby_personnel = DBSession.query(
-            StandByPersonnel.standbyid,
-            StandByPersonnel.username,
+            Users.fullname,
             StandByPersonnel.standbyposition,
             StandByPersonnel.coverrequested).\
+                    join(StandByPersonnel).\
                     filter(StandByPersonnel.standbyid ==
                     request.matchdict['standbyid']).all()
 
-    standby_personnel_headers = ['Standby ID', 'User', 'Standby Position', 'Requesting Coverage']
+    standby_personnel_headers = ['Name', 'Position', 'Requesting Coverage']
 
     # Flag the user as requesting coverage or not
     if standby_person:
@@ -399,7 +398,7 @@ def duty_crew(request):
         return HTTPNotFound('No date passed in.')
 
     # Create a datetime object from the passed in date string
-    month, day, year = request.matchdict['date'].split('-')
+    month, day, year, crew_number = request.matchdict['date'].split('-')
     date = datetime.date(int(year), int(month), int(day))
 
     # Get your own row if you're on call tonight
@@ -421,9 +420,11 @@ def duty_crew(request):
 
     # Get all members that are on call tonight
     duty_members = DBSession.query(
-            DutyCrewSchedule.username, DutyCrewSchedule.coveragerequest).\
-            filter(DutyCrewSchedule.day == date).all()
-    duty_member_headers = ['Member', 'Coverage Requested']
+            Users.fullname,
+            DutyCrewSchedule.coveragerequest).\
+                join(DutyCrewSchedule).\
+                    filter(DutyCrewSchedule.day == date).all()
+    duty_member_headers = ['Name', 'Coverage Requested']
 
     # Get the Crew chief and Probabtionary crew cheif
     chiefs = DBSession.query(CrewChiefSchedule).\
@@ -439,6 +440,7 @@ def duty_crew(request):
 
     return dict(
             title='Duty Crew Night',
+            crew_number=crew_number,
             duty_crew_personnel=duty_members,
             duty_crew_personnel_headers=duty_member_headers,
             on_call=myself,
@@ -461,11 +463,8 @@ def dates(request):
     if 'type' not in request.GET or 'date' not in request.GET:
         return None
 
-    # Get the current date
+    # Get the current date and the Episode type
     day, month, year = request.GET['date'].split('/')
-    today = datetime.datetime(int(year), int(month), int(day))
-
-    # Get the episode type
     Episode = TABLE_DICT[request.GET['type']]
 
     if request.GET['type'] == 'standby' or request.GET['type'] == 'event':
@@ -503,25 +502,26 @@ def dates(request):
     elif request.GET['type'] == 'duty_crew':
         Episode = TABLE_DICT[request.GET['type']]
 
-        # Get the current date
-        day, month, year = request.GET['date'].split('/')
-        today = datetime.date(int(year), int(month), int(day))
-
         # Get all of the days the user is scheduled for a duty crew
         episode_query = DBSession.query(Episode).\
                 filter(Episode.username == request.user.username).\
                 filter(extract('year', Episode.day) == year).\
                 filter(extract('month', Episode.day) == month).all()
 
-        return [ 
-            ('{}/{}/{}'.format(
-                    datetime.datetime.now().month,
-                    episode.day.day,
-                    datetime.datetime.now().year
-                        )
-            ) for episode in episode_query
-               ]
-        
+        return [ ('{}/{}/{}'.format(month, episode.day.day, year)
+            ) for episode in episode_query ]
+
+    elif request.GET['type'] == 'cert_expire':
+        # Return the dates in which the user has a certificate expiring this
+        # month.
+        certs = DBSession.query(Certifications).\
+                filter(Certifications.username == request.user.username).\
+                filter(extract('year', Certifications.expiration) == year).\
+                filter(extract('month', Certifications.expiration) == month).all()
+
+        return [ ('{}/{}/{}'.format(month, cert.expiration.day, year)
+            ) for cert in certs ]
+
 @view_config(name='detailed_info.json', renderer='json')
 def detailed_info(request):
     """Serves up information about Standbys, Events, or Duty Crews based on a
@@ -580,13 +580,15 @@ def detailed_info(request):
             ) for episode in episode_query
                ]
     elif request.GET['type'] == 'duty_crew':
-        if DBSession.query(DutyCrewSchedule).\
-                filter(extract('year', DutyCrewSchedule.day) == year).\
-                filter(extract('month', DutyCrewSchedule.day) == month).\
-                filter(extract('day', DutyCrewSchedule.day) == day).\
-                filter(DutyCrewSchedule.username == request.user.username).\
-                first():
-            return True
+        crew = DBSession.query(DutyCrewCalendar).\
+                join(DutyCrews).\
+                filter(extract('year', DutyCrewCalendar.day) == year).\
+                filter(extract('month', DutyCrewCalendar.day) == month).\
+                filter(extract('day', DutyCrewCalendar.day) == day).\
+                filter(DutyCrews.username == request.user.username).\
+                first()
+        if crew:
+            return crew.crewnumber
         else:
             return None
 
@@ -599,7 +601,8 @@ def duty_crew_calendar(request):
 
     # Get every duty crew that's registered for this month
     duty_crews = DBSession.query(
-            DutyCrews.crewnumber, DutyCrews.username).\
+            DutyCrews.crewnumber, Users.fullname).\
+            join(Users).\
             join(DutyCrewCalendar).\
                 filter(extract('year', DutyCrewCalendar.day) == date.year).\
                 filter(extract('month', DutyCrewCalendar.day) == date.month).\

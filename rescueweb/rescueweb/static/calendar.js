@@ -4,7 +4,8 @@
 // Events calendar.
 $(function() {
     var dates = [];
-    var colors = {'standby': 'hilight-red', 'event': 'hilight-green', 'duty_crew': 'hilight-blue'};
+    // CSS rules to color dates. Rules are defined in `tinydropdown.css'.
+    var colors = {'standby': 'hilight-purple', 'event': 'hilight-green', 'duty_crew': 'hilight-blue'};
 
     // Compute the current date
     var currentDate = new Date()
@@ -21,7 +22,7 @@ $(function() {
         // Hilight the days which Episodes occur on
         inline: true,
         changeYear: true,
-        yearRange: '2010:2013',
+        yearRange: (year-3) + ':' + (year+3),
 
         onChangeMonthYear: function(year, month, inst) {
             // Add the days of the month episodes occur on of the month the
@@ -73,8 +74,10 @@ $(function() {
                 } else if (episode == 'duty_crew') {
                     // Redirect the user to the page which contains
                     // information about the duty crew that's on for
-                    // this day. Pass along the date in a sanitized way.
-                    window.location.href = '/duty_crew/' + date.replace(/\//g, '-');
+                    // this day and pass along the crew number that's on that
+                    // day.
+                    alert(msg);
+                    window.location.href = '/duty_crew/' + date.replace(/\//g, '-') + '-' + msg;
                 }
             });
         }

@@ -163,6 +163,11 @@ td.hilight-blue {
     border: 1px blue solid;
 }
 
+td.hilight-purple {
+    background-color: purple;
+    border: 1px purple solid;
+}
+
 .footer {
 	width:100%;
 	height:20px;
@@ -281,13 +286,31 @@ table.altrowstable td {
 	border-style: solid;
 	border-color: #a9c6c9;
 }
+table.centered {
+    margin: 0 auto;
+}
+form.centered {
+    text-align: center;
+}
+dl.centered {
+    text-align: center;
+}
+ul.centered {
+    text-align: center;
+}
+#datepicker-container{
+  text-align:center;
+}
+#datepicker-center{
+  display:inline-block;
+  margin:0 auto;
+}
 .oddrowcolor{
 	background-color:#d4e3e5;
 }
 .evenrowcolor{
 	background-color:#c3dde0;
 }
-
-.episode {
-    font-size: 15px;
+ul {
+    list-style-type: none;
 }

@@ -1,13 +1,14 @@
 $(function() {
-    var episodeTypes = ['standby', 'event', 'duty_crew'];
+    var episodeTypes = ['standby', 'event', 'duty_crew', 'cert_expire'];
 
     // These will hold all of the dates to be colored in by the Datepicker
     var standbyDates = [];
     var eventDates = [];
     var dutyCrewDates = [];
+    var certExpireDates = [];
 
     var episodeDates = {'standby': standbyDates, 'event': eventDates,
-                        'duty_crew': dutyCrewDates};
+                        'duty_crew': dutyCrewDates, 'cert_expire': certExpireDates};
 
     // Compute the current date
     var currentDate = new Date()
@@ -24,7 +25,7 @@ $(function() {
         // Hilight the days which Episodes occur on
         inline: true,
         changeYear: true,
-        yearRange: '2010:2013',
+        yearRange: (year-3) + ':' + (year+3),
 
         onChangeMonthYear: function(year, month, inst) {
             // Add the days of the month episodes occur on of the month the
@@ -86,17 +87,22 @@ $(function() {
     function hilightDays(date) {
         for (var i = 0; i < standbyDates.length; i++) {
             if (new Date(standbyDates[i]).toString() == date.toString())
-                return [true, 'hilight-red'];
+                return [true, 'hilight-purple', 'Standby!'];
         }
 
         for (var i = 0; i < eventDates.length; i++) {
             if (new Date(eventDates[i]).toString() == date.toString())
-                return [true, 'hilight-green'];
+                return [true, 'hilight-green', 'Event!'];
         }
 
         for (var i = 0; i < dutyCrewDates.length; i++) {
             if (new Date(dutyCrewDates[i]).toString() == date.toString())
-                return [true, 'hilight-blue'];
+                return [true, 'hilight-blue', 'On Call!'];
+        }
+
+        for (var i = 0; i < certExpireDates.length; i++) {
+            if (new Date(certExpireDates[i]).toString() == date.toString())
+                return [true, 'hilight-red', 'Certificate Expiring!'];
         }
 
         return [true, ''];
