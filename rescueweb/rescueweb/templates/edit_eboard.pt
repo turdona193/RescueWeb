@@ -2,34 +2,36 @@
 	<div metal:fill-slot="content">
 	<p>
 		${title}
+		<div tal:condition = "not form">
 		<form method="post">
 			Eboard Position: <select name="selectedposition">
-				<div tal:repeat = "position eboardlist">
-					<span tal:condition="positionchosen==position">
-						<option value="${position[1]}" selected>${positon[1]}</option>
- 					</span>
-					<span tal:condition="not positionchosen==position">
- 						<option value="${position[1]}">${position[1]}</option>
- 					</span>
+				<div tal:repeat = "position eboard_positions">
+ 						<option value="${position}">${position}</option>
  				</div>
 			</select> <br/><br/>	
 			<input type="submit" name="form.selected" value="Load"/><br/>
 		</form>
 		<br/><br/>
-		<span tal:condition="form=='Load' ">
+		</div>
+		
+		<div tal:condition="form">
 			<form method="post">
-				user: <input input = "text" name="title" value="${memberlist[1]}" /><br/>
-				Bio: <textarea name="body" tal:content="position" rows="16" cols="80"/><br/>
+				Eboard Position: ${position.eboardposition} <br/>
+				Personnel: 
+				
+				<input input = "text" name="title" value="${position.username}" /><br/>
+				Bio: <textarea name="body" tal:content="position.bio" rows="16" cols="80"/><br/>
 				Privilege Level: <select name="privilege_level">
 									<div tal:repeat = "level privilege_levels">
 					
 					 						<option value="${level[0]}">${level[1]}</option>
 					  				</div>
-				<input type="hidden" name="editeboard" value="${positionchosen}" />
+				<input type="hidden" name="editeboard" value="${position_chosen}" />
 				<input type="hidden" name="option" value="${form}" />
 				<input type="submit" name="form.submitted" value="Save"/>
 			</form>
-		</span>
+		</div>
+		
 	</p>
 	</div>
 </div>

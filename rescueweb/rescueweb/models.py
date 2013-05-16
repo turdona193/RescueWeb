@@ -125,7 +125,7 @@ class Certifications(Base):
     username = Column(Text, ForeignKey('Users.username'), primary_key=True)
     certification = Column(Text, primary_key=True)
     certnumber = Column(Integer)
-    expiration = Column(Text)
+    expiration = Column(DateTime)
 
     def __init__(self, username,certification,certnumber,expiration):
         self.username = username
