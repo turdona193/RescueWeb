@@ -76,6 +76,7 @@ $(function() {
                     // information about the duty crew that's on for
                     // this day and pass along the crew number that's on that
                     // day.
+                    //
                     // msg[0]: True if the logged in user is on call for this duty crew
                     // msg[1]: The duty crew number that is on tonight
                     window.location.href = '/duty_crew/' + date.replace(/\//g, '-') + '-' + msg[1];
