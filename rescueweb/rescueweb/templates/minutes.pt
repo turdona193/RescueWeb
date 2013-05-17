@@ -1,9 +1,9 @@
 <div metal:use-macro="main.macros['template']">
     <div metal:fill-slot="content">
-    <form>
+    <form method= "post">
     	Meeting Dates: <select name="selected_date">
 					  		<div tal:repeat = "date all_dates">
-					 	 		<option value="${date}">${date}</option>
+					 	 		<option value="${date.date()}">${date.strftime("%A, %B %d")}</option>
 							</div>
 						</select><br/>
 		<input type="submit" name="date.selected" value="Load"/><br/>

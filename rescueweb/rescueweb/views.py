@@ -246,13 +246,13 @@ def minutes(request):
     selected=False
     
     all_dates = DBSession.query(MeetingMinutes.datetime).group_by(MeetingMinutes.datetime).order_by(MeetingMinutes.datetime.desc()).all()
-    all_dates_list = [minute.datetime.timetuple()[:3] for minute in all_dates]
+    all_dates_list = [minute.datetime for minute in all_dates]
 
     if "date.selected" in request.params:
         selected=True
 
         selected_date = request.params['selected_date']
-        date = datetime.datetime.strptime(selected_date,'(%Y, %m, %d)')
+        date = datetime.datetime.strptime(selected_date,'%Y-%m-%d')
         meeting_minutes = DBSession.query(MeetingMinutes).\
         filter_by(datetime = date).\
         order_by(MeetingMinutes.datetime.desc()).all()
