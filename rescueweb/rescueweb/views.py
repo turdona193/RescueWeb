@@ -1374,7 +1374,8 @@ def edit_duty_crew(request):
 
     #Stores the number of crews.
     numOfCrews = DBSession.query(func.max(DutyCrews.crewnumber)).scalar()
-
+    if numOfCrews is None:
+        numOfCrews = 6
     year = 0
     month = 0
     if 'form.changedate' in request.params:
