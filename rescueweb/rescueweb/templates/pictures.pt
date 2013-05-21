@@ -9,7 +9,7 @@
         <p><center><h3>Click the category to see the rest of the set</h3></center></p>
         <ul class="hoverbox">
 			<div tal:repeat="pic pictures">
-			<li><a href ="pictures_view/${pic[2]}"><img src="${request.static_url('rescueweb:static/{}'.format(pic[0]))}" alt="description" /><img src="${request.static_url('rescueweb:static/{}'.format(pic[0]))}" alt="description" class="preview" /></a></li>
+			<li><a href ="pictures_view/${pic[2]}"><img src="${request.static_url('rescueweb:static/pictures/{}'.format(pic[0]))}" alt="description" /><img src="${request.static_url('rescueweb:static/pictures/{}'.format(pic[0]))}" alt="description" class="preview" /></a></li>
 			</div>
 		</ul>
     </div>
