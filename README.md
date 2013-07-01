@@ -2,7 +2,7 @@ Rescue Web website
 ==================
 
 This website will be used by the [SUNY Potsdam Campus Rescue
-Squad](http://potsdamcrs.com).
+Squad](http://potsdamcrs.com) (not this website).
 
 The website uses the [Pyramid web development
 framework](http://www.pylonsproject.org/), and
